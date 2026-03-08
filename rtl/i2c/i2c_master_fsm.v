@@ -96,11 +96,13 @@ module i2c_master_fsm (
     reg        fsm_sda_override;
 
     assign i2c_scl_o    = scl_out;
-    assign i2c_scl_oe_o = (state == IDLE || state == GEN_START || state == GEN_STOP) ? fsm_scl_oe_r : scl_oe_out;
+    assign i2c_scl_oe_o = (state == IDLE || state == GEN_START || state == GEN_STOP || scl_fsm_hold) ? fsm_scl_oe_r : scl_oe_out;
     assign i2c_sda_o    = 1'b0; // open-drain: always drive 0 when enabled
     assign i2c_sda_oe_o = fsm_sda_override ? fsm_sda_oe : sr_sda_oe;
 
     reg fsm_scl_oe_r;
+    reg scl_fsm_hold;         // keep FSM SCL override until SCL gen starts driving
+    reg first_scl_rise_seen;  // gate shift until slave has sampled bit 7
 
     // Quarter-period timer for START/STOP generation
     wire start_stop_tick = (start_stop_cnt == prescaler_i);
@@ -125,6 +127,8 @@ module i2c_master_fsm (
             fsm_sda_oe      <= 1'b0;
             fsm_sda_override <= 1'b1;
             fsm_scl_oe_r    <= 1'b0;
+            scl_fsm_hold    <= 1'b0;
+            first_scl_rise_seen <= 1'b0;
             start_stop_cnt  <= 16'd0;
             ss_phase        <= 3'd0;
         end else begin
@@ -171,6 +175,7 @@ module i2c_master_fsm (
                             end
                             3'd2: begin
                                 fsm_scl_oe_r <= 1'b1; // SCL low
+                                scl_fsm_hold <= 1'b1; // keep FSM SCL until gen starts
                                 // Load address byte into shift register
                                 sr_tx_data <= slave_addr_i;
                                 sr_load    <= 1'b1;
@@ -187,13 +192,20 @@ module i2c_master_fsm (
 
                 SEND_ADDR: begin
                     fsm_sda_override <= 1'b0;
-                    if (scl_fall) begin
+                    // Release FSM SCL hold once SCL gen is actively driving
+                    if (scl_fsm_hold && scl_oe_out)
+                        scl_fsm_hold <= 1'b0;
+                    // Gate: only shift after first SCL rise (slave samples bit 7)
+                    if (scl_rise)
+                        first_scl_rise_seen <= 1'b1;
+                    if (scl_fall && first_scl_rise_seen) begin
                         sr_shift_en <= 1'b1;
                     end
                     if (sr_bit_done) begin
                         state <= CHECK_ACK_ADDR;
                         fsm_sda_override <= 1'b1;
                         fsm_sda_oe <= 1'b0; // release SDA for ACK
+                        first_scl_rise_seen <= 1'b0;
                     end
                 end
 
@@ -240,13 +252,17 @@ module i2c_master_fsm (
 
                 SEND_DATA: begin
                     fsm_sda_override <= 1'b0;
-                    if (scl_fall) begin
+                    // Gate: only shift after first SCL rise (slave samples bit 7)
+                    if (scl_rise)
+                        first_scl_rise_seen <= 1'b1;
+                    if (scl_fall && first_scl_rise_seen) begin
                         sr_shift_en <= 1'b1;
                     end
                     if (sr_bit_done) begin
                         state <= CHECK_ACK_DATA;
                         fsm_sda_override <= 1'b1;
                         fsm_sda_oe <= 1'b0;
+                        first_scl_rise_seen <= 1'b0;
                     end
                 end
 
@@ -281,7 +297,10 @@ module i2c_master_fsm (
 
                 RECV_DATA: begin
                     fsm_sda_override <= 1'b0;
-                    if (scl_fall) begin
+                    // Gate: only shift after first SCL rise (sample bit 7 first)
+                    if (scl_rise)
+                        first_scl_rise_seen <= 1'b1;
+                    if (scl_fall && first_scl_rise_seen) begin
                         sr_shift_en <= 1'b1;
                     end
                     if (sr_bit_done) begin
@@ -290,6 +309,7 @@ module i2c_master_fsm (
                         byte_cnt   <= byte_cnt - 8'd1;
                         state      <= SEND_ACK;
                         fsm_sda_override <= 1'b1;
+                        first_scl_rise_seen <= 1'b0;
                     end
                 end
 

@@ -3,6 +3,8 @@
 // spi_shift_reg.v
 // AI_GLASSES — SPI Master
 // 8-bit bidirectional shift register. MSB-first on MOSI, shift in from MISO.
+// TX shifts on shift_en (falling SCLK edge), RX samples on sample_en
+// (rising SCLK edge) to avoid MISO race with slave.
 //============================================================================
 
 module spi_shift_reg (
@@ -11,6 +13,7 @@ module spi_shift_reg (
 
     input  wire        load,
     input  wire        shift_en,
+    input  wire        sample_en,
     input  wire [7:0]  tx_data_i,
 
     output reg  [7:0]  rx_data_o,
@@ -39,18 +42,22 @@ module spi_shift_reg (
                 tx_shift <= tx_data_i;
                 bit_cnt  <= 3'd0;
                 mosi_o   <= tx_data_i[7]; // MSB first
-            end else if (shift_en) begin
-                // Shift out TX (MSB first)
+            end
+
+            // Sample RX on rising SCLK edge
+            if (sample_en && !load) begin
+                rx_shift <= {rx_shift[6:0], miso_i};
+            end
+
+            // Shift TX on falling SCLK edge
+            if (shift_en && !load) begin
                 tx_shift <= {tx_shift[6:0], 1'b0};
                 mosi_o   <= tx_shift[6]; // next bit
-
-                // Shift in RX
-                rx_shift <= {rx_shift[6:0], miso_i};
 
                 bit_cnt <= bit_cnt + 3'd1;
                 if (bit_cnt == 3'd7) begin
                     bit_done_o <= 1'b1;
-                    rx_data_o  <= {rx_shift[6:0], miso_i};
+                    rx_data_o  <= rx_shift; // capture complete RX byte
                 end
             end
         end

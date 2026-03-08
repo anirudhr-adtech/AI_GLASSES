@@ -62,11 +62,12 @@ module tb_spi_tx_fifo;
         check("not empty after writes", empty == 1'b0);
 
         for (i = 0; i < 4; i = i + 1) begin
-            rd_en = 1;
-            @(posedge clk);
-            rd_en = 0;
-            @(posedge clk);
+            // FWFT: rd_data is valid before rd_en; check then advance
             check("read data matches", rd_data == (8'h10 + i[7:0]));
+            @(posedge clk); #1;
+            rd_en = 1;
+            @(posedge clk); #1;
+            rd_en = 0;
         end
         @(posedge clk); @(posedge clk);
         check("empty after read all", empty == 1'b1);

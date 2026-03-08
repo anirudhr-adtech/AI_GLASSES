@@ -185,25 +185,21 @@ module audio_controller (
                     cycle_counter <= cycle_counter + 32'd1;
                     if (pwr_done_i) begin
                         frame_energy_o <= energy_acc;
+                        // Start mel->log->DCT as a streaming chain
                         mel_start_o    <= 1'b1;
-                        pipe_state     <= P_MEL;
+                        log_start_o    <= 1'b1;
+                        dct_start_o    <= 1'b1;
+                        pipe_state     <= P_DCT;
                     end
                 end
 
+                // P_MEL, P_LOG unused — mel/log/DCT run concurrently as streaming pipeline
                 P_MEL: begin
-                    cycle_counter <= cycle_counter + 32'd1;
-                    if (mel_done_i) begin
-                        log_start_o <= 1'b1;
-                        pipe_state  <= P_LOG;
-                    end
+                    pipe_state <= P_DCT;
                 end
 
                 P_LOG: begin
-                    cycle_counter <= cycle_counter + 32'd1;
-                    if (log_done_i) begin
-                        dct_start_o <= 1'b1;
-                        pipe_state  <= P_DCT;
-                    end
+                    pipe_state <= P_DCT;
                 end
 
                 P_DCT: begin

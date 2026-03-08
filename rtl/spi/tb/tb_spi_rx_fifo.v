@@ -62,13 +62,13 @@ module tb_spi_rx_fifo;
         @(posedge clk); @(posedge clk);
         check("not empty", empty == 1'b0);
 
-        // Read back
+        // Read back (FWFT: check data before asserting rd_en)
         for (i = 0; i < 8; i = i + 1) begin
-            rd_en = 1;
-            @(posedge clk);
-            rd_en = 0;
-            @(posedge clk);
             check("rx data matches", rd_data == (8'hC0 + i[7:0]));
+            @(posedge clk); #1;
+            rd_en = 1;
+            @(posedge clk); #1;
+            rd_en = 0;
         end
         @(posedge clk); @(posedge clk);
         check("empty after reads", empty == 1'b1);

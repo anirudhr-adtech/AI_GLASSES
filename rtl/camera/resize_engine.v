@@ -183,7 +183,8 @@ module resize_engine (
                         // Phase 0: read from top line, compute source X
                         acc_x <= {6'd0, dst_x, 16'd0};  // dst_x * 65536
                         // src_x = (dst_x * scale_x) >> 16
-                        lb_rd_line_sel <= ~line_sel;  // top line = previous
+                        // First row: use current line for both (nearest-neighbor fallback)
+                        lb_rd_line_sel <= (dst_y == 10'd0) ? line_sel : ~line_sel;
                         lb_rd_addr     <= (dst_x * scale_x_i[23:0]) >> 16;
                         frac_x         <= ((dst_x * scale_x_i[23:0]) >> 8);
                         frac_y         <= acc_y[15:8];
@@ -200,10 +201,11 @@ module resize_engine (
                     // Output interpolated pixel when valid
                     if (interp_valid) begin
                         pixel_bot <= lb_rd_data;
-                        // Vertical interpolation: top*(256-frac_y) + bot*frac_y >> 8
-                        out_pixel_o[23:16] <= ((top_r * (8'd255 - frac_y)) + (lb_rd_data[23:16] * frac_y)) >> 8;
-                        out_pixel_o[15:8]  <= ((top_g * (8'd255 - frac_y)) + (lb_rd_data[15:8]  * frac_y)) >> 8;
-                        out_pixel_o[7:0]   <= ((top_b * (8'd255 - frac_y)) + (lb_rd_data[7:0]   * frac_y)) >> 8;
+                        // Vertical interpolation: top*(255-frac_y) + bot*frac_y >> 8
+                        // Use 16-bit intermediates to avoid 8-bit multiply overflow
+                        out_pixel_o[23:16] <= (({8'd0, top_r} * {8'd0, 8'd255 - frac_y}) + ({8'd0, lb_rd_data[23:16]} * {8'd0, frac_y})) >> 8;
+                        out_pixel_o[15:8]  <= (({8'd0, top_g} * {8'd0, 8'd255 - frac_y}) + ({8'd0, lb_rd_data[15:8]}  * {8'd0, frac_y})) >> 8;
+                        out_pixel_o[7:0]   <= (({8'd0, top_b} * {8'd0, 8'd255 - frac_y}) + ({8'd0, lb_rd_data[7:0]}   * {8'd0, frac_y})) >> 8;
                         out_valid_o <= 1'b1;
                         dst_x <= dst_x + 10'd1;
                     end

@@ -36,11 +36,12 @@ module tb_latency_pipe;
         .in_data   (in_data),
         .in_id     (in_id),
         .in_last   (in_last),
-        .out_valid (out_valid),
-        .out_data  (out_data),
-        .out_id    (out_id),
-        .out_last  (out_last),
-        .out_ready (out_ready)
+        .out_valid    (out_valid),
+        .out_data     (out_data),
+        .out_id       (out_id),
+        .out_last     (out_last),
+        .out_ready    (out_ready),
+        .pipe_empty_o ()
     );
 
     initial clk = 0;

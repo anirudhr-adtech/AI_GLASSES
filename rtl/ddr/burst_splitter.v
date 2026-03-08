@@ -147,8 +147,9 @@ module burst_splitter #(
         end else begin
             case (wr_state)
                 WR_IDLE: begin
-                    s_bvalid  <= 1'b0;
+                    // Do NOT unconditionally clear s_bvalid — let handshake logic handle it
                     s_awready <= 1'b1;
+                    s_wready  <= 1'b0;
                     m_bready  <= 1'b0;
                     if (s_awvalid && s_awready) begin
                         s_awready          <= 1'b0;
@@ -165,9 +166,9 @@ module burst_splitter #(
                 end
 
                 WR_ISSUE: begin
-                    // Determine sub-burst length
-                    if (wr_beats_remaining > 9'd16) begin
-                        wr_sub_len <= 4'd15; // 16 beats (0-based)
+                    // Determine sub-burst length (parameterized for downstream width converter)
+                    if (wr_beats_remaining > {5'd0, MAX_AXI3_LEN[3:0]} + 9'd1) begin
+                        wr_sub_len <= MAX_AXI3_LEN[3:0];
                     end else begin
                         wr_sub_len <= wr_beats_remaining[3:0] - 4'd1;
                     end
@@ -177,8 +178,8 @@ module burst_splitter #(
                     m_awaddr   <= wr_addr;
                     m_awsize   <= wr_size;
                     m_awburst  <= wr_burst;
-                    if (wr_beats_remaining > 9'd16)
-                        m_awlen <= 4'd15;
+                    if (wr_beats_remaining > {5'd0, MAX_AXI3_LEN[3:0]} + 9'd1)
+                        m_awlen <= MAX_AXI3_LEN[3:0];
                     else
                         m_awlen <= wr_beats_remaining[3:0] - 4'd1;
 
@@ -191,33 +192,41 @@ module burst_splitter #(
                 end
 
                 WR_DATA: begin
-                    s_wready <= 1'b1;
-                    m_wvalid <= s_wvalid && s_wready;
-                    m_wdata  <= s_wdata;
-                    m_wstrb  <= s_wstrb;
+                    // Pipeline register W channel:
+                    // After accepting a beat, deassert s_wready for 1 cycle
+                    // to prevent double-counting when TB updates data
+                    if (s_wvalid && s_wready) begin
+                        // Accept upstream beat into pipeline register
+                        m_wvalid <= 1'b1;
+                        m_wdata  <= s_wdata;
+                        m_wstrb  <= s_wstrb;
+                        m_wlast  <= (wr_sub_beat_cnt == wr_sub_len);
+                        s_wready <= 1'b0;  // Pause until downstream drains
 
-                    if (wr_sub_beat_cnt == wr_sub_len)
-                        m_wlast <= 1'b1;
-                    else
-                        m_wlast <= 1'b0;
-
-                    if (s_wvalid && s_wready && m_wready) begin
                         wr_sub_beat_cnt    <= wr_sub_beat_cnt + 4'd1;
                         wr_beats_remaining <= wr_beats_remaining - 9'd1;
 
                         if (wr_sub_beat_cnt == wr_sub_len) begin
                             // Sub-burst complete
-                            s_wready <= 1'b0;
-                            m_wvalid <= 1'b0;
-                            // Update address for next sub-burst
                             wr_addr  <= wr_addr + (({12'b0, wr_sub_len} + 16'd1) * wr_beat_bytes);
                             wr_state <= WR_RESP;
                             m_bready <= 1'b1;
                         end
+                    end else if (m_wvalid && m_wready) begin
+                        // Downstream consumed — clear register, re-enable upstream
+                        m_wvalid <= 1'b0;
+                        s_wready <= 1'b1;
+                    end else if (!m_wvalid) begin
+                        // Register empty, ensure ready is high
+                        s_wready <= 1'b1;
                     end
                 end
 
                 WR_RESP: begin
+                    // Drain any remaining m_wvalid (last beat still pending)
+                    if (m_wvalid && m_wready)
+                        m_wvalid <= 1'b0;
+
                     m_bready <= 1'b1;
                     if (m_bvalid && m_bready) begin
                         m_bready        <= 1'b0;
@@ -239,7 +248,7 @@ module burst_splitter #(
                 end
             endcase
 
-            // Clear bvalid on handshake
+            // Clear bvalid on handshake (works in all states)
             if (s_bvalid && s_bready)
                 s_bvalid <= 1'b0;
         end
@@ -285,7 +294,7 @@ module burst_splitter #(
         end else begin
             case (rd_state)
                 RD_IDLE: begin
-                    s_rvalid  <= 1'b0;
+                    // Do NOT unconditionally clear s_rvalid — let handshake logic handle it
                     s_arready <= 1'b1;
                     if (s_arvalid && s_arready) begin
                         s_arready          <= 1'b0;
@@ -300,8 +309,8 @@ module burst_splitter #(
                 end
 
                 RD_ISSUE: begin
-                    if (rd_beats_remaining > 9'd16) begin
-                        rd_sub_len <= 4'd15;
+                    if (rd_beats_remaining > {5'd0, MAX_AXI3_LEN[3:0]} + 9'd1) begin
+                        rd_sub_len <= MAX_AXI3_LEN[3:0];
                     end else begin
                         rd_sub_len <= rd_beats_remaining[3:0] - 4'd1;
                     end
@@ -311,8 +320,8 @@ module burst_splitter #(
                     m_araddr   <= rd_addr;
                     m_arsize   <= rd_size;
                     m_arburst  <= rd_burst;
-                    if (rd_beats_remaining > 9'd16)
-                        m_arlen <= 4'd15;
+                    if (rd_beats_remaining > {5'd0, MAX_AXI3_LEN[3:0]} + 9'd1)
+                        m_arlen <= MAX_AXI3_LEN[3:0];
                     else
                         m_arlen <= rd_beats_remaining[3:0] - 4'd1;
 
@@ -353,17 +362,13 @@ module burst_splitter #(
                         end else begin
                             s_rlast <= 1'b0;
                         end
-                    end else begin
-                        // Clear rvalid when downstream accepts
-                        if (s_rvalid && s_rready)
-                            s_rvalid <= 1'b0;
                     end
                 end
 
                 default: rd_state <= RD_IDLE;
             endcase
 
-            // Clear rvalid on handshake (except when new data arriving)
+            // Clear rvalid on handshake (works in all states, except when new data arriving)
             if (s_rvalid && s_rready && !(m_rvalid && m_rready))
                 s_rvalid <= 1'b0;
         end

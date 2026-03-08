@@ -197,6 +197,7 @@ module audio_subsys_top (
         .clk            (clk_i),
         .rst_n          (rst_ni),
         .start_i        (window_start),
+        .frame_size_i   (reg_window_config[10:0]),
         .fifo_rd_en_o   (window_fifo_rd),
         .fifo_rd_data_i (fifo_rd_data),
         .done_o         (window_done),

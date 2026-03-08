@@ -73,13 +73,13 @@ module tb_i2c_tx_fifo;
         @(posedge clk);
         check("still full after overflow attempt", full == 1'b1);
 
-        // Read all 16 bytes and verify order
+        // Read all 16 bytes and verify order (FWFT: data valid before rd_en)
         for (i = 0; i < 16; i = i + 1) begin
+            check("read data matches", rd_data == i[7:0]);
             rd_en = 1;
             @(posedge clk);
             rd_en = 0;
             @(posedge clk);
-            check("read data matches", rd_data == i[7:0]);
         end
         @(posedge clk); @(posedge clk);
         check("empty after reading all", empty == 1'b1);
@@ -90,11 +90,12 @@ module tb_i2c_tx_fifo;
         @(posedge clk);
         wr_en = 0;
         @(posedge clk);
+        // FWFT: data available before rd_en
+        check("simultaneous rw data", rd_data == 8'hAB);
         rd_en = 1;
         @(posedge clk);
         rd_en = 0;
         @(posedge clk);
-        check("simultaneous rw data", rd_data == 8'hAB);
 
         @(posedge clk);
         $display("========================================");

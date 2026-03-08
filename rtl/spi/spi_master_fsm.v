@@ -58,7 +58,7 @@ module spi_master_fsm (
     );
 
     // Shift register
-    reg        sr_load, sr_shift_en;
+    reg        sr_load, sr_shift_en, sr_sample_en;
     reg  [7:0] sr_tx_data;
     wire [7:0] sr_rx_data;
     wire       sr_bit_done;
@@ -68,6 +68,7 @@ module spi_master_fsm (
         .rst_n      (rst_n),
         .load       (sr_load),
         .shift_en   (sr_shift_en),
+        .sample_en  (sr_sample_en),
         .tx_data_i  (sr_tx_data),
         .rx_data_o  (sr_rx_data),
         .mosi_o     (spi_mosi_o),
@@ -85,14 +86,16 @@ module spi_master_fsm (
             spi_cs_n_o <= 1'b1;
             sclk_en    <= 1'b0;
             sr_load    <= 1'b0;
-            sr_shift_en <= 1'b0;
-            sr_tx_data <= 8'd0;
+            sr_shift_en  <= 1'b0;
+            sr_sample_en <= 1'b0;
+            sr_tx_data   <= 8'd0;
         end else begin
             // Defaults
-            sr_load     <= 1'b0;
-            sr_shift_en <= 1'b0;
-            tx_ready_o  <= 1'b0;
-            rx_valid_o  <= 1'b0;
+            sr_load      <= 1'b0;
+            sr_shift_en  <= 1'b0;
+            sr_sample_en <= 1'b0;
+            tx_ready_o   <= 1'b0;
+            rx_valid_o   <= 1'b0;
 
             case (state)
                 IDLE: begin
@@ -110,6 +113,9 @@ module spi_master_fsm (
                 end
 
                 SHIFT: begin
+                    if (sample_edge) begin
+                        sr_sample_en <= 1'b1;
+                    end
                     if (shift_edge) begin
                         sr_shift_en <= 1'b1;
                     end

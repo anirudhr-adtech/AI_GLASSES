@@ -11,6 +11,7 @@ module audio_window (
     input  wire        clk,
     input  wire        rst_n,
     input  wire        start_i,
+    input  wire [10:0] frame_size_i,   // configurable frame length (samples to read from FIFO)
     // FIFO read interface
     output reg         fifo_rd_en_o,
     input  wire [15:0] fifo_rd_data_i,
@@ -76,7 +77,7 @@ module audio_window (
                 end
 
                 S_READ: begin
-                    if (cnt < 11'd640) begin
+                    if (cnt < frame_size_i) begin
                         fifo_rd_en_o <= 1'b1;
                         ham_addr     <= cnt;
                         state        <= S_WAIT;

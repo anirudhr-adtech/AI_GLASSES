@@ -113,9 +113,10 @@ module axi4_to_axi3_bridge #(
     // Burst splitter: AXI4 -> AXI3 burst conversion
     // -----------------------------------------------------------------------
     burst_splitter #(
-        .ADDR_WIDTH (ADDR_WIDTH),
-        .DATA_WIDTH (DATA_WIDTH),
-        .ID_WIDTH   (ID_WIDTH)
+        .ADDR_WIDTH  (ADDR_WIDTH),
+        .DATA_WIDTH  (DATA_WIDTH),
+        .ID_WIDTH    (ID_WIDTH),
+        .MAX_AXI3_LEN(7)       // 8-beat max: width converter doubles to 16 (AXI3 max)
     ) u_burst_splitter (
         .clk        (clk),
         .rst_n      (rst_n),

@@ -64,13 +64,13 @@ module tb_i2c_rx_fifo;
         check("not empty after writes", empty == 1'b0);
         check("not full after 8 writes", full == 1'b0);
 
-        // Read back
+        // Read back (FWFT: data valid before rd_en)
         for (i = 0; i < 8; i = i + 1) begin
+            check("rx data matches", rd_data == (8'hA0 + i[7:0]));
             rd_en = 1;
             @(posedge clk);
             rd_en = 0;
             @(posedge clk);
-            check("rx data matches", rd_data == (8'hA0 + i[7:0]));
         end
         @(posedge clk); @(posedge clk);
         check("empty after read all", empty == 1'b1);

@@ -6,7 +6,7 @@
 module tb_spi_shift_reg;
 
     reg        clk, rst_n;
-    reg        load, shift_en;
+    reg        load, shift_en, sample_en;
     reg  [7:0] tx_data;
     wire [7:0] rx_data;
     wire       mosi;
@@ -18,6 +18,7 @@ module tb_spi_shift_reg;
         .rst_n      (rst_n),
         .load       (load),
         .shift_en   (shift_en),
+        .sample_en  (sample_en),
         .tx_data_i  (tx_data),
         .rx_data_o  (rx_data),
         .mosi_o     (mosi),
@@ -46,7 +47,8 @@ module tb_spi_shift_reg;
     always #5 clk = ~clk;
 
     initial begin
-        rst_n = 0; load = 0; shift_en = 0; tx_data = 0; miso = 0;
+        rst_n = 0; load = 0; shift_en = 0; sample_en = 0;
+        tx_data = 0; miso = 0;
         repeat (4) @(posedge clk);
         rst_n = 1;
         @(posedge clk);
@@ -61,13 +63,18 @@ module tb_spi_shift_reg;
         check("MOSI = MSB after load", mosi == 1'b1); // 0xA5 MSB = 1
 
         // Shift 8 bits, feed MISO = 0x3C (00111100) MSB-first
+        // Simulate proper SPI timing: sample first (rising), then shift (falling)
         // 0xA5 = 10100101. After load, mosi=bit7=1 (already checked above).
-        // Each shift_en posedge: RTL does tx_shift <= {tx_shift[6:0],0}, mosi <= tx_shift[6]
-        //   and rx_shift <= {rx_shift[6:0], miso_i}
         captured_mosi = 8'd0;
         captured_mosi[7] = mosi; // MSB captured from load
         for (i = 7; i >= 0; i = i - 1) begin
+            // Sample phase (rising edge): capture MISO
             miso = (8'h3C >> i) & 1'b1;  // feed MSB first
+            sample_en = 1;
+            @(posedge clk); #1;
+            sample_en = 0;
+
+            // Shift phase (falling edge): shift TX, advance bit counter
             shift_en = 1;
             @(posedge clk); #1;
             // After this posedge, mosi shows NEXT tx bit

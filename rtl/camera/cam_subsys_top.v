@@ -152,8 +152,8 @@ module cam_subsys_top (
     wire [31:0] active_rd_addr;
     wire        fbuf_swap;
 
-    // Frame stride: src_width * 4 bytes per pixel (RGBX)
-    wire [15:0] frame_stride = {4'd0, cfg_src_width, 2'b00};
+    // Frame stride: dst_width * 4 bytes per pixel (RGBX)
+    wire [15:0] frame_stride = {4'd0, cfg_dst_width, 2'b00};
 
     // DVP capture -> pixel FIFO
     wire [15:0] dvp_pixel_data;
@@ -227,6 +227,15 @@ module cam_subsys_top (
             fifo_rd_en <= 1'b0;
         else
             fifo_rd_en <= ~fifo_rd_empty & isp_in_ready;
+    end
+
+    // Delay valid by 1 cycle to match pixel_fifo registered read latency
+    reg fifo_rd_valid_d;
+    always @(posedge clk_i) begin
+        if (!rst_ni)
+            fifo_rd_valid_d <= 1'b0;
+        else
+            fifo_rd_valid_d <= fifo_rd_en;
     end
 
     // ================================================================
@@ -337,7 +346,7 @@ module cam_subsys_top (
     //               overflow_o
     // ----------------------------------------------------------------
     pixel_fifo u_pixel_fifo (
-        .wr_clk     (cam_pclk_i),
+        .wr_clk     (clk_i),       // dvp_capture already syncs to clk via dvp_sync
         .wr_rst_n   (rst_ni),
         .wr_en      (dvp_pixel_valid),
         .wr_data    (dvp_pixel_data),
@@ -365,7 +374,7 @@ module cam_subsys_top (
         .dst_width_i  (cfg_dst_width),
         .dst_height_i (cfg_dst_height),
         .in_pixel_i   (fifo_rd_data),
-        .in_valid_i   (fifo_rd_en),
+        .in_valid_i   (fifo_rd_valid_d),
         .in_ready_o   (isp_in_ready),
         .out_data_o   (isp_out_data),
         .out_valid_o  (isp_out_valid),

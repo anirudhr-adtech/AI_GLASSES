@@ -121,6 +121,7 @@ module audio_dma #(
 
                         if (m_axi_awvalid && m_axi_awready) begin
                             m_axi_awvalid <= 1'b0;
+                            m_axi_wlast   <= (burst_len == 8'd0); // Pre-set wlast for first beat
                             src_ready_o   <= 1'b1;
                             state         <= S_DATA;
                         end
@@ -132,7 +133,7 @@ module audio_dma #(
                         m_axi_wdata  <= src_data_i;
                         m_axi_wstrb  <= 4'hF;
                         m_axi_wvalid <= 1'b1;
-                        m_axi_wlast  <= (beat_cnt == cur_burst_len);
+                        // wlast is pre-set by S_ADDR or previous handshake
 
                         if (m_axi_wvalid && m_axi_wready) begin
                             beat_cnt        <= beat_cnt + 8'd1;
@@ -146,6 +147,9 @@ module audio_dma #(
                                 src_ready_o  <= 1'b0;
                                 m_axi_bready <= 1'b1;
                                 state        <= S_RESP;
+                            end else begin
+                                // Pre-set wlast for the next beat
+                                m_axi_wlast <= (beat_cnt + 8'd1 == cur_burst_len);
                             end
                         end
                     end else if (!src_valid_i) begin

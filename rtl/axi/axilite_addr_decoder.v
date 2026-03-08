@@ -86,15 +86,11 @@ module axilite_addr_decoder #(
         endcase
     end
 
-    // Registered output
-    always @(posedge clk) begin
-        if (!rst_n) begin
-            periph_sel_o   <= P_ERROR;
-            decode_error_o <= 1'b0;
-        end else begin
-            periph_sel_o   <= periph_sel_comb;
-            decode_error_o <= decode_error_comb;
-        end
+    // Combinational output — no register latency so the mux samples
+    // the correct periph_sel on the same cycle it accepts the address.
+    always @(*) begin
+        periph_sel_o   = periph_sel_comb;
+        decode_error_o = decode_error_comb;
     end
 
 endmodule

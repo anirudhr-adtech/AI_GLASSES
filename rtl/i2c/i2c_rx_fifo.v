@@ -13,8 +13,8 @@ module i2c_rx_fifo (
     input  wire [7:0]  wr_data_i,
     input  wire        wr_en_i,
 
-    // Read interface
-    output reg  [7:0]  rd_data_o,
+    // Read interface (FWFT: data valid when ~empty)
+    output wire [7:0]  rd_data_o,
     input  wire        rd_en_i,
 
     // Status
@@ -31,6 +31,9 @@ module i2c_rx_fifo (
     wire do_write = wr_en_i & ~full_o;
     wire do_read  = rd_en_i & ~empty_o;
 
+    // FWFT: always present head-of-queue on rd_data_o
+    assign rd_data_o = mem[rd_ptr];
+
     always @(posedge clk) begin
         if (!rst_n) begin
             wr_ptr  <= 4'd0;
@@ -39,7 +42,6 @@ module i2c_rx_fifo (
             full_o  <= 1'b0;
             empty_o <= 1'b1;
             count_o <= 5'd0;
-            rd_data_o <= 8'd0;
         end else begin
             if (do_write) begin
                 mem[wr_ptr] <= wr_data_i;
@@ -47,7 +49,6 @@ module i2c_rx_fifo (
             end
 
             if (do_read) begin
-                rd_data_o <= mem[rd_ptr];
                 rd_ptr <= rd_ptr + 4'd1;
             end
 

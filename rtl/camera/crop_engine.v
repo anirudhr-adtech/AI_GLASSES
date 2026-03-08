@@ -94,6 +94,9 @@ module crop_engine (
     wire [23:0]  resized_pixel;
     wire         resized_valid;
 
+    // Total output pixels for DMA writer
+    wire [13:0] crop_total_pixels = crop_out_w_i[9:0] * crop_out_h_i[9:0];
+
     // Scale factors (computed: src / dst in Q8.16)
     // For simplicity, CPU provides these via registers; we forward them
     wire [23:0] scale_x = {14'd0, crop_w_i} * 24'd65536 / {14'd0, crop_out_w_i};
@@ -241,6 +244,7 @@ module crop_engine (
         .rst_n           (rst_n),
         .start_i         (writer_start),
         .crop_buf_addr_i (crop_buf_addr_i),
+        .total_pixels_i  (crop_total_pixels),
         .in_data_i       (resized_pixel),
         .in_valid_i      (resized_valid),
         .in_ready_o      (),   // resize has no backpressure output

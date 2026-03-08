@@ -73,9 +73,13 @@ module i2c_master (
 
     // FSM status
     wire        fsm_busy;
-    wire        fsm_done;
+    wire        fsm_done;   // 1-cycle pulse
     wire        fsm_nack;
     wire        fsm_tx_ready;
+
+    // Sticky done/nack for STATUS register (cleared by irq_clear)
+    reg         sticky_done;
+    reg         sticky_nack;
 
     // Register file
     i2c_regfile u_regfile (
@@ -109,8 +113,8 @@ module i2c_master (
         .rx_fifo_rd_en   (rx_fifo_rd_en),
         .irq_clear       (irq_clear),
         .status_busy     (fsm_busy),
-        .status_done     (fsm_done),
-        .status_nack     (fsm_nack),
+        .status_done     (sticky_done),
+        .status_nack     (sticky_nack),
         .tx_fifo_count   (tx_fifo_count),
         .tx_fifo_full    (tx_fifo_full),
         .tx_fifo_empty   (tx_fifo_empty),
@@ -176,15 +180,25 @@ module i2c_master (
     assign rx_fifo_wdata = fsm_rx_data;
     assign rx_fifo_wr_en = fsm_rx_valid;
 
-    // Interrupt — sticky, cleared by irq_clear
+    // Sticky done/nack + Interrupt — all cleared by irq_clear
     always @(posedge clk_i) begin
         if (!rst_ni) begin
             irq_i2c_done_o <= 1'b0;
+            sticky_done    <= 1'b0;
+            sticky_nack    <= 1'b0;
         end else begin
-            if (irq_clear)
+            if (irq_clear) begin
                 irq_i2c_done_o <= 1'b0;
-            else if (fsm_done)
-                irq_i2c_done_o <= 1'b1;
+                sticky_done    <= 1'b0;
+                sticky_nack    <= 1'b0;
+            end else begin
+                if (fsm_done) begin
+                    irq_i2c_done_o <= 1'b1;
+                    sticky_done    <= 1'b1;
+                end
+                if (fsm_nack)
+                    sticky_nack <= 1'b1;
+            end
         end
     end
 

@@ -12,6 +12,7 @@ module crop_dma_writer (
     // Control
     input  wire         start_i,
     input  wire [31:0]  crop_buf_addr_i,
+    input  wire [13:0]  total_pixels_i,
     // Pixel input (24-bit RGB from crop_resize)
     input  wire [23:0]  in_data_i,
     input  wire         in_valid_i,
@@ -45,9 +46,7 @@ module crop_dma_writer (
     localparam AXI_ID         = 4'b1101;
     localparam MAX_BURST      = 8'd255;
     localparam BYTES_PER_BEAT = 16;
-    // 112x112 RGBX = 50176 bytes = 3136 beats
-    // 3136 / 256 = 12 full bursts + 1 partial (64 beats)
-    localparam TOTAL_PIXELS   = 112 * 112;  // 12544
+    // total_pixels_i provides the actual pixel count from crop config
 
     // ----------------------------------------------------------------
     // FSM
@@ -103,9 +102,9 @@ module crop_dma_writer (
             end
             S_PACK: begin
                 // Accumulate 256 words (or fewer if end), then issue burst
-                if (fifo_count >= 3'd4 || (total_beats_rem <= 32'd4 && !fifo_empty && pixel_count >= TOTAL_PIXELS))
+                if (fifo_count >= 3'd4 || (total_beats_rem <= 32'd4 && !fifo_empty && pixel_count >= total_pixels_i))
                     state_next = S_AW;
-                else if (pixel_count >= TOTAL_PIXELS && pack_cnt == 2'd0 && !fifo_empty)
+                else if (pixel_count >= total_pixels_i && pack_cnt == 2'd0 && !fifo_empty)
                     state_next = S_AW;
             end
             S_AW: begin
@@ -207,7 +206,7 @@ module crop_dma_writer (
                     in_ready_o    <= 1'b0;
                     if (start_i) begin
                         current_addr    <= crop_buf_addr_i;
-                        total_beats_rem <= 32'd3136; // 112*112*4/16
+                        total_beats_rem <= {18'd0, total_pixels_i} >> 2; // pixels*4/16 = pixels/4
                         fifo_rd_ptr     <= 3'd0;
                     end
                 end

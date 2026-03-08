@@ -32,6 +32,7 @@ module i2c_scl_gen (
     reg [1:0]  phase;      // 0=low1, 1=rise, 2=high, 3=fall
     reg        scl_prev;
     reg        stretching;
+    reg        check_stretch; // 1-cycle delayed stretch check
 
     always @(posedge clk) begin
         if (!rst_n) begin
@@ -44,6 +45,7 @@ module i2c_scl_gen (
             stretch_detected_o <= 1'b0;
             scl_prev           <= 1'b1;
             stretching         <= 1'b0;
+            check_stretch      <= 1'b0;
         end else begin
             scl_prev   <= scl_i;
             scl_rise_o <= 1'b0;
@@ -62,6 +64,7 @@ module i2c_scl_gen (
                 scl_oe_o <= 1'b0;
                 stretching <= 1'b0;
                 stretch_detected_o <= 1'b0;
+                check_stretch <= 1'b0;
             end else if (stretching) begin
                 // Clock stretching: slave holds SCL low
                 stretch_detected_o <= 1'b1;
@@ -71,6 +74,16 @@ module i2c_scl_gen (
                 end
             end else begin
                 stretch_detected_o <= 1'b0;
+
+                // Delayed stretch check: sample scl_i one cycle after
+                // releasing scl_oe_o so the bus has time to update
+                if (check_stretch) begin
+                    check_stretch <= 1'b0;
+                    if (!scl_i) begin
+                        stretching <= 1'b1;
+                    end
+                end
+
                 if (cnt == prescaler_i) begin
                     cnt <= 16'd0;
                     phase <= phase + 2'd1;
@@ -82,10 +95,8 @@ module i2c_scl_gen (
                         2'd1: begin // Release SCL (go high)
                             scl_o    <= 1'b0;
                             scl_oe_o <= 1'b0; // release line
-                            // Check for clock stretching
-                            if (!scl_i) begin
-                                stretching <= 1'b1;
-                            end
+                            // Defer stretch check by 1 cycle so bus updates first
+                            check_stretch <= 1'b1;
                         end
                         2'd2: begin // End of high first half -> still released
                             scl_o    <= 1'b0;

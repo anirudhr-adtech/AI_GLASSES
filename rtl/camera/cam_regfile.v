@@ -161,6 +161,11 @@ module cam_regfile (
                 8'h50: frame_size_bytes_o <= s_axil_wdata;
                 default: ;  // read-only or reserved
             endcase
+        end else begin
+            // Auto-clear pulse registers
+            capture_start_o <= 32'd0;
+            crop_start_o    <= 32'd0;
+            irq_clear_o     <= 32'd0;
         end
     end
 

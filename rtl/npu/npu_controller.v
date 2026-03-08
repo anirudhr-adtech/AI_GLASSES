@@ -320,7 +320,10 @@ module npu_controller (
                     output_dims <= reg_tensor_dims[31:16];
 
                     // Compute target: input_channels / 8 for Conv2D/FC, 1 for DW-Conv2D
+                    // Minimum of 1 to ensure MAC pipeline produces a valid output
                     if (reg_layer_config[3:0] == 4'd4) begin
+                        compute_target <= 16'd1;
+                    end else if (reg_layer_config[15:8] == 8'd0) begin
                         compute_target <= 16'd1;
                     end else begin
                         compute_target <= {8'd0, reg_layer_config[15:8]};
@@ -387,8 +390,8 @@ module npu_controller (
                         wbuf_rd_addr  <= wbuf_rd_addr + 15'd1;
                         abuf_rd_addr  <= abuf_rd_addr + 15'd1;
                     end else begin
-                        // Done computing
-                        mac_en        <= 1'b0;
+                        // Done computing — keep mac_en high for pipeline drain
+                        mac_en        <= 1'b1;
                         mac_clear_acc <= 1'b0;
                         wbuf_rd_en    <= 1'b0;
                         abuf_rd_en    <= 1'b0;
@@ -397,15 +400,18 @@ module npu_controller (
 
                 // ============================================================
                 // WAIT_MAC
+                // Keep mac_en asserted so the MAC pipeline valid counter
+                // can reach LATENCY and produce acc_valid.
                 // ============================================================
                 S_WAIT_MAC: begin
-                    mac_en        <= 1'b0;
+                    mac_en        <= 1'b1;
                     mac_clear_acc <= 1'b0;
                     wbuf_rd_en    <= 1'b0;
                     abuf_rd_en    <= 1'b0;
 
                     if (mac_acc_valid) begin
                         pipe_count <= 4'd0;
+                        mac_en     <= 1'b0;
                     end
                 end
 

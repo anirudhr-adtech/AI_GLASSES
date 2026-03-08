@@ -13,8 +13,8 @@ module spi_tx_fifo (
     input  wire [7:0]  wr_data_i,
     input  wire        wr_en_i,
 
-    // Read interface
-    output reg  [7:0]  rd_data_o,
+    // Read interface (FWFT — combinational read)
+    output wire [7:0]  rd_data_o,
     input  wire        rd_en_i,
 
     // Status
@@ -28,6 +28,9 @@ module spi_tx_fifo (
     reg [3:0] rd_ptr;
     reg [4:0] count;
 
+    // FWFT: head of FIFO always visible on rd_data_o
+    assign rd_data_o = mem[rd_ptr];
+
     wire do_write = wr_en_i & ~full_o;
     wire do_read  = rd_en_i & ~empty_o;
 
@@ -39,7 +42,6 @@ module spi_tx_fifo (
             full_o    <= 1'b0;
             empty_o   <= 1'b1;
             count_o   <= 5'd0;
-            rd_data_o <= 8'd0;
         end else begin
             if (do_write) begin
                 mem[wr_ptr] <= wr_data_i;
@@ -47,7 +49,6 @@ module spi_tx_fifo (
             end
 
             if (do_read) begin
-                rd_data_o <= mem[rd_ptr];
                 rd_ptr <= rd_ptr + 4'd1;
             end
 

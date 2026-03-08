@@ -59,6 +59,7 @@ module axi_mem_r_channel #(
     wire [DATA_WIDTH-1:0]  pipe_out_data;
     wire [ID_WIDTH-1:0]    pipe_out_id;
     wire                   pipe_out_last;
+    wire                   pipe_empty;
 
     initial begin
         state        = S_IDLE;
@@ -127,7 +128,7 @@ module axi_mem_r_channel #(
 
             case (state)
                 S_IDLE: begin
-                    ar_ready_o <= 1'b1;
+                    ar_ready_o <= pipe_empty;  // only accept new burst when pipe is drained
                     if (ar_valid_i && ar_ready_o) begin
                         state      <= S_BURST;
                         burst_addr <= ar_addr_i;
@@ -174,11 +175,12 @@ module axi_mem_r_channel #(
         .in_data   (pipe_in_data),
         .in_id     (pipe_in_id),
         .in_last   (pipe_in_last),
-        .out_valid (pipe_out_valid),
-        .out_data  (pipe_out_data),
-        .out_id    (pipe_out_id),
-        .out_last  (pipe_out_last),
-        .out_ready (s_axi_rready)
+        .out_valid    (pipe_out_valid),
+        .out_data     (pipe_out_data),
+        .out_id       (pipe_out_id),
+        .out_last     (pipe_out_last),
+        .out_ready    (s_axi_rready),
+        .pipe_empty_o (pipe_empty)
     );
 
     // AXI R outputs

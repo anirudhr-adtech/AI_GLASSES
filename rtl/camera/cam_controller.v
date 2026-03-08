@@ -146,12 +146,12 @@ module cam_controller (
                     cap_state_next = CS_ISP;
             end
             CS_ISP: begin
-                if (isp_done_i)
-                    cap_state_next = CS_DMA;
-            end
-            CS_DMA: begin
                 if (vdma_done_i)
                     cap_state_next = CS_FRAME_DONE;
+            end
+            CS_DMA: begin
+                // Unused — ISP and VDMA run concurrently
+                cap_state_next = CS_FRAME_DONE;
             end
             CS_FRAME_DONE: begin
                 if (reg_continuous_i)
@@ -217,7 +217,7 @@ module cam_controller (
             // Capture path control
             // --------------------------------------------------------
             capture_busy_o <= (cap_state != CS_IDLE);
-            dma_busy_o     <= (cap_state == CS_DMA);
+            dma_busy_o     <= (cap_state == CS_ISP);
 
             // Performance counter: capture
             if (cap_state == CS_CAPTURE)
@@ -229,21 +229,20 @@ module cam_controller (
             if (cap_state == CS_ISP)
                 isp_cyc_cnt <= isp_cyc_cnt + 32'd1;
 
-            // Start ISP when capture finishes
+            // Start ISP and VDMA together when capture finishes
             if (cap_state == CS_CAPTURE && cap_state_next == CS_ISP) begin
                 isp_start_o         <= 1'b1;
+                vdma_start_o        <= 1'b1;
                 perf_capture_cyc_o  <= capture_cyc_cnt;
                 isp_cyc_cnt         <= 32'd0;
             end
 
-            // Start DMA when ISP finishes
-            if (cap_state == CS_ISP && cap_state_next == CS_DMA) begin
-                vdma_start_o    <= 1'b1;
-                perf_isp_cyc_o  <= isp_cyc_cnt;
-            end
+            // Record ISP perf when done (ISP may finish after VDMA exits CS_ISP)
+            if (isp_done_i && isp_cyc_cnt > 32'd0)
+                perf_isp_cyc_o <= isp_cyc_cnt;
 
             // Frame done
-            if (cap_state == CS_DMA && cap_state_next == CS_FRAME_DONE) begin
+            if (cap_state == CS_ISP && cap_state_next == CS_FRAME_DONE) begin
                 frame_ready_o <= 1'b1;
                 frame_count_o <= frame_count_o + 8'd1;
                 fbuf_swap_o   <= 1'b1;

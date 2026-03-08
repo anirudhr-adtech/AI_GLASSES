@@ -219,19 +219,36 @@ module npu_dma (
     // ---------------------------------------------------------------
     // AXI read arbitration — weight channel has priority
     // ---------------------------------------------------------------
-    // Track which channel is currently granted the read bus
+    // Track which channel is currently granted the read bus.
+    // ar_grant_weight_r is latched when the arbiter FORWARDS a request
+    // (not when the external handshake completes, since the sub-channel
+    // deasserts its arvalid before the registered external handshake fires).
     reg ar_grant_weight_r;  // 1 = weight channel owns read bus
+
+    // Latch the grant when we register a new AR transaction.
+    // Hold the grant until the read burst completes (rlast accepted).
+    reg ar_burst_active;  // 1 = a read burst is in progress
 
     always @(posedge clk) begin
         if (!rst_n) begin
             ar_grant_weight_r <= 1'b0;
+            ar_burst_active   <= 1'b0;
         end else begin
-            if (m_axi_arvalid && m_axi_arready) begin
-                // Transaction accepted — record who got it
-                ar_grant_weight_r <= wch_arvalid; // weight has priority
+            // When rlast is accepted, burst is complete
+            if (m_axi_rvalid && m_axi_rready && m_axi_rlast) begin
+                ar_burst_active <= 1'b0;
             end
-            // On rlast, release grant (handled implicitly; grant is
-            // only used for response routing)
+
+            // Only update grant when no burst is active
+            if (!ar_burst_active) begin
+                if (wch_arvalid) begin
+                    ar_grant_weight_r <= 1'b1;
+                    ar_burst_active   <= 1'b1;
+                end else if (ach_arvalid) begin
+                    ar_grant_weight_r <= 1'b0;
+                    ar_burst_active   <= 1'b1;
+                end
+            end
         end
     end
 
@@ -246,34 +263,54 @@ module npu_dma (
             m_axi_arqos   <= 4'hF;
             m_axi_arvalid <= 1'b0;
         end else begin
-            if (wch_arvalid) begin
-                m_axi_araddr  <= wch_araddr;
-                m_axi_arlen   <= wch_arlen;
-                m_axi_arsize  <= wch_arsize;
-                m_axi_arburst <= wch_arburst;
-                m_axi_arvalid <= 1'b1;
-            end else if (ach_arvalid) begin
-                m_axi_araddr  <= ach_araddr;
-                m_axi_arlen   <= ach_arlen;
-                m_axi_arsize  <= ach_arsize;
-                m_axi_arburst <= ach_arburst;
-                m_axi_arvalid <= 1'b1;
-            end else begin
-                m_axi_arvalid <= 1'b0;
+            if (m_axi_arvalid && m_axi_arready) begin
+                // Handshake complete — check for new request
+                if (wch_arvalid) begin
+                    m_axi_araddr  <= wch_araddr;
+                    m_axi_arlen   <= wch_arlen;
+                    m_axi_arsize  <= wch_arsize;
+                    m_axi_arburst <= wch_arburst;
+                    m_axi_arvalid <= 1'b1;
+                end else if (ach_arvalid) begin
+                    m_axi_araddr  <= ach_araddr;
+                    m_axi_arlen   <= ach_arlen;
+                    m_axi_arsize  <= ach_arsize;
+                    m_axi_arburst <= ach_arburst;
+                    m_axi_arvalid <= 1'b1;
+                end else begin
+                    m_axi_arvalid <= 1'b0;
+                end
+            end else if (!m_axi_arvalid) begin
+                // Not currently driving — check for new request
+                if (wch_arvalid) begin
+                    m_axi_araddr  <= wch_araddr;
+                    m_axi_arlen   <= wch_arlen;
+                    m_axi_arsize  <= wch_arsize;
+                    m_axi_arburst <= wch_arburst;
+                    m_axi_arvalid <= 1'b1;
+                end else if (ach_arvalid) begin
+                    m_axi_araddr  <= ach_araddr;
+                    m_axi_arlen   <= ach_arlen;
+                    m_axi_arsize  <= ach_arsize;
+                    m_axi_arburst <= ach_arburst;
+                    m_axi_arvalid <= 1'b1;
+                end
             end
+            // Hold arvalid high until external handshake completes
             m_axi_arid  <= 4'b0100;
             m_axi_arqos <= 4'hF;
         end
     end
 
-    // AR ready back to channels
+    // AR ready back to channels — only assert when external handshake completes
     always @(*) begin
         wch_arready = 1'b0;
         ach_arready = 1'b0;
-        if (wch_arvalid) begin
-            wch_arready = m_axi_arready;
-        end else if (ach_arvalid) begin
-            ach_arready = m_axi_arready;
+        if (m_axi_arvalid && m_axi_arready) begin
+            if (ar_grant_weight_r)
+                wch_arready = 1'b1;
+            else
+                ach_arready = 1'b1;
         end
     end
 
@@ -288,13 +325,9 @@ module npu_dma (
     assign ach_rlast  = m_axi_rlast;
     assign ach_rvalid = ar_grant_weight_r ? 1'b0 : m_axi_rvalid;
 
-    // R ready — OR of both channels (only one will be active)
-    always @(posedge clk) begin
-        if (!rst_n) begin
-            m_axi_rready <= 1'b0;
-        end else begin
-            m_axi_rready <= wch_rready | ach_rready;
-        end
+    // R ready — combinational OR of both channels (only one will be active)
+    always @(*) begin
+        m_axi_rready = wch_rready | ach_rready;
     end
 
     // ---------------------------------------------------------------

@@ -197,22 +197,13 @@ module tb_cam_controller;
         @(posedge clk);
         dvp_frame_done = 1'b0;
 
-        // Wait for ISP start
+        // Wait for ISP + VDMA start (both launch together)
         repeat (3) @(posedge clk);
         check("ISP start pulsed", isp_start == 1'b1 || u_dut.cap_state == 3'd3);
+        check("DMA state reached", vdma_start == 1'b1 || u_dut.cap_state == 3'd3);
 
-        // Simulate ISP done
-        repeat (5) @(posedge clk);
-        isp_done = 1'b1;
-        @(posedge clk);
-        isp_done = 1'b0;
-
-        // Wait for DMA start
-        repeat (3) @(posedge clk);
-        check("DMA state reached", u_dut.cap_state == 3'd4 || vdma_start == 1'b1);
-
-        // Simulate DMA done
-        repeat (5) @(posedge clk);
+        // Simulate VDMA done (ISP and VDMA run concurrently, VDMA done ends CS_ISP)
+        repeat (10) @(posedge clk);
         vdma_done = 1'b1;
         @(posedge clk);
         vdma_done = 1'b0;

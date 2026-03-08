@@ -192,8 +192,8 @@ module axi_width_128to64 #(
                 end
             endcase
 
-            // Deassert wvalid after high-half accepted
-            if (wd_phase == WD_LOW && m_wvalid && m_wready) begin
+            // Deassert wvalid after high-half accepted (only if no new word)
+            if (wd_phase == WD_LOW && m_wvalid && m_wready && !(s_wvalid && s_wready)) begin
                 m_wvalid <= 1'b0;
             end
         end
