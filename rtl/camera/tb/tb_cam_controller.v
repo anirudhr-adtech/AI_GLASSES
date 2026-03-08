@@ -111,40 +111,40 @@ module tb_cam_controller;
 
     task reset_dut;
         begin
-            rst_n              <= 1'b0;
-            reg_enable         <= 1'b0;
-            reg_soft_reset     <= 1'b0;
-            reg_continuous     <= 1'b0;
-            reg_irq_enable     <= 1'b0;
-            reg_crop_enable    <= 1'b0;
-            reg_capture_start  <= 1'b0;
-            reg_crop_start     <= 1'b0;
-            reg_bypass         <= 1'b0;
-            reg_src_width      <= 10'd640;
-            reg_src_height     <= 10'd480;
-            reg_dst_width      <= 10'd128;
-            reg_dst_height     <= 10'd128;
-            reg_scale_x        <= 24'h050000;
-            reg_scale_y        <= 24'h03C000;
-            reg_frame_buf_addr <= 32'h0400_0000;
-            reg_frame_size     <= 32'd65536;
-            reg_crop_x         <= 10'd0;
-            reg_crop_y         <= 10'd0;
-            reg_crop_w         <= 10'd112;
-            reg_crop_h         <= 10'd112;
-            reg_crop_out_w     <= 10'd112;
-            reg_crop_out_h     <= 10'd112;
-            reg_raw_frame_addr <= 32'h0402_0000;
-            reg_frame_stride   <= 16'd2560;
-            reg_crop_buf_addr  <= 32'h0420_0000;
-            reg_irq_clear_frame <= 1'b0;
-            reg_irq_clear_crop  <= 1'b0;
-            dvp_frame_done     <= 1'b0;
-            isp_done           <= 1'b0;
-            vdma_done          <= 1'b0;
-            crop_engine_done   <= 1'b0;
+            rst_n              = 1'b0;
+            reg_enable         = 1'b0;
+            reg_soft_reset     = 1'b0;
+            reg_continuous     = 1'b0;
+            reg_irq_enable     = 1'b0;
+            reg_crop_enable    = 1'b0;
+            reg_capture_start  = 1'b0;
+            reg_crop_start     = 1'b0;
+            reg_bypass         = 1'b0;
+            reg_src_width      = 10'd640;
+            reg_src_height     = 10'd480;
+            reg_dst_width      = 10'd128;
+            reg_dst_height     = 10'd128;
+            reg_scale_x        = 24'h050000;
+            reg_scale_y        = 24'h03C000;
+            reg_frame_buf_addr = 32'h0400_0000;
+            reg_frame_size     = 32'd65536;
+            reg_crop_x         = 10'd0;
+            reg_crop_y         = 10'd0;
+            reg_crop_w         = 10'd112;
+            reg_crop_h         = 10'd112;
+            reg_crop_out_w     = 10'd112;
+            reg_crop_out_h     = 10'd112;
+            reg_raw_frame_addr = 32'h0402_0000;
+            reg_frame_stride   = 16'd2560;
+            reg_crop_buf_addr  = 32'h0420_0000;
+            reg_irq_clear_frame = 1'b0;
+            reg_irq_clear_crop  = 1'b0;
+            dvp_frame_done     = 1'b0;
+            isp_done           = 1'b0;
+            vdma_done          = 1'b0;
+            crop_engine_done   = 1'b0;
             repeat (5) @(posedge clk);
-            rst_n <= 1'b1;
+            rst_n = 1'b1;
             repeat (2) @(posedge clk);
         end
     endtask
@@ -180,12 +180,12 @@ module tb_cam_controller;
         check("frame_count=0 after reset", frame_count == 8'd0);
 
         // Test 2: Single-shot capture sequence
-        reg_enable  <= 1'b1;
-        reg_irq_enable <= 1'b1;
+        reg_enable  = 1'b1;
+        reg_irq_enable = 1'b1;
         @(posedge clk);
-        reg_capture_start <= 1'b1;
+        reg_capture_start = 1'b1;
         @(posedge clk);
-        reg_capture_start <= 1'b0;
+        reg_capture_start = 1'b0;
 
         // Should transition through states
         repeat (3) @(posedge clk);
@@ -193,9 +193,9 @@ module tb_cam_controller;
 
         // Simulate DVP frame done
         repeat (5) @(posedge clk);
-        dvp_frame_done <= 1'b1;
+        dvp_frame_done = 1'b1;
         @(posedge clk);
-        dvp_frame_done <= 1'b0;
+        dvp_frame_done = 1'b0;
 
         // Wait for ISP start
         repeat (3) @(posedge clk);
@@ -203,9 +203,9 @@ module tb_cam_controller;
 
         // Simulate ISP done
         repeat (5) @(posedge clk);
-        isp_done <= 1'b1;
+        isp_done = 1'b1;
         @(posedge clk);
-        isp_done <= 1'b0;
+        isp_done = 1'b0;
 
         // Wait for DMA start
         repeat (3) @(posedge clk);
@@ -213,9 +213,9 @@ module tb_cam_controller;
 
         // Simulate DMA done
         repeat (5) @(posedge clk);
-        vdma_done <= 1'b1;
+        vdma_done = 1'b1;
         @(posedge clk);
-        vdma_done <= 1'b0;
+        vdma_done = 1'b0;
 
         repeat (3) @(posedge clk);
         check("frame_ready asserted", frame_ready == 1'b1);
@@ -225,28 +225,28 @@ module tb_cam_controller;
 
         // Test 3: IRQ clear
         @(posedge clk);
-        reg_irq_clear_frame <= 1'b1;
+        reg_irq_clear_frame = 1'b1;
         @(posedge clk);
-        reg_irq_clear_frame <= 1'b0;
+        reg_irq_clear_frame = 1'b0;
         @(posedge clk);
         check("frame_ready cleared", frame_ready == 1'b0);
         check("IRQ cleared", irq == 1'b0);
 
         // Test 4: Crop flow
-        reg_crop_enable <= 1'b1;
+        reg_crop_enable = 1'b1;
         @(posedge clk);
-        reg_crop_start <= 1'b1;
+        reg_crop_start = 1'b1;
         @(posedge clk);
-        reg_crop_start <= 1'b0;
+        reg_crop_start = 1'b0;
 
         repeat (3) @(posedge clk);
         check("crop_busy asserted", crop_busy == 1'b1);
 
         // Simulate crop done
         repeat (5) @(posedge clk);
-        crop_engine_done <= 1'b1;
+        crop_engine_done = 1'b1;
         @(posedge clk);
-        crop_engine_done <= 1'b0;
+        crop_engine_done = 1'b0;
 
         repeat (3) @(posedge clk);
         check("crop_done asserted", crop_done == 1'b1);
@@ -254,9 +254,9 @@ module tb_cam_controller;
 
         // Test 5: Soft reset
         @(posedge clk);
-        reg_soft_reset <= 1'b1;
+        reg_soft_reset = 1'b1;
         @(posedge clk);
-        reg_soft_reset <= 1'b0;
+        reg_soft_reset = 1'b0;
         repeat (3) @(posedge clk);
         check("capture_busy cleared after soft reset", capture_busy == 1'b0);
         check("crop_busy cleared after soft reset", crop_busy == 1'b0);

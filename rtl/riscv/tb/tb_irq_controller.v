@@ -81,24 +81,40 @@ module tb_irq_controller;
         input [7:0]  addr;
         input [31:0] data;
         input [3:0]  strb;
+        integer wto;
+        reg aw_done, w_done;
         begin
-            @(posedge clk);
-            s_axil_awaddr  <= addr;
-            s_axil_awvalid <= 1'b1;
-            s_axil_wdata   <= data;
-            s_axil_wstrb   <= strb;
-            s_axil_wvalid  <= 1'b1;
-            s_axil_bready  <= 1'b1;
+            @(posedge clk); #1;
+            s_axil_awaddr  = addr;
+            s_axil_awvalid = 1'b1;
+            s_axil_wdata   = data;
+            s_axil_wstrb   = strb;
+            s_axil_wvalid  = 1'b1;
+            s_axil_bready  = 1'b1;
+            aw_done = 1'b0;
+            w_done  = 1'b0;
+            wto = 0;
 
-            @(posedge clk);
-            while (!s_axil_awready) @(posedge clk);
-            s_axil_awvalid <= 1'b0;
-            while (!s_axil_wready) @(posedge clk);
-            s_axil_wvalid <= 1'b0;
-
-            while (!s_axil_bvalid) @(posedge clk);
-            @(posedge clk);
-            s_axil_bready <= 1'b0;
+            begin : wr_loop
+                forever begin
+                    @(posedge clk); #1;
+                    wto = wto + 1;
+                    if (s_axil_awready && !aw_done) begin
+                        s_axil_awvalid = 1'b0;
+                        aw_done = 1'b1;
+                    end
+                    if (s_axil_wready && !w_done) begin
+                        s_axil_wvalid = 1'b0;
+                        w_done = 1'b1;
+                    end
+                    if (s_axil_bvalid) begin
+                        @(posedge clk); #1;
+                        s_axil_bready = 1'b0;
+                        disable wr_loop;
+                    end
+                    if (wto > 100) disable wr_loop;
+                end
+            end
         end
     endtask
 
@@ -108,20 +124,33 @@ module tb_irq_controller;
     task axil_read;
         input  [7:0]  addr;
         output [31:0] data;
+        integer rto;
+        reg ar_done;
         begin
-            @(posedge clk);
-            s_axil_araddr  <= addr;
-            s_axil_arvalid <= 1'b1;
-            s_axil_rready  <= 1'b1;
+            @(posedge clk); #1;
+            s_axil_araddr  = addr;
+            s_axil_arvalid = 1'b1;
+            s_axil_rready  = 1'b1;
+            ar_done = 1'b0;
+            rto = 0;
 
-            @(posedge clk);
-            while (!s_axil_arready) @(posedge clk);
-            s_axil_arvalid <= 1'b0;
-
-            while (!s_axil_rvalid) @(posedge clk);
-            data = s_axil_rdata;
-            @(posedge clk);
-            s_axil_rready <= 1'b0;
+            begin : rd_loop
+                forever begin
+                    @(posedge clk); #1;
+                    rto = rto + 1;
+                    if (s_axil_arready && !ar_done) begin
+                        s_axil_arvalid = 1'b0;
+                        ar_done = 1'b1;
+                    end
+                    if (s_axil_rvalid) begin
+                        data = s_axil_rdata;
+                        @(posedge clk); #1;
+                        s_axil_rready = 1'b0;
+                        disable rd_loop;
+                    end
+                    if (rto > 100) disable rd_loop;
+                end
+            end
         end
     endtask
 
@@ -210,23 +239,27 @@ module tb_irq_controller;
         axil_write(8'h04, 32'h00000001, 4'hF); // IRQ_ENABLE = bit 0
 
         // Assert level source 0
+        @(posedge clk); #1;
         irq_sources_i = 8'h01;
-        repeat (3) @(posedge clk); // allow registered outputs to update
+        repeat (4) @(posedge clk); #1; // allow registered outputs to update
 
         axil_read(8'h00, rd_data); // IRQ_PENDING
         check("T2 pending level", rd_data[0], 1'b1);
 
+        repeat (2) @(posedge clk); #1;
         axil_read(8'h10, rd_data); // IRQ_STATUS
         check("T2 status level", rd_data[0], 1'b1);
 
+        repeat (2) @(posedge clk); #1;
         check_bool("T2 irq_external high", irq_external_o, 1'b1);
 
         axil_read(8'h14, rd_data); // IRQ_HIGHEST
         check("T2 highest=0", rd_data, 32'h00000000);
 
         // De-assert level source => pending should clear
+        @(posedge clk); #1;
         irq_sources_i = 8'h00;
-        repeat (3) @(posedge clk);
+        repeat (4) @(posedge clk); #1;
 
         axil_read(8'h00, rd_data);
         check("T2 pending clear", rd_data[0], 1'b0);
@@ -239,10 +272,11 @@ module tb_irq_controller;
         axil_write(8'h04, 32'h00000004, 4'hF); // IRQ_ENABLE = bit 2
 
         // Pulse source 2 (rising edge)
+        @(posedge clk); #1;
         irq_sources_i = 8'h04;
-        repeat (2) @(posedge clk);
+        repeat (3) @(posedge clk); #1;
         irq_sources_i = 8'h00;
-        repeat (3) @(posedge clk);
+        repeat (4) @(posedge clk); #1;
 
         axil_read(8'h00, rd_data); // IRQ_PENDING
         check("T3 edge pending set", rd_data[2], 1'b1);
@@ -254,7 +288,7 @@ module tb_irq_controller;
 
         // Clear edge pending via IRQ_CLEAR
         axil_write(8'h08, 32'h00000004, 4'hF); // write-1-to-clear bit 2
-        repeat (3) @(posedge clk);
+        repeat (4) @(posedge clk); #1;
 
         axil_read(8'h00, rd_data);
         check("T3 edge cleared", rd_data[2], 1'b0);
@@ -267,14 +301,16 @@ module tb_irq_controller;
         axil_write(8'h04, 32'h0000000B, 4'hF); // bits 0,1,3
 
         // Set source 1 (level) and source 3 (edge)
+        @(posedge clk); #1;
         irq_sources_i = 8'h0A; // bits 1 and 3
-        repeat (3) @(posedge clk);
+        repeat (4) @(posedge clk); #1;
 
         axil_read(8'h14, rd_data);
         check("T4 highest=1 (priority)", rd_data, 32'h00000001);
 
+        @(posedge clk); #1;
         irq_sources_i = 8'h00;
-        repeat (2) @(posedge clk);
+        repeat (3) @(posedge clk); #1;
 
         // ----------------------------------------------------------
         // Test 5: IRQ_TYPE reconfiguration — change bit 2 to level
@@ -282,14 +318,16 @@ module tb_irq_controller;
         axil_write(8'h0C, 32'h000000F8, 4'hF); // bit 2 now level
         axil_write(8'h04, 32'h00000004, 4'hF); // enable bit 2
 
+        @(posedge clk); #1;
         irq_sources_i = 8'h04;
-        repeat (3) @(posedge clk);
+        repeat (4) @(posedge clk); #1;
 
         axil_read(8'h00, rd_data);
         check("T5 type change level", rd_data[2], 1'b1);
 
+        @(posedge clk); #1;
         irq_sources_i = 8'h00;
-        repeat (3) @(posedge clk);
+        repeat (4) @(posedge clk); #1;
 
         axil_read(8'h00, rd_data);
         check("T5 level deassert", rd_data[2], 1'b0);
@@ -298,15 +336,17 @@ module tb_irq_controller;
         // Test 6: Disabled source should not appear in status
         // ----------------------------------------------------------
         axil_write(8'h04, 32'h00000000, 4'hF); // disable all
+        @(posedge clk); #1;
         irq_sources_i = 8'hFF;
-        repeat (3) @(posedge clk);
+        repeat (4) @(posedge clk); #1;
 
         axil_read(8'h10, rd_data); // IRQ_STATUS
         check("T6 disabled status", rd_data, 32'h00000000);
         check_bool("T6 irq_external low", irq_external_o, 1'b0);
 
+        @(posedge clk); #1;
         irq_sources_i = 8'h00;
-        repeat (2) @(posedge clk);
+        repeat (3) @(posedge clk); #1;
 
         // ----------------------------------------------------------
         // Summary

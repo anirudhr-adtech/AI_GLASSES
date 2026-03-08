@@ -49,34 +49,53 @@ module tb_npu_mac_array;
         // Test 1: Conv2D mode — all ones weights and activations
         $display("Test 1: Conv2D mode, weights=1, acts=1");
         mode = 2'd0;
+        // Cycle 1: drive data with clear_acc=1
         clear_acc = 1; en = 1;
-        // All weights = 1, all activations = 1
         weight_data = {8{8'sd1}};
         act_data    = {8{8'sd1}};
         @(posedge clk);
+        // Cycle 2: deassert clear_acc, keep en for 1 more cycle
         clear_acc = 0;
-        // Wait for pipeline
+        @(posedge clk);
+        // Deassert en and wait for pipeline output
+        en = 0;
         repeat (4) @(posedge clk);
-        // Each MAC: 1*1=1, accumulated once. acc_out[col] should be 1 (for single cycle)
-        $display("  acc_out[0] = %0d", $signed(acc_out[31:0]));
+        // Each MAC: 1*1=1, accumulated once. acc_out[col] should be 1
+        $display("  acc_out[0] = %0d (expect 1)", $signed(acc_out[31:0]));
+        if ($signed(acc_out[31:0]) == 1)
+            pass_count = pass_count + 1;
+        else
+            fail_count = fail_count + 1;
+
+        @(posedge clk);
 
         // Test 2: DW-Conv2D mode — only row 0 active
         $display("Test 2: DW-Conv2D mode");
         mode = 2'd1;
-        clear_acc = 1;
+        // Cycle 1: drive data with clear_acc=1
+        clear_acc = 1; en = 1;
         weight_data = {8{8'sd2}};
         act_data    = {8{8'sd3}};
         @(posedge clk);
+        // Cycle 2: deassert clear_acc
         clear_acc = 0;
+        @(posedge clk);
+        // Deassert en and wait for pipeline output
+        en = 0;
         repeat (4) @(posedge clk);
         // Row 0 MACs: 2*3=6, other rows disabled
         $display("  acc_out[0] = %0d (expect 6)", $signed(acc_out[31:0]));
+        if ($signed(acc_out[31:0]) == 6)
+            pass_count = pass_count + 1;
+        else
+            fail_count = fail_count + 1;
 
-        en = 0;
         repeat (3) @(posedge clk);
         $display("========================================");
-        $display("tb_npu_mac_array: basic tests complete");
+        $display("tb_npu_mac_array: %0d PASSED, %0d FAILED", pass_count, fail_count);
         $display("========================================");
+        if (fail_count == 0)
+            $display("ALL TESTS PASSED");
         $finish;
     end
 

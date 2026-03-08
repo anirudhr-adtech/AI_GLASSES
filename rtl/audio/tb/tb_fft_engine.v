@@ -36,6 +36,13 @@ module tb_fft_engine;
 
     always #5 clk = ~clk;
 
+    // Global timeout guard
+    initial begin
+        #50000000;
+        $display("FAIL: Global timeout reached");
+        $finish;
+    end
+
     integer i;
 
     initial begin
@@ -71,20 +78,18 @@ module tb_fft_engine;
         @(posedge clk);
         start = 0;
 
-        // Wait for done (timeout after 100000 cycles)
+        // Wait for done (while-loop timeout pattern)
         begin : wait_block
-            fork
-                begin : timeout_branch
-                    repeat (100000) @(posedge clk);
-                    $display("FAIL: FFT timeout");
-                    fail_count = fail_count + 1;
-                    disable done_branch;
-                end
-                begin : done_branch
-                    @(posedge done);
-                    disable timeout_branch;
-                end
-            join
+            integer fft_countdown;
+            fft_countdown = 100000;
+            while (!done && fft_countdown > 0) begin
+                @(posedge clk); #1;
+                fft_countdown = fft_countdown - 1;
+            end
+            if (fft_countdown == 0) begin
+                $display("FAIL: FFT timeout");
+                fail_count = fail_count + 1;
+            end
         end
 
         if (done) begin
@@ -93,12 +98,13 @@ module tb_fft_engine;
         end
 
         // Read bin 0 (DC) - should have the largest magnitude
+        // BRAM read needs: set addr+rd_en, posedge latches, then data available
         @(posedge clk);
         out_addr  = 10'd0;
         out_rd_en = 1;
-        @(posedge clk);
+        @(posedge clk);  // BRAM latches addr, out_rdata updated
         out_rd_en = 0;
-        @(posedge clk);
+        @(posedge clk); #1; // Wait for registered output to propagate
 
         $display("INFO: Bin 0 Re=%0d Im=%0d", $signed(out_re), $signed(out_im));
 
@@ -117,12 +123,13 @@ module tb_fft_engine;
         out_rd_en = 1;
         @(posedge clk);
         out_rd_en = 0;
-        @(posedge clk);
+        @(posedge clk); #1;
 
         $display("INFO: Bin 1 Re=%0d Im=%0d", $signed(out_re), $signed(out_im));
 
         // Bin 1 should be near zero for DC input (allow some rounding)
-        if ($signed(out_re) > -16'd10 && $signed(out_re) < 16'd10) begin
+        // Use signed literals properly for Verilator
+        if ($signed(out_re) > -16'sd10 && $signed(out_re) < 16'sd10) begin
             pass_count = pass_count + 1;
             $display("PASS: Bin 1 near zero for DC input");
         end else begin

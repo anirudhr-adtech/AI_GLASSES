@@ -87,19 +87,19 @@ module tb_gpio_peripheral;
         input [31:0] data;
         begin
             @(posedge clk);
-            s_axil_awaddr  <= addr;
-            s_axil_awvalid <= 1'b1;
-            s_axil_wdata   <= data;
-            s_axil_wstrb   <= 4'hF;
-            s_axil_wvalid  <= 1'b1;
-            s_axil_bready  <= 1'b1;
+            s_axil_awaddr  = addr;
+            s_axil_awvalid = 1'b1;
+            s_axil_wdata   = data;
+            s_axil_wstrb   = 4'hF;
+            s_axil_wvalid  = 1'b1;
+            s_axil_bready  = 1'b1;
             @(posedge clk);
             while (!(s_axil_awready && s_axil_wready)) @(posedge clk);
-            s_axil_awvalid <= 1'b0;
-            s_axil_wvalid  <= 1'b0;
+            s_axil_awvalid = 1'b0;
+            s_axil_wvalid  = 1'b0;
             while (!s_axil_bvalid) @(posedge clk);
             @(posedge clk);
-            s_axil_bready <= 1'b0;
+            s_axil_bready = 1'b0;
         end
     endtask
 
@@ -112,16 +112,16 @@ module tb_gpio_peripheral;
         input [7:0] addr;
         begin
             @(posedge clk);
-            s_axil_araddr  <= addr;
-            s_axil_arvalid <= 1'b1;
-            s_axil_rready  <= 1'b1;
+            s_axil_araddr  = addr;
+            s_axil_arvalid = 1'b1;
+            s_axil_rready  = 1'b1;
             @(posedge clk);
             while (!s_axil_arready) @(posedge clk);
-            s_axil_arvalid <= 1'b0;
+            s_axil_arvalid = 1'b0;
             while (!s_axil_rvalid) @(posedge clk);
-            axil_read_data <= s_axil_rdata;
+            axil_read_data = s_axil_rdata;
             @(posedge clk);
-            s_axil_rready <= 1'b0;
+            s_axil_rready = 1'b0;
         end
     endtask
 

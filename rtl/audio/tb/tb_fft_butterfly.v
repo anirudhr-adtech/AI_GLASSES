@@ -49,6 +49,13 @@ module tb_fft_butterfly;
         end
     endtask
 
+    // Global timeout guard
+    initial begin
+        #100000;
+        $display("FAIL: Global timeout reached");
+        $finish;
+    end
+
     initial begin
         clk   = 0;
         rst_n = 0;
@@ -63,17 +70,29 @@ module tb_fft_butterfly;
 
         // Test 1: W = 1+0j (w_re=32767, w_im=0), A=1000+0j, B=500+0j
         // W*B = 500+0j, P = (1000+500)/2 = 750, Q = (1000-500)/2 = 250
-        @(posedge clk);
+        // Set inputs BEFORE the posedge so they are stable when sampled
         a_re = 16'd1000; a_im = 16'd0;
         b_re = 16'd500;  b_im = 16'd0;
         w_re = 16'd32767; w_im = 16'd0;
         en   = 1;
-        @(posedge clk);
+        @(posedge clk); #1; // Cycle N: RTL samples en=1, latches stage 1
         en = 0;
 
-        // Wait for 2-cycle pipeline
-        @(posedge clk);
-        @(posedge clk);
+        // 2-stage pipeline:
+        // Cycle N:   en sampled -> stage 1 registers mults + a_d1, en_d1 <= 1
+        // Cycle N+1: en_d1 sampled -> stage 2 registers p/q, valid_o <= 1
+        // So valid_o is high after posedge N+1
+        @(posedge clk); #1; // Cycle N+1: valid_o should now be high
+
+        // Wait one more to be safe
+        begin : t1_wait
+            integer wait_cnt;
+            wait_cnt = 10;
+            while (!valid && wait_cnt > 0) begin
+                @(posedge clk); #1;
+                wait_cnt = wait_cnt - 1;
+            end
+        end
 
         if (valid) begin
             check_near("T1 p_re", p_re, 16'd750, 16'd5);
@@ -85,20 +104,29 @@ module tb_fft_butterfly;
             fail_count = fail_count + 4;
         end
 
+        // Wait for valid to deassert before next test
+        @(posedge clk); #1;
+
         // Test 2: W = 0-1j (w_re=0, w_im=-32768), A=100+200j, B=300+400j
         // W*B = (0*300 - (-32768)*400)/32768 + j(0*400 + (-32768)*300)/32768
         //     = 400 + j(-300) = 400 - 300j
         // P = (A + W*B)/2 = (100+400 + (200-300)j)/2 = 250 - 50j
         // Q = (A - W*B)/2 = (100-400 + (200+300)j)/2 = -150 + 250j
-        @(posedge clk);
         a_re = 16'd100;  a_im = 16'd200;
         b_re = 16'd300;  b_im = 16'd400;
         w_re = 16'd0;    w_im = -16'd32768;
         en   = 1;
-        @(posedge clk);
+        @(posedge clk); #1;
         en = 0;
-        @(posedge clk);
-        @(posedge clk);
+
+        begin : t2_wait
+            integer wait_cnt;
+            wait_cnt = 10;
+            while (!valid && wait_cnt > 0) begin
+                @(posedge clk); #1;
+                wait_cnt = wait_cnt - 1;
+            end
+        end
 
         if (valid) begin
             check_near("T2 p_re", p_re, 16'd250, 16'd10);
@@ -108,15 +136,24 @@ module tb_fft_butterfly;
             fail_count = fail_count + 2;
         end
 
+        // Wait for valid to deassert
+        @(posedge clk); #1;
+
         // Test 3: Zero inputs
-        @(posedge clk);
         a_re = 0; a_im = 0; b_re = 0; b_im = 0;
         w_re = 16'd32767; w_im = 0;
         en = 1;
-        @(posedge clk);
+        @(posedge clk); #1;
         en = 0;
-        @(posedge clk);
-        @(posedge clk);
+
+        begin : t3_wait
+            integer wait_cnt;
+            wait_cnt = 10;
+            while (!valid && wait_cnt > 0) begin
+                @(posedge clk); #1;
+                wait_cnt = wait_cnt - 1;
+            end
+        end
 
         if (valid) begin
             check_near("T3 p_re zero", p_re, 16'd0, 16'd1);

@@ -177,31 +177,49 @@ module tb_onchip_sram;
         input [31:0] addr;
         input [31:0] data;
         input [3:0]  strb;
+        integer timeout_cnt;
+        reg aw_done, w_done, b_done;
         begin
-            // Address phase
-            @(posedge clk);
+            // Drive AW and W between clock edges
+            @(posedge clk); #1;
             b_awaddr  = addr;
             b_awid    = 4'd1;
             b_awvalid = 1'b1;
-            @(posedge clk);
-            while (!b_awready) @(posedge clk);
-            b_awvalid = 1'b0;
+            b_wdata   = data;
+            b_wstrb   = strb;
+            b_wvalid  = 1'b1;
+            b_wlast   = 1'b1;
+            b_bready  = 1'b1;
+            aw_done = 1'b0;
+            w_done  = 1'b0;
+            b_done  = 1'b0;
 
-            // Data phase
-            b_wdata  = data;
-            b_wstrb  = strb;
-            b_wvalid = 1'b1;
-            b_wlast  = 1'b1;
-            @(posedge clk);
-            while (!b_wready) @(posedge clk);
-            b_wvalid = 1'b0;
-            b_wlast  = 1'b0;
-
-            // Response
-            b_bready = 1'b1;
-            while (!b_bvalid) @(posedge clk);
-            @(posedge clk);
-            b_bready = 1'b0;
+            timeout_cnt = 0;
+            begin : bw_wait
+                forever begin
+                    @(posedge clk);
+                    // Sample at clock edge (old registered values visible)
+                    if (b_awready && b_awvalid) aw_done = 1'b1;
+                    if (b_wready  && b_wvalid)  w_done  = 1'b1;
+                    if (b_bvalid  && b_bready)  b_done  = 1'b1;
+                    #1;
+                    // Deassert after NBA resolves
+                    if (aw_done) b_awvalid = 1'b0;
+                    if (w_done) begin
+                        b_wvalid = 1'b0;
+                        b_wlast  = 1'b0;
+                    end
+                    if (b_done) begin
+                        b_bready = 1'b0;
+                        disable bw_wait;
+                    end
+                    timeout_cnt = timeout_cnt + 1;
+                    if (timeout_cnt >= 100) begin
+                        $display("TIMEOUT: axi_b_write at addr=0x%08h", addr);
+                        disable bw_wait;
+                    end
+                end
+            end
         end
     endtask
 
@@ -209,19 +227,39 @@ module tb_onchip_sram;
     task axi_b_read;
         input  [31:0] addr;
         output [31:0] rdata;
+        integer rto;
+        reg ar_done, r_done;
         begin
-            @(posedge clk);
+            @(posedge clk); #1;
             b_araddr  = addr;
             b_arid    = 4'd2;
             b_arvalid = 1'b1;
             b_rready  = 1'b1;
-            @(posedge clk);
-            while (!b_arready) @(posedge clk);
-            b_arvalid = 1'b0;
-            while (!b_rvalid) @(posedge clk);
-            rdata = b_rdata;
-            @(posedge clk);
-            b_rready = 1'b0;
+            ar_done = 1'b0;
+            r_done  = 1'b0;
+            rto = 0;
+
+            begin : br_loop
+                forever begin
+                    @(posedge clk);
+                    if (b_arready && b_arvalid) ar_done = 1'b1;
+                    if (b_rvalid && b_rready) begin
+                        rdata = b_rdata;
+                        r_done = 1'b1;
+                    end
+                    #1;
+                    if (ar_done) b_arvalid = 1'b0;
+                    if (r_done) begin
+                        b_rready = 1'b0;
+                        disable br_loop;
+                    end
+                    rto = rto + 1;
+                    if (rto > 100) begin
+                        $display("TIMEOUT: axi_b_read at addr=0x%08h", addr);
+                        disable br_loop;
+                    end
+                end
+            end
         end
     endtask
 
@@ -229,19 +267,39 @@ module tb_onchip_sram;
     task axi_a_read;
         input  [31:0] addr;
         output [31:0] rdata;
+        integer ato;
+        reg ar_done, r_done;
         begin
-            @(posedge clk);
+            @(posedge clk); #1;
             a_araddr  = addr;
             a_arid    = 4'd3;
             a_arvalid = 1'b1;
             a_rready  = 1'b1;
-            @(posedge clk);
-            while (!a_arready) @(posedge clk);
-            a_arvalid = 1'b0;
-            while (!a_rvalid) @(posedge clk);
-            rdata = a_rdata;
-            @(posedge clk);
-            a_rready = 1'b0;
+            ar_done = 1'b0;
+            r_done  = 1'b0;
+            ato = 0;
+
+            begin : ar_loop
+                forever begin
+                    @(posedge clk);
+                    if (a_arready && a_arvalid) ar_done = 1'b1;
+                    if (a_rvalid && a_rready) begin
+                        rdata = a_rdata;
+                        r_done = 1'b1;
+                    end
+                    #1;
+                    if (ar_done) a_arvalid = 1'b0;
+                    if (r_done) begin
+                        a_rready = 1'b0;
+                        disable ar_loop;
+                    end
+                    ato = ato + 1;
+                    if (ato > 100) begin
+                        $display("TIMEOUT: axi_a_read at addr=0x%08h", addr);
+                        disable ar_loop;
+                    end
+                end
+            end
         end
     endtask
 

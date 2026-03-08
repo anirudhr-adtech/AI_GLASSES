@@ -77,23 +77,23 @@ module tb_crop_dma_reader;
     // Tasks
     task reset_dut;
         begin
-            rst_n          <= 1'b0;
-            start          <= 1'b0;
-            raw_frame_addr <= 32'd0;
-            frame_stride   <= 16'd0;
-            crop_x         <= 10'd0;
-            crop_y         <= 10'd0;
-            crop_w         <= 10'd0;
-            crop_h         <= 10'd0;
-            out_ready      <= 1'b1;
-            arready        <= 1'b0;
-            rid            <= 4'b1101;
-            rdata          <= 128'd0;
-            rresp          <= 2'b00;
-            rlast          <= 1'b0;
-            rvalid         <= 1'b0;
+            rst_n          = 1'b0;
+            start          = 1'b0;
+            raw_frame_addr = 32'd0;
+            frame_stride   = 16'd0;
+            crop_x         = 10'd0;
+            crop_y         = 10'd0;
+            crop_w         = 10'd0;
+            crop_h         = 10'd0;
+            out_ready      = 1'b1;
+            arready        = 1'b0;
+            rid            = 4'b1101;
+            rdata          = 128'd0;
+            rresp          = 2'b00;
+            rlast          = 1'b0;
+            rvalid         = 1'b0;
             repeat (5) @(posedge clk);
-            rst_n <= 1'b1;
+            rst_n = 1'b1;
             repeat (2) @(posedge clk);
         end
     endtask
@@ -166,16 +166,16 @@ module tb_crop_dma_reader;
         check("arvalid deasserted after reset", arvalid == 1'b0);
 
         // Test 2: Read a small 4x4 ROI (4 pixels wide = 16 bytes = 1 beat/row)
-        raw_frame_addr <= 32'h0402_0000;
-        frame_stride   <= 16'd2560; // 640 * 4 bytes
-        crop_x         <= 10'd10;
-        crop_y         <= 10'd20;
-        crop_w         <= 10'd4;    // 4 pixels = 16 bytes = 1 beat
-        crop_h         <= 10'd4;    // 4 rows
+        raw_frame_addr = 32'h0402_0000;
+        frame_stride   = 16'd2560; // 640 * 4 bytes
+        crop_x         = 10'd10;
+        crop_y         = 10'd20;
+        crop_w         = 10'd4;    // 4 pixels = 16 bytes = 1 beat
+        crop_h         = 10'd4;    // 4 rows
         @(posedge clk);
-        start <= 1'b1;
+        start = 1'b1;
         @(posedge clk);
-        start <= 1'b0;
+        start = 1'b0;
 
         // Wait for first AR
         repeat (20) begin

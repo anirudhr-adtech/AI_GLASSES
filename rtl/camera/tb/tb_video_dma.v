@@ -79,17 +79,17 @@ module tb_video_dma;
     // Tasks
     task reset_dut;
         begin
-            rst_n     <= 1'b0;
-            start     <= 1'b0;
-            in_data   <= 128'd0;
-            in_valid  <= 1'b0;
-            awready   <= 1'b0;
-            wready    <= 1'b0;
-            bid       <= 4'b1101;
-            bresp     <= 2'b00;
-            bvalid    <= 1'b0;
+            rst_n     = 1'b0;
+            start     = 1'b0;
+            in_data   = 128'd0;
+            in_valid  = 1'b0;
+            awready   = 1'b0;
+            wready    = 1'b0;
+            bid       = 4'b1101;
+            bresp     = 2'b00;
+            bvalid    = 1'b0;
             repeat (5) @(posedge clk);
-            rst_n <= 1'b1;
+            rst_n = 1'b1;
             repeat (2) @(posedge clk);
         end
     endtask
@@ -146,39 +146,35 @@ module tb_video_dma;
         check("wvalid deasserted after reset", wvalid == 1'b0);
 
         // Test 2: Small frame transfer (512 bytes = 32 beats = 1 burst)
-        base_addr  <= 32'h0400_0000;
-        frame_size <= 32'd512; // 32 beats * 16 bytes
+        base_addr  = 32'h0400_0000;
+        frame_size = 32'd512; // 32 beats * 16 bytes
         @(posedge clk);
-        start <= 1'b1;
+        start = 1'b1;
         @(posedge clk);
-        start <= 1'b0;
+        start = 1'b0;
 
         // Enable AXI slave
-        wready <= 1'b1;
+        wready = 1'b1;
 
-        // Feed 32 data words
-        beat_count = 0;
-        fork
-            begin : feed_data
-                integer i;
-                for (i = 0; i < 32; i = i + 1) begin
-                    @(posedge clk);
-                    while (!in_ready) @(posedge clk);
-                    in_data  <= {4{i[31:0]}};
-                    in_valid <= 1'b1;
-                    @(posedge clk);
-                    in_valid <= 1'b0;
-                end
-                disable count_beats;
-            end
-            begin : count_beats
-                forever begin
-                    @(posedge clk);
+        // Feed 32 data words (while-loop pattern, no fork/disable)
+        begin : feed_and_count_blk
+            integer i;
+            beat_count = 0;
+            for (i = 0; i < 32; i = i + 1) begin
+                @(posedge clk);
+                while (!in_ready) begin
                     if (wvalid && wready)
                         beat_count = beat_count + 1;
+                    @(posedge clk);
                 end
+                in_data  = {4{i[31:0]}};
+                in_valid = 1'b1;
+                @(posedge clk);
+                if (wvalid && wready)
+                    beat_count = beat_count + 1;
+                in_valid = 1'b0;
             end
-        join
+        end
 
         // Wait for done
         repeat (100) begin
@@ -195,27 +191,27 @@ module tb_video_dma;
 
         // Test 3: Backpressure — deassert wready briefly
         reset_dut;
-        base_addr  <= 32'h0400_0000;
-        frame_size <= 32'd64; // 4 beats
+        base_addr  = 32'h0400_0000;
+        frame_size = 32'd64; // 4 beats
         @(posedge clk);
-        start <= 1'b1;
+        start = 1'b1;
         @(posedge clk);
-        start <= 1'b0;
-        wready <= 1'b0;
+        start = 1'b0;
+        wready = 1'b0;
 
         // Let AW complete
         repeat (10) @(posedge clk);
 
         // Now enable wready
-        wready <= 1'b1;
+        wready = 1'b1;
 
         // Feed data
         repeat (4) begin
             @(posedge clk);
-            in_data  <= 128'hDEAD_BEEF;
-            in_valid <= 1'b1;
+            in_data  = 128'hDEAD_BEEF;
+            in_valid = 1'b1;
             @(posedge clk);
-            in_valid <= 1'b0;
+            in_valid = 1'b0;
         end
 
         repeat (50) @(posedge clk);

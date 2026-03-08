@@ -18,17 +18,22 @@ module frame_buf_ctrl (
 
     reg active_buf;
 
+    // Compute next active_buf combinationally so mux and register
+    // update coherently on the same clock edge.
+    wire active_buf_next = swap_i ? ~active_buf : active_buf;
+
     always @(posedge clk) begin
         if (!rst_n) begin
             active_buf <= 1'b0;
             wr_addr_o  <= 32'd0;
             rd_addr_o  <= 32'd0;
         end else begin
-            if (swap_i)
-                active_buf <= ~active_buf;
+            active_buf <= active_buf_next;
 
             // Mux write/read addresses based on active buffer
-            if (!active_buf) begin
+            // active_buf 0: write to A, read from B
+            // active_buf 1: write to B, read from A
+            if (!active_buf_next) begin
                 wr_addr_o <= buf_a_addr_i;
                 rd_addr_o <= buf_b_addr_i;
             end else begin

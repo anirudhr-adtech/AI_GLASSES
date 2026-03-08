@@ -136,32 +136,32 @@ module tb_cam_subsys_top;
 
     task reset_dut;
         begin
-            rst_n       <= 1'b0;
-            cam_vsync   <= 1'b0;
-            cam_href    <= 1'b0;
-            cam_data    <= 8'd0;
-            axi_awaddr  <= 32'd0;
-            axi_awvalid <= 1'b0;
-            axi_wdata   <= 32'd0;
-            axi_wstrb   <= 4'hF;
-            axi_wvalid  <= 1'b0;
-            axi_bready  <= 1'b1;
-            axi_araddr  <= 32'd0;
-            axi_arvalid <= 1'b0;
-            axi_rready  <= 1'b1;
-            m_awready   <= 1'b1;
-            m_wready    <= 1'b1;
-            m_bid       <= 4'b1101;
-            m_bresp     <= 2'b00;
-            m_bvalid    <= 1'b0;
-            m_arready   <= 1'b1;
-            m_rid       <= 4'b1101;
-            m_rdata     <= 128'd0;
-            m_rresp     <= 2'b00;
-            m_rlast     <= 1'b0;
-            m_rvalid    <= 1'b0;
+            rst_n       = 1'b0;
+            cam_vsync   = 1'b0;
+            cam_href    = 1'b0;
+            cam_data    = 8'd0;
+            axi_awaddr  = 32'd0;
+            axi_awvalid = 1'b0;
+            axi_wdata   = 32'd0;
+            axi_wstrb   = 4'hF;
+            axi_wvalid  = 1'b0;
+            axi_bready  = 1'b1;
+            axi_araddr  = 32'd0;
+            axi_arvalid = 1'b0;
+            axi_rready  = 1'b1;
+            m_awready   = 1'b1;
+            m_wready    = 1'b1;
+            m_bid       = 4'b1101;
+            m_bresp     = 2'b00;
+            m_bvalid    = 1'b0;
+            m_arready   = 1'b1;
+            m_rid       = 4'b1101;
+            m_rdata     = 128'd0;
+            m_rresp     = 2'b00;
+            m_rlast     = 1'b0;
+            m_rvalid    = 1'b0;
             repeat (10) @(posedge clk);
-            rst_n <= 1'b1;
+            rst_n = 1'b1;
             repeat (5) @(posedge clk);
         end
     endtask
@@ -210,29 +210,29 @@ module tb_cam_subsys_top;
         check("Module hierarchy valid (no elab errors)", 1'b1);
 
         // Test 3: DVP signals propagate (generate VSYNC pulse)
-        cam_vsync <= 1'b1;
+        cam_vsync = 1'b1;
         repeat (10) @(posedge cam_pclk);
-        cam_vsync <= 1'b0;
+        cam_vsync = 1'b0;
         repeat (5) @(posedge clk);
 
         check("VSYNC propagated", 1'b1); // structural check
 
         // Test 4: Generate a mini frame (4 lines x 8 bytes = 4 YUV422 pixels/line)
         // Simulate OV7670-like timing
-        cam_vsync <= 1'b1;
+        cam_vsync = 1'b1;
         repeat (5) @(posedge cam_pclk);
-        cam_vsync <= 1'b0;
+        cam_vsync = 1'b0;
         repeat (10) @(posedge cam_pclk);
 
         begin : gen_frame
             integer line, byte_idx;
             for (line = 0; line < 4; line = line + 1) begin
-                cam_href <= 1'b1;
+                cam_href = 1'b1;
                 for (byte_idx = 0; byte_idx < 8; byte_idx = byte_idx + 1) begin
-                    cam_data <= byte_idx[7:0] + line[7:0] * 8;
+                    cam_data = byte_idx[7:0] + line[7:0] * 8;
                     @(posedge cam_pclk);
                 end
-                cam_href <= 1'b0;
+                cam_href = 1'b0;
                 repeat (5) @(posedge cam_pclk);
             end
         end

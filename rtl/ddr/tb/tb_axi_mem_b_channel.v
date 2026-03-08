@@ -55,8 +55,15 @@ module tb_axi_mem_b_channel;
         @(posedge clk);
         wlast_done_i = 0;
 
-        // Wait for latency
-        repeat (WRITE_LATENCY + 1) @(posedge clk);
+        // Wait for bvalid (latency pipeline + 1 register stage)
+        begin : wait_bvalid_t1
+            integer wt;
+            wt = 0;
+            while (!s_axi_bvalid && wt < 50) begin
+                @(posedge clk);
+                wt = wt + 1;
+            end
+        end
 
         if (s_axi_bvalid && s_axi_bid == 6'd5 && s_axi_bresp == 2'b00) begin
             pass_count = pass_count + 1;
@@ -71,7 +78,14 @@ module tb_axi_mem_b_channel;
         @(posedge clk);
         wlast_done_i = 0; error_inject_i = 0;
 
-        repeat (WRITE_LATENCY + 1) @(posedge clk);
+        begin : wait_bvalid_t2
+            integer wt;
+            wt = 0;
+            while (!s_axi_bvalid && wt < 50) begin
+                @(posedge clk);
+                wt = wt + 1;
+            end
+        end
 
         if (s_axi_bvalid && s_axi_bid == 6'd10 && s_axi_bresp == 2'b10) begin
             pass_count = pass_count + 1;
@@ -87,7 +101,14 @@ module tb_axi_mem_b_channel;
         @(posedge clk);
         wlast_done_i = 0;
 
-        repeat (WRITE_LATENCY + 2) @(posedge clk);
+        begin : wait_bvalid_t3
+            integer wt;
+            wt = 0;
+            while (!s_axi_bvalid && wt < 50) begin
+                @(posedge clk);
+                wt = wt + 1;
+            end
+        end
 
         if (s_axi_bvalid) begin
             pass_count = pass_count + 1;
@@ -111,6 +132,13 @@ module tb_axi_mem_b_channel;
         $display("tb_axi_mem_b_channel: %0d PASSED, %0d FAILED", pass_count, fail_count);
         $display("========================================");
         if (fail_count == 0) $display("ALL TESTS PASSED");
+        $finish;
+    end
+
+    // Timeout watchdog
+    initial begin
+        #10000;
+        $display("TIMEOUT: Simulation exceeded 10us");
         $finish;
     end
 

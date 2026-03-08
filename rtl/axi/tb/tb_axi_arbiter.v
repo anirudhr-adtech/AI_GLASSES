@@ -50,6 +50,7 @@ module tb_axi_arbiter;
 
     task complete_burst;
         begin
+            req_i = 0;
             lock_i = 0;
             done_i = 1;
             @(posedge clk);

@@ -132,7 +132,6 @@ module dbus_axi_adapter (
             // Default pulse signals
             gnt_r    <= 1'b0;
             rvalid_r <= 1'b0;
-            rerr_r   <= 1'b0;
 
             case (state_r)
                 IDLE: begin
@@ -141,6 +140,7 @@ module dbus_axi_adapter (
                     w_valid_r  <= 1'b0;
                     b_ready_r  <= 1'b0;
                     if (data_req_i) begin
+                        rerr_r <= 1'b0;
                         if (!data_we_i) begin
                             // Load: issue AXI read
                             ar_valid_r <= 1'b1;

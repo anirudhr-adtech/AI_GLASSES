@@ -2,6 +2,7 @@
 //============================================================================
 // Testbench: tb_dma_weight_ch
 // Basic stimulus for weight DMA channel — verifies FSM progression
+// Fixed for Verilator --timing: #1 sampling after posedge
 //============================================================================
 
 module tb_dma_weight_ch;
@@ -43,11 +44,14 @@ module tb_dma_weight_ch;
     );
 
     integer beat_count;
+    integer errors;
 
     initial begin
+        errors = 0;
         rst_n = 0; start = 0;
         src_addr = 0; xfer_len = 0;
-        arready = 0; rdata = 0; rresp = 0; rlast = 0; rvalid = 0;
+        arready = 0;
+        rdata = 0; rresp = 0; rlast = 0; rvalid = 0;
 
         repeat (5) @(posedge clk);
         rst_n = 1;
@@ -60,35 +64,100 @@ module tb_dma_weight_ch;
         @(posedge clk);
         start = 0;
 
-        // Wait for AR
-        repeat (5) @(posedge clk);
-        if (arvalid) begin
-            $display("AR issued: addr=%h, len=%0d", araddr, arlen);
-            arready = 1;
-            @(posedge clk);
-            arready = 0;
+        // Wait for arvalid, then accept immediately
+        begin : ar_wait_blk
+            integer countdown;
+            countdown = 1000;
+            forever begin
+                @(posedge clk);
+                #1;
+                if (arvalid) begin
+                    arready = 1;
+                    @(posedge clk); // handshake completes on this edge
+                    #1;
+                    arready = 0;
+                    $display("AR issued: addr=%h, len=%0d", araddr, arlen);
+                    countdown = -1;
+                end
+                countdown = countdown - 1;
+                if (countdown == 0) begin
+                    $display("FAIL: Timeout waiting for arvalid");
+                    errors = errors + 1;
+                end
+                if (countdown <= 0) disable ar_wait_blk;
+            end
         end
 
-        // Provide 4 read data beats
-        @(posedge clk);
-        for (beat_count = 0; beat_count < 4; beat_count = beat_count + 1) begin
-            rvalid = 1;
-            rdata = {32'h0000_0003, 32'h0000_0002, 32'h0000_0001, 32'h0000_0000} + {4{beat_count[31:0] * 32'd4}};
-            rlast = (beat_count == 3);
-            @(posedge clk);
-            while (!rready) @(posedge clk);
+        // Serve 4 read data beats reactively.
+        // The DUT holds rready=1 when waiting for a beat in S_R_DATA (sub_word_r==0).
+        // We present rvalid+rdata, the handshake occurs on the next posedge,
+        // then we must hold rvalid through that edge.
+        for (beat_count = 0; beat_count < 4; beat_count = beat_count + 1) begin : beat_loop
+            integer countdown;
+            countdown = 2000;
+            // Wait until DUT is ready (rready=1)
+            forever begin
+                @(posedge clk);
+                #1;
+                if (rready) begin
+                    // Present data — DUT will sample on next posedge
+                    rvalid = 1;
+                    rdata = {32'h0000_0003, 32'h0000_0002, 32'h0000_0001, 32'h0000_0000}
+                            + {4{beat_count[31:0] * 32'd4}};
+                    rlast = (beat_count == 3);
+                    // $display("  Beat %0d: presenting data, rlast=%0b", beat_count, rlast);
+                    // Hold through the sampling edge
+                    @(posedge clk);
+                    #1;
+                    // DUT has sampled rvalid+rdata on this edge (rready was high)
+                    // Deassert rvalid
+                    rvalid = 0;
+                    rlast  = 0;
+                    countdown = -1;
+                end
+                countdown = countdown - 1;
+                if (countdown == 0) begin
+                    $display("FAIL: Timeout waiting for rready at beat %0d", beat_count);
+                    errors = errors + 1;
+                end
+                if (countdown <= 0) disable beat_loop;
+            end
         end
-        rvalid = 0; rlast = 0;
 
-        // Wait for done
-        repeat (20) @(posedge clk);
-        if (done) $display("DMA transfer completed successfully");
-        else $display("WARNING: DMA did not assert done");
+        // Wait for done with timeout
+        begin : done_wait_blk
+            integer countdown;
+            countdown = 1000;
+            while (countdown > 0) begin
+                @(posedge clk);
+                #1;
+                if (done) begin
+                    $display("DMA transfer completed successfully");
+                    countdown = -1;
+                end
+                countdown = countdown - 1;
+            end
+            if (countdown == 0) begin
+                $display("FAIL: Timeout waiting for done");
+                errors = errors + 1;
+            end
+        end
 
         repeat (3) @(posedge clk);
         $display("========================================");
-        $display("tb_dma_weight_ch: basic test complete");
+        if (errors == 0) begin
+            $display("tb_dma_weight_ch: basic test PASSED");
+            $display("ALL TESTS PASSED");
+        end else
+            $display("tb_dma_weight_ch: FAILED (%0d errors)", errors);
         $display("========================================");
+        $finish;
+    end
+
+    // Global watchdog
+    initial begin
+        #200000;
+        $display("FAIL: Global watchdog timeout");
         $finish;
     end
 

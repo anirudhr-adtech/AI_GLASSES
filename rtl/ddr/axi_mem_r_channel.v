@@ -80,39 +80,49 @@ module axi_mem_r_channel #(
     wire [ADDR_WIDTH-1:0] beat_addr = burst_addr + (beat_cnt << burst_size);
 
     // Read state machine
-    // We issue rd_en one cycle, then capture rd_data next cycle into pipe
-    reg rd_pending;
-    reg [7:0] rd_beat_idx;
+    // mem_array has 1-cycle registered read: rd_en at cycle N, rd_data valid at cycle N+2
+    // (rd_en captured at posedge N, rd_data NBA at posedge N+1, visible at posedge N+2)
+    // So we use a 2-stage pending: rd_pending_p1 -> rd_pending_p2 -> capture
+    reg rd_pending_p1;  // 1 cycle after rd_en
+    reg rd_pending_p2;  // 2 cycles after rd_en (rd_data now valid)
     reg rd_is_last;
+    reg rd_is_last_p2;
 
     initial begin
-        rd_pending = 1'b0;
-        rd_beat_idx = 8'd0;
-        rd_is_last = 1'b0;
+        rd_pending_p1 = 1'b0;
+        rd_pending_p2 = 1'b0;
+        rd_is_last    = 1'b0;
+        rd_is_last_p2 = 1'b0;
     end
 
     always @(posedge clk) begin
         if (!rst_n) begin
-            state        <= S_IDLE;
-            ar_ready_o   <= 1'b0;
-            rd_en        <= 1'b0;
-            rd_addr      <= {ADDR_WIDTH{1'b0}};
-            beat_cnt     <= 8'd0;
+            state         <= S_IDLE;
+            ar_ready_o    <= 1'b0;
+            rd_en         <= 1'b0;
+            rd_addr       <= {ADDR_WIDTH{1'b0}};
+            beat_cnt      <= 8'd0;
             pipe_in_valid <= 1'b0;
-            rd_pending   <= 1'b0;
-            rd_is_last   <= 1'b0;
+            rd_pending_p1 <= 1'b0;
+            rd_pending_p2 <= 1'b0;
+            rd_is_last    <= 1'b0;
+            rd_is_last_p2 <= 1'b0;
         end else begin
             pipe_in_valid <= 1'b0;
             rd_en         <= 1'b0;
             ar_ready_o    <= 1'b0;
 
-            // Capture read data from mem_array (1 cycle after rd_en)
-            if (rd_pending) begin
+            // Pipeline the pending flag to account for mem_array registered read
+            rd_pending_p2 <= rd_pending_p1;
+            rd_is_last_p2 <= rd_is_last;
+            rd_pending_p1 <= 1'b0;  // default clear (set below when rd_en issued)
+
+            // Capture read data from mem_array (2 cycles after rd_en)
+            if (rd_pending_p2) begin
                 pipe_in_valid <= 1'b1;
                 pipe_in_data  <= rd_data;
                 pipe_in_id    <= burst_id;
-                pipe_in_last  <= rd_is_last;
-                rd_pending    <= 1'b0;
+                pipe_in_last  <= rd_is_last_p2;
             end
 
             case (state)
@@ -126,21 +136,21 @@ module axi_mem_r_channel #(
                         burst_id   <= ar_id_i;
                         beat_cnt   <= 8'd0;
                         // Issue first read
-                        rd_en      <= 1'b1;
-                        rd_addr    <= ar_addr_i;
-                        rd_pending <= 1'b1;
-                        rd_is_last <= (ar_len_i == 8'd0);
-                        ar_ready_o <= 1'b0;
+                        rd_en         <= 1'b1;
+                        rd_addr       <= ar_addr_i;
+                        rd_pending_p1 <= 1'b1;
+                        rd_is_last    <= (ar_len_i == 8'd0);
+                        ar_ready_o    <= 1'b0;
                     end
                 end
                 S_BURST: begin
                     // After capturing previous beat, issue next read
                     if (pipe_in_valid && !pipe_in_last) begin
-                        beat_cnt   <= beat_cnt + 8'd1;
-                        rd_en      <= 1'b1;
-                        rd_addr    <= burst_addr + ((beat_cnt + 8'd1) << burst_size);
-                        rd_pending <= 1'b1;
-                        rd_is_last <= ((beat_cnt + 8'd1) == burst_len);
+                        beat_cnt      <= beat_cnt + 8'd1;
+                        rd_en         <= 1'b1;
+                        rd_addr       <= burst_addr + ((beat_cnt + 8'd1) << burst_size);
+                        rd_pending_p1 <= 1'b1;
+                        rd_is_last    <= ((beat_cnt + 8'd1) == burst_len);
                     end
 
                     // Burst complete

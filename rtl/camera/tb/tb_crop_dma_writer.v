@@ -70,18 +70,18 @@ module tb_crop_dma_writer;
 
     task reset_dut;
         begin
-            rst_n         <= 1'b0;
-            start         <= 1'b0;
-            crop_buf_addr <= 32'd0;
-            in_data       <= 24'd0;
-            in_valid      <= 1'b0;
-            awready       <= 1'b0;
-            wready        <= 1'b0;
-            bid           <= 4'b1101;
-            bresp         <= 2'b00;
-            bvalid        <= 1'b0;
+            rst_n         = 1'b0;
+            start         = 1'b0;
+            crop_buf_addr = 32'd0;
+            in_data       = 24'd0;
+            in_valid      = 1'b0;
+            awready       = 1'b0;
+            wready        = 1'b0;
+            bid           = 4'b1101;
+            bresp         = 2'b00;
+            bvalid        = 1'b0;
             repeat (5) @(posedge clk);
-            rst_n <= 1'b1;
+            rst_n = 1'b1;
             repeat (2) @(posedge clk);
         end
     endtask
@@ -142,12 +142,12 @@ module tb_crop_dma_writer;
         check("awvalid deasserted after reset", awvalid == 1'b0);
 
         // Test 2: Feed 16 pixels (4 beats worth: 16 * 32-bit = 4 * 128-bit)
-        crop_buf_addr <= 32'h0420_0000;
+        crop_buf_addr = 32'h0420_0000;
         @(posedge clk);
-        start <= 1'b1;
+        start = 1'b1;
         @(posedge clk);
-        start <= 1'b0;
-        wready <= 1'b1;
+        start = 1'b0;
+        wready = 1'b1;
 
         // Feed 16 RGB pixels
         begin : feed
@@ -155,10 +155,10 @@ module tb_crop_dma_writer;
             for (i = 0; i < 16; i = i + 1) begin
                 @(posedge clk);
                 while (!in_ready) @(posedge clk);
-                in_data  <= {8'd255, 8'd128, 8'd64};
-                in_valid <= 1'b1;
+                in_data  = {8'd255, 8'd128, 8'd64};
+                in_valid = 1'b1;
                 @(posedge clk);
-                in_valid <= 1'b0;
+                in_valid = 1'b0;
             end
         end
 

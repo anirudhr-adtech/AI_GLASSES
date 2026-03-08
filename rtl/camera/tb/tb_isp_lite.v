@@ -72,14 +72,14 @@ module tb_isp_lite;
     // ----------------------------------------------------------------
     task reset_dut;
         begin
-            rst_n    <= 1'b0;
-            start    <= 1'b0;
-            bypass   <= 1'b0;
-            in_pixel <= 16'd0;
-            in_valid <= 1'b0;
-            out_ready <= 1'b1;
+            rst_n    = 1'b0;
+            start    = 1'b0;
+            bypass   = 1'b0;
+            in_pixel = 16'd0;
+            in_valid = 1'b0;
+            out_ready = 1'b1;
             repeat (5) @(posedge clk);
-            rst_n <= 1'b1;
+            rst_n = 1'b1;
             repeat (2) @(posedge clk);
         end
     endtask
@@ -116,27 +116,27 @@ module tb_isp_lite;
         check("out_valid deasserted after reset", out_valid == 1'b0);
 
         // Test 2: Start pipeline (normal mode)
-        src_width  <= 10'd8;
-        src_height <= 10'd4;
-        dst_width  <= 10'd4;
-        dst_height <= 10'd2;
-        scale_x    <= 24'h020000; // 2.0 in Q8.16
-        scale_y    <= 24'h020000;
-        bypass     <= 1'b0;
+        src_width  = 10'd8;
+        src_height = 10'd4;
+        dst_width  = 10'd4;
+        dst_height = 10'd2;
+        scale_x    = 24'h020000; // 2.0 in Q8.16
+        scale_y    = 24'h020000;
+        bypass     = 1'b0;
         @(posedge clk);
-        start <= 1'b1;
+        start = 1'b1;
         @(posedge clk);
-        start <= 1'b0;
+        start = 1'b0;
 
         // Feed some YUV422 pixels
         pixel_count = 0;
         repeat (32) begin
             @(posedge clk);
-            in_pixel <= {8'hA0, 8'h80}; // Y=A0, U=80
-            in_valid <= 1'b1;
+            in_pixel = {8'hA0, 8'h80}; // Y=A0, U=80
+            in_valid = 1'b1;
             pixel_count = pixel_count + 1;
         end
-        in_valid <= 1'b0;
+        in_valid = 1'b0;
 
         // Wait for some output
         repeat (50) @(posedge clk);
@@ -145,25 +145,25 @@ module tb_isp_lite;
 
         // Test 3: Bypass mode
         reset_dut;
-        src_width  <= 10'd4;
-        src_height <= 10'd2;
-        dst_width  <= 10'd4;
-        dst_height <= 10'd2;
-        scale_x    <= 24'h010000; // 1.0
-        scale_y    <= 24'h010000;
-        bypass     <= 1'b1;
+        src_width  = 10'd4;
+        src_height = 10'd2;
+        dst_width  = 10'd4;
+        dst_height = 10'd2;
+        scale_x    = 24'h010000; // 1.0
+        scale_y    = 24'h010000;
+        bypass     = 1'b1;
         @(posedge clk);
-        start <= 1'b1;
+        start = 1'b1;
         @(posedge clk);
-        start <= 1'b0;
+        start = 1'b0;
 
         // Feed pixels in bypass mode
         repeat (8) begin
             @(posedge clk);
-            in_pixel <= 16'hFF80; // Y=FF, U=80
-            in_valid <= 1'b1;
+            in_pixel = 16'hFF80; // Y=FF, U=80
+            in_valid = 1'b1;
         end
-        in_valid <= 1'b0;
+        in_valid = 1'b0;
         repeat (20) @(posedge clk);
 
         check("Bypass mode: pipeline active", u_dut.pipeline_active == 1'b1 || done == 1'b1);

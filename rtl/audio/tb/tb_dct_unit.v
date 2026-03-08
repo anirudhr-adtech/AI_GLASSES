@@ -68,24 +68,23 @@ module tb_dct_unit;
             log_valid = 0;
         end
 
-        // Collect outputs
-        fork
-            begin : collect
-                while (!done) begin
-                    @(posedge clk);
-                    if (mfcc_valid) begin
-                        mfcc_results[mfcc_idx] = mfcc_data;
-                        out_count = out_count + 1;
-                    end
+        // Collect outputs (while-loop timeout pattern)
+        begin : collect_blk
+            integer collect_countdown;
+            collect_countdown = 10000;
+            while (!done && collect_countdown > 0) begin
+                @(posedge clk);
+                collect_countdown = collect_countdown - 1;
+                if (mfcc_valid) begin
+                    mfcc_results[mfcc_idx] = mfcc_data;
+                    out_count = out_count + 1;
                 end
             end
-            begin : timeout
-                repeat (10000) @(posedge clk);
+            if (collect_countdown == 0) begin
                 $display("FAIL: Timeout");
                 errors = errors + 1;
-                disable collect;
             end
-        join
+        end
 
         // Should have 10 outputs
         if (out_count != 4'd10) begin
@@ -120,21 +119,19 @@ module tb_dct_unit;
             log_valid = 0;
         end
 
-        fork
-            begin : collect2
-                while (!done) begin
-                    @(posedge clk);
-                    if (mfcc_valid) begin
-                        mfcc_results[mfcc_idx] = mfcc_data;
-                        out_count = out_count + 1;
-                    end
+        // Collect outputs test 2 (while-loop timeout pattern)
+        begin : collect2_blk
+            integer collect2_countdown;
+            collect2_countdown = 10000;
+            while (!done && collect2_countdown > 0) begin
+                @(posedge clk);
+                collect2_countdown = collect2_countdown - 1;
+                if (mfcc_valid) begin
+                    mfcc_results[mfcc_idx] = mfcc_data;
+                    out_count = out_count + 1;
                 end
             end
-            begin : timeout2
-                repeat (10000) @(posedge clk);
-                disable collect2;
-            end
-        join
+        end
 
         // For constant input, MFCC[0] should be large, others ~0
         $display("  Constant input test:");
@@ -147,9 +144,10 @@ module tb_dct_unit;
             errors = errors + 1;
         end
 
-        if (errors == 0)
+        if (errors == 0) begin
             $display("=== tb_dct_unit: PASSED ===");
-        else
+            $display("ALL TESTS PASSED");
+        end else
             $display("=== tb_dct_unit: FAILED (%0d errors) ===", errors);
 
         $finish;

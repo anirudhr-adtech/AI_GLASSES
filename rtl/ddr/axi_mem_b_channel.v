@@ -81,27 +81,28 @@ module axi_mem_b_channel #(
             s_axi_bresp  <= 2'b00;
             resp_pending  <= 1'b0;
         end else begin
-            // Handshake complete
-            if (s_axi_bvalid && s_axi_bready) begin
-                s_axi_bvalid <= 1'b0;
-            end
-
-            // Capture from latency pipe
+            // New response from latency pipe has priority
             if (lat_valid[WRITE_LATENCY-1]) begin
                 if (!s_axi_bvalid || s_axi_bready) begin
+                    // Output channel free or being consumed — present new response
                     s_axi_bvalid <= 1'b1;
                     s_axi_bid    <= lat_id[WRITE_LATENCY-1];
                     s_axi_bresp  <= lat_err[WRITE_LATENCY-1] ? 2'b10 : 2'b00;
                 end else begin
+                    // Output busy — hold in pending register
                     resp_pending <= 1'b1;
                     resp_id      <= lat_id[WRITE_LATENCY-1];
                     resp_code    <= lat_err[WRITE_LATENCY-1] ? 2'b10 : 2'b00;
                 end
             end else if (resp_pending && (!s_axi_bvalid || s_axi_bready)) begin
+                // Drain pending response
                 s_axi_bvalid <= 1'b1;
                 s_axi_bid    <= resp_id;
                 s_axi_bresp  <= resp_code;
                 resp_pending  <= 1'b0;
+            end else if (s_axi_bvalid && s_axi_bready) begin
+                // Handshake complete — deassert valid
+                s_axi_bvalid <= 1'b0;
             end
         end
     end

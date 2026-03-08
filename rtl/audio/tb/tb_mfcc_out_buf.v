@@ -122,9 +122,10 @@ module tb_mfcc_out_buf;
             errors = errors + 1;
         end
 
-        if (errors == 0)
+        if (errors == 0) begin
             $display("=== tb_mfcc_out_buf: PASSED ===");
-        else
+            $display("ALL TESTS PASSED");
+        end else
             $display("=== tb_mfcc_out_buf: FAILED (%0d errors) ===", errors);
 
         $finish;

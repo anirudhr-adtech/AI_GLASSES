@@ -31,7 +31,7 @@ module riscv_axilite_addr_decoder #(
             slave_sel_r    <= 4'd0;
 
             // Check if address is in the peripheral range 0x2000_0000 - 0x2000_08FF
-            if (addr_i[31:16] == 16'h2000 && addr_i[15:8] < 8'd9) begin
+            if (addr_i[31:16] == 16'h2000 && addr_i[15:8] < NUM_SLAVES[7:0]) begin
                 slave_sel_r <= {1'b0, addr_i[11:8]};
             end else begin
                 decode_error_r <= 1'b1;

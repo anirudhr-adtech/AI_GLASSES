@@ -79,26 +79,38 @@ module tb_timer_clint;
         input [7:0]  addr;
         input [31:0] data;
         input [3:0]  strb;
+        integer wto;
+        reg aw_done, w_done, b_done;
         begin
-            @(posedge clk);
-            s_axil_awaddr  <= addr;
-            s_axil_awvalid <= 1'b1;
-            s_axil_wdata   <= data;
-            s_axil_wstrb   <= strb;
-            s_axil_wvalid  <= 1'b1;
-            s_axil_bready  <= 1'b1;
+            @(posedge clk); #1;
+            s_axil_awaddr  = addr;
+            s_axil_awvalid = 1'b1;
+            s_axil_wdata   = data;
+            s_axil_wstrb   = strb;
+            s_axil_wvalid  = 1'b1;
+            s_axil_bready  = 1'b1;
+            aw_done = 1'b0;
+            w_done  = 1'b0;
+            b_done  = 1'b0;
+            wto = 0;
 
-            // Wait for both handshakes
-            @(posedge clk);
-            while (!s_axil_awready) @(posedge clk);
-            s_axil_awvalid <= 1'b0;
-            while (!s_axil_wready) @(posedge clk);
-            s_axil_wvalid <= 1'b0;
-
-            // Wait for write response
-            while (!s_axil_bvalid) @(posedge clk);
-            @(posedge clk);
-            s_axil_bready <= 1'b0;
+            begin : wr_loop
+                forever begin
+                    @(posedge clk);
+                    if (s_axil_awready && s_axil_awvalid) aw_done = 1'b1;
+                    if (s_axil_wready  && s_axil_wvalid)  w_done  = 1'b1;
+                    if (s_axil_bvalid  && s_axil_bready)  b_done  = 1'b1;
+                    #1;
+                    if (aw_done) s_axil_awvalid = 1'b0;
+                    if (w_done)  s_axil_wvalid  = 1'b0;
+                    if (b_done) begin
+                        s_axil_bready = 1'b0;
+                        disable wr_loop;
+                    end
+                    wto = wto + 1;
+                    if (wto > 100) disable wr_loop;
+                end
+            end
         end
     endtask
 
@@ -108,20 +120,35 @@ module tb_timer_clint;
     task axil_read;
         input  [7:0]  addr;
         output [31:0] data;
+        integer rto;
+        reg ar_done, r_done;
         begin
-            @(posedge clk);
-            s_axil_araddr  <= addr;
-            s_axil_arvalid <= 1'b1;
-            s_axil_rready  <= 1'b1;
+            @(posedge clk); #1;
+            s_axil_araddr  = addr;
+            s_axil_arvalid = 1'b1;
+            s_axil_rready  = 1'b1;
+            ar_done = 1'b0;
+            r_done  = 1'b0;
+            rto = 0;
 
-            @(posedge clk);
-            while (!s_axil_arready) @(posedge clk);
-            s_axil_arvalid <= 1'b0;
-
-            while (!s_axil_rvalid) @(posedge clk);
-            data = s_axil_rdata;
-            @(posedge clk);
-            s_axil_rready <= 1'b0;
+            begin : rd_loop
+                forever begin
+                    @(posedge clk);
+                    if (s_axil_arready && s_axil_arvalid) ar_done = 1'b1;
+                    if (s_axil_rvalid && s_axil_rready) begin
+                        data = s_axil_rdata;
+                        r_done = 1'b1;
+                    end
+                    #1;
+                    if (ar_done) s_axil_arvalid = 1'b0;
+                    if (r_done) begin
+                        s_axil_rready = 1'b0;
+                        disable rd_loop;
+                    end
+                    rto = rto + 1;
+                    if (rto > 100) disable rd_loop;
+                end
+            end
         end
     endtask
 
@@ -224,7 +251,7 @@ module tb_timer_clint;
         axil_write(8'h0C, 32'h00000000, 4'hF);  // mtimecmp_hi = 0
 
         // Wait a couple cycles for registered output
-        repeat (3) @(posedge clk);
+        repeat (4) @(posedge clk); #1;
         check_bool("T4 irq_timer high", irq_timer_o, 1'b1);
 
         // ----------------------------------------------------------
@@ -232,7 +259,7 @@ module tb_timer_clint;
         // ----------------------------------------------------------
         axil_write(8'h0C, 32'hFFFFFFFF, 4'hF);
         axil_write(8'h08, 32'hFFFFFFFF, 4'hF);
-        repeat (3) @(posedge clk);
+        repeat (4) @(posedge clk); #1;
         check_bool("T5 irq_timer clear", irq_timer_o, 1'b0);
 
         // ----------------------------------------------------------

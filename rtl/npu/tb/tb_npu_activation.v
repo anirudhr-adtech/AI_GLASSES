@@ -86,6 +86,7 @@ module tb_npu_activation;
         $display("========================================");
         $display("tb_npu_activation: %0d PASSED, %0d FAILED", pass_count, fail_count);
         $display("========================================");
+        if (fail_count == 0) $display("ALL TESTS PASSED");
         $finish;
     end
 

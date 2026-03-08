@@ -305,14 +305,17 @@ module onchip_sram #(
                     end
                 end
                 B_RREAD: begin
-                    // Data available next cycle
-                    b_rdata_r  <= bank_b_rdata[b_bank_sel];
-                    b_rvalid_r <= 1'b1;
-                    b_state    <= B_RRESP;
+                    // SRAM output registered — data available THIS cycle
+                    // (bank was enabled combinationally; wait 1 cycle for SRAM registered read)
+                    b_state <= B_RRESP;
                 end
                 B_RRESP: begin
                     b_active <= 1'b0;
-                    if (s_axi_b_rready && b_rvalid_r) begin
+                    if (!b_rvalid_r) begin
+                        // First cycle in B_RRESP: latch data and assert rvalid
+                        b_rdata_r  <= bank_b_rdata[b_bank_sel];
+                        b_rvalid_r <= 1'b1;
+                    end else if (s_axi_b_rready && b_rvalid_r) begin
                         b_rvalid_r  <= 1'b0;
                         b_arready_r <= 1'b1;
                         b_awready_r <= 1'b1;

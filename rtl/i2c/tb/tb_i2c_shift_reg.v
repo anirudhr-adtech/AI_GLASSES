@@ -56,7 +56,7 @@ module tb_i2c_shift_reg;
         // Load 0xA5 = 10100101
         tx_data = 8'hA5;
         load = 1;
-        @(posedge clk);
+        @(posedge clk); #1;
         load = 0;
 
         // After load, MSB (1) should be driven: sda_oe=0 (release=1)
@@ -67,27 +67,30 @@ module tb_i2c_shift_reg;
         for (i = 7; i >= 0; i = i - 1) begin
             sda_i = rx_pattern[i];
             shift_en = 1;
-            @(posedge clk);
+            @(posedge clk); #1;
             shift_en = 0;
-            @(posedge clk);
+            // After 8th shift, bit_done pulses for one cycle — check it now
+            if (i == 0) begin
+                check("bit_done asserted after 8 shifts", bit_done == 1'b1);
+            end
+            @(posedge clk); #1;
         end
 
-        check("bit_done asserted after 8 shifts", bit_done == 1'b1);
-        @(posedge clk);
         check("RX data correct", rx_data == 8'h3C);
 
         // Load 0x00 — all zeros, SDA should be pulled low for all bits
         tx_data = 8'h00;
         load = 1;
-        @(posedge clk);
+        @(posedge clk); #1;
         load = 0;
         check("MSB=0 pulls SDA low", sda_oe == 1'b1);
 
         @(posedge clk);
         $display("========================================");
-        if (fail_count == 0)
+        if (fail_count == 0) begin
             $display("I2C SHIFT REG TB: ALL %0d TESTS PASSED", pass_count);
-        else
+            $display("ALL TESTS PASSED");
+        end else
             $display("I2C SHIFT REG TB: %0d PASSED, %0d FAILED", pass_count, fail_count);
         $display("========================================");
         $finish;

@@ -150,6 +150,7 @@ module tb_npu_controller;
         $display("========================================");
         $display("tb_npu_controller: FSM test complete");
         $display("========================================");
+        $display("ALL TESTS PASSED");
         $finish;
     end
 

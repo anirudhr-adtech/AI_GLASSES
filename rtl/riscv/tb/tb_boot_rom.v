@@ -65,13 +65,13 @@ module tb_boot_rom;
     reg         s_axi_bready;
 
     // ----------------------------------------------------------------
-    // Initialize ROM content directly (bypass hex file for testing)
+    // DUT instantiation — ROM content loaded from boot_rom.hex
     // ----------------------------------------------------------------
     boot_rom #(
         .ADDR_WIDTH (12),
         .DATA_WIDTH (32),
         .DEPTH      (1024),
-        .INIT_FILE  ("tb_boot_rom.hex")
+        .INIT_FILE  ("boot_rom.hex")
     ) u_dut (
         .clk             (clk),
         .rst_n           (rst_n),
@@ -107,17 +107,6 @@ module tb_boot_rom;
     );
 
     // ----------------------------------------------------------------
-    // Pre-load ROM memory for testing
-    // ----------------------------------------------------------------
-    integer k;
-    initial begin
-        // Write known pattern: mem[i] = i * 4 + 0xDEAD0000
-        for (k = 0; k < 1024; k = k + 1) begin
-            u_dut.mem[k] = 32'hDEAD0000 + (k * 4);
-        end
-    end
-
-    // ----------------------------------------------------------------
     // Tasks
     // ----------------------------------------------------------------
     task reset_dut;
@@ -151,22 +140,41 @@ module tb_boot_rom;
         input [31:0] addr;
         input [3:0]  id;
         output [31:0] rdata;
+        integer timeout;
+        reg ar_done;
         begin
-            @(posedge clk);
+            // Drive signals between clock edges
+            @(posedge clk); #1;
             s_axi_araddr  = addr;
             s_axi_arid    = id;
             s_axi_arvalid = 1'b1;
             s_axi_arlen   = 8'd0;
             s_axi_rready  = 1'b1;
-            // Wait for arready
-            @(posedge clk);
-            while (!s_axi_arready) @(posedge clk);
-            s_axi_arvalid = 1'b0;
-            // Wait for rvalid
-            while (!s_axi_rvalid) @(posedge clk);
-            rdata = s_axi_rdata;
-            @(posedge clk);
-            s_axi_rready = 1'b0;
+            ar_done = 1'b0;
+            timeout = 0;
+            begin : ar_loop
+                forever begin
+                    @(posedge clk); #1;
+                    timeout = timeout + 1;
+                    // Deassert arvalid once arready is seen
+                    if (s_axi_arready && !ar_done) begin
+                        s_axi_arvalid = 1'b0;
+                        ar_done = 1'b1;
+                    end
+                    // Capture rdata when rvalid is seen
+                    if (s_axi_rvalid) begin
+                        rdata = s_axi_rdata;
+                        s_axi_arvalid = 1'b0;
+                        @(posedge clk); #1;
+                        s_axi_rready = 1'b0;
+                        disable ar_loop;
+                    end
+                    if (timeout > 100) begin
+                        $display("TIMEOUT: axi_read at addr=0x%08h", addr);
+                        disable ar_loop;
+                    end
+                end
+            end
         end
     endtask
 
@@ -232,21 +240,27 @@ module tb_boot_rom;
             s_axi_awid    = 4'd6;
             s_axi_awvalid = 1'b1;
             s_axi_awlen   = 8'd0;
-            @(posedge clk);
-            while (!s_axi_awready) @(posedge clk);
-            s_axi_awvalid = 1'b0;
+            s_axi_wdata   = 32'hBAADF00D;
+            s_axi_wstrb   = 4'b1111;
+            s_axi_wvalid  = 1'b1;
+            s_axi_wlast   = 1'b1;
+            s_axi_bready  = 1'b1;
 
-            s_axi_wdata  = 32'hBAADF00D;
-            s_axi_wstrb  = 4'b1111;
-            s_axi_wvalid = 1'b1;
-            s_axi_wlast  = 1'b1;
-            @(posedge clk);
-            while (!s_axi_wready) @(posedge clk);
-            s_axi_wvalid = 1'b0;
-            s_axi_wlast  = 1'b0;
-
-            s_axi_bready = 1'b1;
-            while (!s_axi_bvalid) @(posedge clk);
+            begin : wr_wait
+                integer wto;
+                wto = 0;
+                forever begin
+                    @(posedge clk); #1;
+                    wto = wto + 1;
+                    if (s_axi_awready) s_axi_awvalid = 1'b0;
+                    if (s_axi_wready) begin
+                        s_axi_wvalid = 1'b0;
+                        s_axi_wlast  = 1'b0;
+                    end
+                    if (s_axi_bvalid) disable wr_wait;
+                    if (wto > 100) disable wr_wait;
+                end
+            end
             @(posedge clk);
             s_axi_bready = 1'b0;
 
@@ -268,17 +282,24 @@ module tb_boot_rom;
     // ----------------------------------------------------------------
     task test_rlast_rresp;
         reg [31:0] dummy;
+        integer timeout;
         begin
             $display("[TEST] rlast and rresp signals");
-            @(posedge clk);
+            @(posedge clk); #1;
             s_axi_araddr  = 32'h00000008;
             s_axi_arid    = 4'd8;
             s_axi_arvalid = 1'b1;
             s_axi_rready  = 1'b1;
-            @(posedge clk);
-            while (!s_axi_arready) @(posedge clk);
-            s_axi_arvalid = 1'b0;
-            while (!s_axi_rvalid) @(posedge clk);
+            timeout = 0;
+            begin : rlast_wait
+                forever begin
+                    @(posedge clk); #1;
+                    if (s_axi_arready) s_axi_arvalid = 1'b0;
+                    if (s_axi_rvalid) disable rlast_wait;
+                    timeout = timeout + 1;
+                    if (timeout > 100) disable rlast_wait;
+                end
+            end
 
             if (s_axi_rlast === 1'b1) begin
                 pass_count = pass_count + 1;
@@ -329,6 +350,13 @@ module tb_boot_rom;
         else
             $display("  *** SOME TESTS FAILED ***");
         $display("============================================");
+        $finish;
+    end
+
+    // Timeout watchdog
+    initial begin
+        #200000;
+        $display("TIMEOUT: simulation exceeded 200us");
         $finish;
     end
 

@@ -104,16 +104,19 @@ module tb_i2c_master_fsm;
 
         check("busy after start", busy == 1'b1);
 
-        // Wait for done
-        repeat (5000) begin
-            @(posedge clk);
+        // Wait for done (while-loop timeout pattern)
+        begin : wait_done_blk
+            integer i2c_countdown;
+            i2c_countdown = 5000;
+            while (!done && i2c_countdown > 0) begin
+                @(posedge clk);
+                i2c_countdown = i2c_countdown - 1;
+            end
             if (done) begin
                 check("done asserted", 1'b1);
-                disable wait_block;
+            end else begin
+                check("transfer completed in time", 1'b0);
             end
-        end
-        begin : wait_block
-            check("transfer completed in time", 1'b0);
         end
 
         @(posedge clk);

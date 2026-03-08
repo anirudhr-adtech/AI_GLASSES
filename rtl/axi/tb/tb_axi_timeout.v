@@ -110,7 +110,7 @@ module tb_axi_timeout;
         s_awid = 0; s_awaddr = 0; s_awlen = 0; s_awsize = 0; s_awburst = 0; s_awvalid = 0;
         s_wdata = 0; s_wstrb = 0; s_wlast = 0; s_wvalid = 0;
         s_arid = 0; s_araddr = 0; s_arlen = 0; s_arsize = 0; s_arburst = 0; s_arvalid = 0;
-        s_bready = 1; s_rready = 1;
+        s_bready = 0; s_rready = 0;
         repeat (4) @(posedge clk);
         rst_n = 1;
         repeat (2) @(posedge clk);
@@ -128,7 +128,7 @@ module tb_axi_timeout;
         // Wait for timeout
         repeat (TIMEOUT_CYCLES + 20) @(posedge clk);
 
-        // Check for forced SLVERR
+        // Check for forced SLVERR — bready is 0, so response should be held
         if (s_bvalid && s_bresp === 2'b10) begin
             pass_count = pass_count + 1;
             $display("PASS: Timeout SLVERR on write");
@@ -136,6 +136,10 @@ module tb_axi_timeout;
             fail_count = fail_count + 1;
             $display("FAIL: bvalid=%b bresp=%b (exp SLVERR)", s_bvalid, s_bresp);
         end
+        // Consume the B response
+        s_bready = 1;
+        @(posedge clk);
+        s_bready = 0;
 
         // Check sticky bit
         if (timeout_sticky === 1'b1) begin

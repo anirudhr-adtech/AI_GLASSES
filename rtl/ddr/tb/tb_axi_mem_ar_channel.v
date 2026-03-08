@@ -63,8 +63,11 @@ module tb_axi_mem_ar_channel;
         rst_n = 1;
         @(posedge clk);
 
-        // Test 1: AR transaction with ready downstream
-        ar_ready_i = 1;
+        // ---------------------------------------------------------------
+        // Test 1: AR transaction with downstream NOT ready (holds ar_valid_o)
+        // ---------------------------------------------------------------
+        @(negedge clk);
+        ar_ready_i    = 0;
         s_axi_arvalid = 1;
         s_axi_arid    = 6'd12;
         s_axi_araddr  = 32'h0000_3000;
@@ -72,12 +75,22 @@ module tb_axi_mem_ar_channel;
         s_axi_arsize  = 3'd4;
         s_axi_arburst = 2'd1;
 
-        @(posedge clk);
-        while (!s_axi_arready) @(posedge clk);
-        @(posedge clk);
+        // Wait for arready at negedge
+        begin : wait_ar1
+            integer wt;
+            wt = 0;
+            @(negedge clk);
+            while (!s_axi_arready && wt < 100) begin
+                @(negedge clk);
+                wt = wt + 1;
+            end
+        end
+        @(posedge clk); #1; // handshake fires at this posedge
+        @(negedge clk);
         s_axi_arvalid = 0;
 
-        @(posedge clk);
+        // Check captured values at next negedge (ar_ready_i=0, so ar_valid_o holds)
+        @(negedge clk);
         if (ar_valid_o && ar_addr_o == 32'h0000_3000 && ar_len_o == 8'd7 &&
             ar_size_o == 3'd4 && ar_id_o == 6'd12) begin
             pass_count = pass_count + 1;
@@ -87,35 +100,59 @@ module tb_axi_mem_ar_channel;
                      ar_valid_o, ar_addr_o, ar_len_o, ar_size_o, ar_id_o);
         end
 
-        @(posedge clk);
-
-        // Test 2: Stalled downstream
+        // Consume it: assert ar_ready_i at negedge so DUT sees it cleanly on posedge
+        @(negedge clk);
+        ar_ready_i = 1;
+        @(posedge clk); #1;  // DUT consumes: ar_valid_o <= 0
+        @(negedge clk);
         ar_ready_i = 0;
+
+        // Wait for DUT to re-assert arready
+        @(posedge clk); @(posedge clk);
+
+        // ---------------------------------------------------------------
+        // Test 2: Stalled downstream (ar_ready_i = 0)
+        // ---------------------------------------------------------------
+        @(negedge clk);
+        ar_ready_i    = 0;
         s_axi_arvalid = 1;
         s_axi_arid    = 6'd25;
         s_axi_araddr  = 32'h0000_4000;
         s_axi_arlen   = 8'd0;
         s_axi_arsize  = 3'd4;
 
-        repeat (3) @(posedge clk);
-        while (!s_axi_arready) @(posedge clk);
-        @(posedge clk);
+        // Wait for arready at negedge
+        begin : wait_ar2
+            integer wt;
+            wt = 0;
+            @(negedge clk);
+            while (!s_axi_arready && wt < 100) begin
+                @(negedge clk);
+                wt = wt + 1;
+            end
+        end
+        @(posedge clk); #1; // handshake fires
+        @(negedge clk);
         s_axi_arvalid = 0;
 
-        @(posedge clk);
+        @(negedge clk);
         if (ar_valid_o && ar_id_o == 6'd25) begin
             pass_count = pass_count + 1;
         end else begin
             fail_count = fail_count + 1;
-            $display("FAIL: Stall AR id=%h", ar_id_o);
+            $display("FAIL: Stall AR v=%b id=%h", ar_valid_o, ar_id_o);
         end
 
+        // Clean up: consume Test 2
+        @(negedge clk);
         ar_ready_i = 1;
         @(posedge clk); @(posedge clk);
 
-        // Test 3: Reset
+        // ---------------------------------------------------------------
+        // Test 3: Reset clears ar_valid
+        // ---------------------------------------------------------------
         rst_n = 0;
-        @(posedge clk);
+        @(posedge clk); #1;
         if (!ar_valid_o) begin
             pass_count = pass_count + 1;
         end else begin
@@ -129,6 +166,13 @@ module tb_axi_mem_ar_channel;
         $display("tb_axi_mem_ar_channel: %0d PASSED, %0d FAILED", pass_count, fail_count);
         $display("========================================");
         if (fail_count == 0) $display("ALL TESTS PASSED");
+        $finish;
+    end
+
+    // Timeout watchdog
+    initial begin
+        #10000;
+        $display("TIMEOUT: Simulation exceeded 10us");
         $finish;
     end
 

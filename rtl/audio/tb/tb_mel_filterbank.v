@@ -68,24 +68,23 @@ module tb_mel_filterbank;
         @(posedge clk);
         start = 0;
 
-        // Wait for completion, collect outputs
-        fork
-            begin : collect_outputs
-                while (!done) begin
-                    @(posedge clk);
-                    if (mel_valid) begin
-                        mel_results[mel_idx] = mel_data;
-                        mel_count = mel_count + 1;
-                    end
+        // Wait for completion, collect outputs (while-loop timeout pattern)
+        begin : collect_outputs_blk
+            integer mel_countdown;
+            mel_countdown = 50000;
+            while (!done && mel_countdown > 0) begin
+                @(posedge clk);
+                mel_countdown = mel_countdown - 1;
+                if (mel_valid) begin
+                    mel_results[mel_idx] = mel_data;
+                    mel_count = mel_count + 1;
                 end
             end
-            begin : timeout
-                repeat (50000) @(posedge clk);
+            if (mel_countdown == 0) begin
                 $display("FAIL: Timeout waiting for done");
                 errors = errors + 1;
-                disable collect_outputs;
             end
-        join
+        end
 
         // Check: should have 40 outputs
         if (mel_count != 6'd40) begin
@@ -111,21 +110,19 @@ module tb_mel_filterbank;
         @(posedge clk);
         start = 0;
 
-        fork
-            begin : collect2
-                while (!done) begin
-                    @(posedge clk);
-                    if (mel_valid) begin
-                        mel_results[mel_idx] = mel_data;
-                        mel_count = mel_count + 1;
-                    end
+        // Collect test 2 outputs (while-loop timeout pattern)
+        begin : collect2_blk
+            integer mel2_countdown;
+            mel2_countdown = 50000;
+            while (!done && mel2_countdown > 0) begin
+                @(posedge clk);
+                mel2_countdown = mel2_countdown - 1;
+                if (mel_valid) begin
+                    mel_results[mel_idx] = mel_data;
+                    mel_count = mel_count + 1;
                 end
             end
-            begin : timeout2
-                repeat (50000) @(posedge clk);
-                disable collect2;
-            end
-        join
+        end
 
         for (i = 0; i < 40; i = i + 1) begin
             if (mel_results[i] != 32'd0) begin
@@ -135,9 +132,10 @@ module tb_mel_filterbank;
             end
         end
 
-        if (errors == 0)
+        if (errors == 0) begin
             $display("=== tb_mel_filterbank: PASSED ===");
-        else
+            $display("ALL TESTS PASSED");
+        end else
             $display("=== tb_mel_filterbank: FAILED (%0d errors) ===", errors);
 
         $finish;

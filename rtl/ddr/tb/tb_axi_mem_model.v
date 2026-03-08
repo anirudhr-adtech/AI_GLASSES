@@ -118,35 +118,35 @@ module tb_axi_mem_model;
         input [DATA_WIDTH-1:0] data;
         input [ID_WIDTH-1:0]   id;
         begin
-            // AW phase
-            @(posedge clk);
+            // AW phase — drive valid, then wait for ready
             s_axi_awvalid = 1;
             s_axi_awid    = id;
             s_axi_awaddr  = addr;
             s_axi_awlen   = 8'd0;
             s_axi_awsize  = 3'd4;
             s_axi_awburst = 2'd1;
-            @(posedge clk);
             while (!s_axi_awready) @(posedge clk);
+            @(posedge clk);  // handshake fires at this edge
             s_axi_awvalid = 0;
 
-            // W phase
+            // W phase — drive valid, then wait for ready
             s_axi_wvalid = 1;
             s_axi_wdata  = data;
             s_axi_wstrb  = {STRB_WIDTH{1'b1}};
             s_axi_wlast  = 1;
-            @(posedge clk);
             while (!s_axi_wready) @(posedge clk);
-            @(posedge clk);
+            @(posedge clk);  // handshake fires at this edge
             s_axi_wvalid = 0;
             s_axi_wlast  = 0;
 
             // Wait for B
             timeout_cnt = 0;
-            while (!s_axi_bvalid && timeout_cnt < 100) begin
+            while (!s_axi_bvalid && timeout_cnt < 200) begin
                 @(posedge clk);
                 timeout_cnt = timeout_cnt + 1;
             end
+            if (timeout_cnt >= 200)
+                $display("TIMEOUT waiting for B response");
             @(posedge clk);
         end
     endtask
@@ -156,24 +156,25 @@ module tb_axi_mem_model;
         input  [ID_WIDTH-1:0]   id;
         output [DATA_WIDTH-1:0] data_out;
         begin
-            @(posedge clk);
+            // AR phase — drive valid, then wait for ready
             s_axi_arvalid = 1;
             s_axi_arid    = id;
             s_axi_araddr  = addr;
             s_axi_arlen   = 8'd0;
             s_axi_arsize  = 3'd4;
             s_axi_arburst = 2'd1;
-            @(posedge clk);
             while (!s_axi_arready) @(posedge clk);
-            @(posedge clk);
+            @(posedge clk);  // handshake fires at this edge
             s_axi_arvalid = 0;
 
             // Wait for R
             timeout_cnt = 0;
-            while (!s_axi_rvalid && timeout_cnt < 100) begin
+            while (!s_axi_rvalid && timeout_cnt < 200) begin
                 @(posedge clk);
                 timeout_cnt = timeout_cnt + 1;
             end
+            if (timeout_cnt >= 200)
+                $display("TIMEOUT waiting for R response");
             data_out = s_axi_rdata;
             @(posedge clk);
         end

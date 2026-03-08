@@ -73,9 +73,10 @@ module tb_log_lut_rom;
             end
         end
 
-        if (errors == 0)
+        if (errors == 0) begin
             $display("=== tb_log_lut_rom: PASSED ===");
-        else
+            $display("ALL TESTS PASSED");
+        end else
             $display("=== tb_log_lut_rom: FAILED (%0d errors) ===", errors);
 
         $finish;

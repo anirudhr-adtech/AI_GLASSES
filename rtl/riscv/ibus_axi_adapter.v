@@ -88,7 +88,6 @@ module ibus_axi_adapter (
             // Default pulse signals
             gnt_r    <= 1'b0;
             rvalid_r <= 1'b0;
-            rerr_r   <= 1'b0;
 
             // Track outstanding count: increment on AR handshake, decrement on R handshake
             case ({(ar_valid_r & m_axi_arready), (m_axi_rvalid & m_axi_rready)})
@@ -108,6 +107,7 @@ module ibus_axi_adapter (
                 IDLE: begin
                     ar_valid_r <= 1'b0;
                     if (instr_req_i) begin
+                        rerr_r     <= 1'b0;
                         ar_valid_r <= 1'b1;
                         ar_addr_r  <= instr_addr_i;
                         ar_id_r    <= 4'd0;

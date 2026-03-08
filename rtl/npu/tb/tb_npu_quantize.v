@@ -48,7 +48,7 @@ module tb_npu_quantize;
         @(posedge clk);
         valid_i = 0;
         // Wait 3 cycles for pipeline
-        repeat (3) @(posedge clk);
+        repeat (2) @(posedge clk);
         if (valid_o && $signed(data_o) == 50) pass_count = pass_count + 1;
         else begin fail_count = fail_count + 1; $display("FAIL Test1: data_o=%0d", $signed(data_o)); end
 
@@ -57,7 +57,7 @@ module tb_npu_quantize;
         data_i = 32'sd256; valid_i = 1; shift_i = 8'd4; scale_i = 16'd1;
         @(posedge clk);
         valid_i = 0;
-        repeat (3) @(posedge clk);
+        repeat (2) @(posedge clk);
         if (valid_o && $signed(data_o) == 16) pass_count = pass_count + 1;
         else begin fail_count = fail_count + 1; $display("FAIL Test2: data_o=%0d", $signed(data_o)); end
 
@@ -66,7 +66,7 @@ module tb_npu_quantize;
         data_i = 32'sd10000; valid_i = 1; shift_i = 0; scale_i = 16'd1;
         @(posedge clk);
         valid_i = 0;
-        repeat (3) @(posedge clk);
+        repeat (2) @(posedge clk);
         if (valid_o && $signed(data_o) == 127) pass_count = pass_count + 1;
         else begin fail_count = fail_count + 1; $display("FAIL Test3: data_o=%0d", $signed(data_o)); end
 
@@ -75,7 +75,7 @@ module tb_npu_quantize;
         data_i = -32'sd10000; valid_i = 1; shift_i = 0; scale_i = 16'd1;
         @(posedge clk);
         valid_i = 0;
-        repeat (3) @(posedge clk);
+        repeat (2) @(posedge clk);
         if (valid_o && $signed(data_o) == -128) pass_count = pass_count + 1;
         else begin fail_count = fail_count + 1; $display("FAIL Test4: data_o=%0d", $signed(data_o)); end
 
@@ -83,6 +83,7 @@ module tb_npu_quantize;
         $display("========================================");
         $display("tb_npu_quantize: %0d PASSED, %0d FAILED", pass_count, fail_count);
         $display("========================================");
+        if (fail_count == 0) $display("ALL TESTS PASSED");
         $finish;
     end
 

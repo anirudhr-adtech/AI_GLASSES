@@ -38,8 +38,28 @@ module tb_log_compress;
     integer i;
     reg [15:0] results [0:39];
     reg [5:0]  out_count;
+    reg        done_seen;
 
-    // Task to feed mel values
+    // Global timeout guard
+    initial begin
+        #500000;
+        $display("FAIL: Global timeout reached");
+        $finish;
+    end
+
+    // Concurrent output collector: capture log_valid outputs at all times
+    // Also capture done pulse
+    always @(posedge clk) begin
+        #1;
+        if (log_valid) begin
+            results[log_idx] = log_data;
+            out_count = out_count + 1;
+        end
+        if (done)
+            done_seen = 1;
+    end
+
+    // Task to feed mel values - wait for RTL to be ready (in S_CAPTURE)
     task feed_mel;
         input [5:0]  idx;
         input [31:0] val;
@@ -50,6 +70,8 @@ module tb_log_compress;
             mel_valid = 1;
             @(posedge clk);
             mel_valid = 0;
+            // Wait enough cycles for the pipeline (NORM->LUT->COMPUTE->OUTPUT = 4+ cycles)
+            repeat(8) @(posedge clk);
         end
     endtask
 
@@ -62,15 +84,21 @@ module tb_log_compress;
         mel_idx = 0;
         mel_valid = 0;
         out_count = 0;
+        done_seen = 0;
+
+        // Initialize results array
+        for (i = 0; i < 40; i = i + 1)
+            results[i] = 16'd0;
 
         repeat (5) @(posedge clk);
         rst_n = 1;
         repeat (3) @(posedge clk);
 
-        // Test 1: log(0) should output 0
+        // Start the log_compress module
         start = 1;
-        @(posedge clk);
+        @(posedge clk); #1;
         start = 0;
+        @(posedge clk); // Let FSM move to S_CAPTURE
 
         // Feed 40 mel values: first is 0, rest are known
         feed_mel(6'd0, 32'd0);         // log(0) = 0
@@ -84,24 +112,22 @@ module tb_log_compress;
             feed_mel(i[5:0], 32'd1024);
         end
 
-        // Collect outputs
-        fork
-            begin : collect
-                while (!done) begin
-                    @(posedge clk);
-                    if (log_valid) begin
-                        results[log_idx] = log_data;
-                        out_count = out_count + 1;
-                    end
-                end
+        // Wait for done signal (may have already been captured by always block)
+        if (!done_seen) begin : done_wait_blk
+            integer done_countdown;
+            done_countdown = 5000;
+            while (!done_seen && done_countdown > 0) begin
+                @(posedge clk); #1;
+                done_countdown = done_countdown - 1;
             end
-            begin : timeout
-                repeat (5000) @(posedge clk);
-                $display("FAIL: Timeout");
+            if (done_countdown == 0) begin
+                $display("FAIL: Timeout waiting for done");
                 errors = errors + 1;
-                disable collect;
             end
-        join
+        end
+
+        // Allow last output to be captured
+        repeat (3) @(posedge clk); #1;
 
         // Check outputs
         if (out_count != 6'd40) begin
@@ -134,9 +160,10 @@ module tb_log_compress;
         $display("  log(65536) = 0x%04X (%0d)", results[3], $signed(results[3]));
         $display("  log(1e6)   = 0x%04X (%0d)", results[4], $signed(results[4]));
 
-        if (errors == 0)
+        if (errors == 0) begin
             $display("=== tb_log_compress: PASSED ===");
-        else
+            $display("ALL TESTS PASSED");
+        end else
             $display("=== tb_log_compress: FAILED (%0d errors) ===", errors);
 
         $finish;

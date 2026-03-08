@@ -102,9 +102,10 @@ module tb_resize_engine;
         repeat (10) @(posedge clk);
 
         // Summary
-        if (err_count == 0)
+        if (err_count == 0) begin
             $display("PASS: tb_resize_engine — resize completed (out_pixels=%0d)", out_cnt);
-        else
+            $display("ALL TESTS PASSED");
+        end else
             $display("FAIL: tb_resize_engine — %0d errors", err_count);
 
         $finish;

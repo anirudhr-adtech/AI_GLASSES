@@ -197,9 +197,10 @@ module tb_audio_regfile;
             errors = errors + 1;
         end
 
-        if (errors == 0)
+        if (errors == 0) begin
             $display("=== tb_audio_regfile: PASSED ===");
-        else
+            $display("ALL TESTS PASSED");
+        end else
             $display("=== tb_audio_regfile: FAILED (%0d errors) ===", errors);
 
         $finish;

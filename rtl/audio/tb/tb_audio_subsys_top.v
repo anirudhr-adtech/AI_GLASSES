@@ -201,7 +201,7 @@ module tb_audio_subsys_top;
         // Test 8: Generate I2S traffic (simple pattern)
         fork
             begin : i2s_gen
-                integer bit;
+                integer bit_idx;
                 // Send one 16-bit sample via I2S
                 i2s_ws = 1; // Right channel (skip)
                 repeat (20) begin
@@ -210,8 +210,8 @@ module tb_audio_subsys_top;
                 end
                 // Left channel
                 i2s_ws = 0;
-                for (bit = 15; bit >= 0; bit = bit - 1) begin
-                    i2s_sd = (bit % 2); // Alternating pattern
+                for (bit_idx = 15; bit_idx >= 0; bit_idx = bit_idx - 1) begin
+                    i2s_sd = (bit_idx % 2); // Alternating pattern
                     i2s_sck = 0; repeat (100) @(posedge clk);
                     i2s_sck = 1; repeat (100) @(posedge clk);
                 end
@@ -224,9 +224,10 @@ module tb_audio_subsys_top;
         axil_read(32'h0C, rd_val);
         $display("  FIFO_STATUS after I2S = 0x%08X (fill=%0d)", rd_val, rd_val[9:0]);
 
-        if (errors == 0)
+        if (errors == 0) begin
             $display("=== tb_audio_subsys_top: PASSED ===");
-        else
+            $display("ALL TESTS PASSED");
+        end else
             $display("=== tb_audio_subsys_top: FAILED (%0d errors) ===", errors);
 
         $finish;

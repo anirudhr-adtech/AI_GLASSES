@@ -121,6 +121,12 @@ module tb_spi_master;
         rst_n = 1;
         repeat (2) @(posedge clk);
 
+        // CS_n should be high in idle state (before any AXI writes)
+        check("CS_n high in idle", cs_n == 1'b1);
+
+        // Check IRQ not asserted before transfer
+        check("IRQ not asserted initially", irq == 1'b0);
+
         // Configure: div=1, Mode 0, auto_cs
         axil_write(8'h0C, 32'h00000401); // div=1, auto_cs=1
 
@@ -131,19 +137,14 @@ module tb_spi_master;
         axil_read(8'h08, rd_val);
         check("status register readable", 1'b1);
 
-        // CS should go low during transfer
-        check("CS_n initially high", cs_n == 1'b1);
-
-        // Check IRQ not asserted
-        check("IRQ not asserted initially", irq == 1'b0);
-
         // Wait some time for transfer
         repeat (500) @(posedge clk);
 
         $display("========================================");
-        if (fail_count == 0)
+        if (fail_count == 0) begin
             $display("SPI MASTER TB: ALL %0d TESTS PASSED", pass_count);
-        else
+            $display("ALL TESTS PASSED");
+        end else
             $display("SPI MASTER TB: %0d PASSED, %0d FAILED", pass_count, fail_count);
         $display("========================================");
         $finish;

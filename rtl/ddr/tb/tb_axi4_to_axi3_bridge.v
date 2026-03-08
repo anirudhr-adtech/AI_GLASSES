@@ -119,6 +119,7 @@ module tb_axi4_to_axi3_bridge;
     // Test 1: QoS mapping for NPU write (ID prefix 010)
     // -----------------------------------------------------------------------
     task test_qos_write;
+        integer wt;
     begin
         $display("[TEST] QoS mapping for NPU write (ID=010xxx)");
         s_awid    = 6'b010_100; // NPU
@@ -128,13 +129,22 @@ module tb_axi4_to_axi3_bridge;
         s_awburst = 2'b01;
         s_awvalid = 1;
 
-        @(posedge clk);
-        while (!s_awready) @(posedge clk);
-        @(posedge clk);
+        // Wait for AW ready at negedge, handshake fires at posedge
+        wt = 0;
+        @(negedge clk);
+        while (!s_awready && wt < 100) begin
+            @(negedge clk);
+            wt = wt + 1;
+        end
+        @(posedge clk); // handshake fires
         s_awvalid = 0;
 
         // Wait for AW on master and check QoS
-        while (!m_awvalid) @(posedge clk);
+        wt = 0;
+        while (!m_awvalid && wt < 100) begin
+            @(posedge clk);
+            wt = wt + 1;
+        end
         // QoS is registered, so it may take one more cycle to settle
         @(posedge clk);
         // Read qos — the QoS mapper is separate, check m_awqos
@@ -147,25 +157,39 @@ module tb_axi4_to_axi3_bridge;
             pass_count = pass_count + 1; // Accept since registration adds latency
         end
 
-        // Complete the write transaction
+        // Complete the write transaction — use negedge for ready sampling
         for (i = 0; i < 4; i = i + 1) begin
             s_wdata  = i;
             s_wstrb  = {STRB_WIDTH{1'b1}};
             s_wlast  = (i == 3);
             s_wvalid = 1;
-            @(posedge clk);
-            while (!(s_wready && m_wready)) @(posedge clk);
+            wt = 0;
+            @(negedge clk);
+            while (!s_wready && wt < 100) begin
+                @(negedge clk);
+                wt = wt + 1;
+            end
+            @(posedge clk); // handshake fires
         end
         s_wvalid = 0;
         @(posedge clk);
 
+        // Wait for m_bready then send B response
+        wt = 0;
+        while (!m_bready && wt < 100) begin
+            @(posedge clk);
+            wt = wt + 1;
+        end
         m_bid = 6'b010_100; m_bresp = 2'b00; m_bvalid = 1;
         @(posedge clk);
-        while (!m_bready) @(posedge clk);
         @(posedge clk);
         m_bvalid = 0;
 
-        while (!s_bvalid) @(posedge clk);
+        wt = 0;
+        while (!s_bvalid && wt < 100) begin
+            @(posedge clk);
+            wt = wt + 1;
+        end
         @(posedge clk);
     end
     endtask
@@ -174,6 +198,7 @@ module tb_axi4_to_axi3_bridge;
     // Test 2: Burst split + QoS for Audio read (ID prefix 100)
     // -----------------------------------------------------------------------
     task test_qos_read;
+        integer wt;
     begin
         $display("[TEST] QoS mapping for Audio read (ID=100xxx)");
         s_arid    = 6'b100_010; // Audio
@@ -183,12 +208,21 @@ module tb_axi4_to_axi3_bridge;
         s_arburst = 2'b01;
         s_arvalid = 1;
 
-        @(posedge clk);
-        while (!s_arready) @(posedge clk);
-        @(posedge clk);
+        // Wait for AR ready at negedge, handshake fires at posedge
+        wt = 0;
+        @(negedge clk);
+        while (!s_arready && wt < 100) begin
+            @(negedge clk);
+            wt = wt + 1;
+        end
+        @(posedge clk); // handshake fires
         s_arvalid = 0;
 
-        while (!m_arvalid) @(posedge clk);
+        wt = 0;
+        while (!m_arvalid && wt < 100) begin
+            @(posedge clk);
+            wt = wt + 1;
+        end
         if (m_arlen == 4'd7) begin
             $display("  PASS: arlen passthrough = 7");
             pass_count = pass_count + 1;
@@ -198,6 +232,13 @@ module tb_axi4_to_axi3_bridge;
         end
         @(posedge clk);
 
+        // Wait for m_rready from DUT
+        wt = 0;
+        while (!m_rready && wt < 100) begin
+            @(posedge clk);
+            wt = wt + 1;
+        end
+
         // Supply read data
         for (i = 0; i < 8; i = i + 1) begin
             m_rid    = 6'b100_010;
@@ -205,9 +246,12 @@ module tb_axi4_to_axi3_bridge;
             m_rresp  = 2'b00;
             m_rlast  = (i == 7);
             m_rvalid = 1;
-            @(posedge clk);
-            while (!m_rready) @(posedge clk);
-            @(posedge clk);
+            wt = 0;
+            while (!(m_rvalid && m_rready) && wt < 100) begin
+                @(posedge clk);
+                wt = wt + 1;
+            end
+            @(posedge clk); // beat accepted
         end
         m_rvalid = 0;
         @(posedge clk);

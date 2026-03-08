@@ -155,10 +155,8 @@ module irq_controller (
         if (!rst_n) begin
             irq_sources_prev <= 8'd0;
             irq_pending_edge <= 8'd0;
-            irq_clear_pulse  <= 1'b0;
         end else begin
             irq_sources_prev <= irq_sources_i;
-            irq_clear_pulse  <= 1'b0;
 
             // Set on rising edge
             irq_pending_edge <= (irq_pending_edge | rising_edge_det);
@@ -186,6 +184,7 @@ module irq_controller (
             irq_enable      <= 8'h00;
             irq_type        <= 8'hFC;
             irq_clear_val   <= 8'd0;
+            irq_clear_pulse <= 1'b0;
         end else begin
             aw_ready_reg    <= 1'b0;
             w_ready_reg     <= 1'b0;
@@ -207,9 +206,7 @@ module irq_controller (
             end
 
             // When both captured, perform write
-            if ((aw_done || (s_axil_awvalid && !aw_done)) &&
-                (w_done  || (s_axil_wvalid  && !w_done))  &&
-                !b_valid_reg) begin
+            if (aw_done && w_done && !b_valid_reg) begin
 
                 b_valid_reg <= 1'b1;
 

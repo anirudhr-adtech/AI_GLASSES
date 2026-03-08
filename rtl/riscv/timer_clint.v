@@ -66,6 +66,8 @@ module timer_clint (
     reg [7:0]  aw_addr_latched;
     reg        aw_done;
     reg        w_done;
+    reg [31:0] wdata_lat;
+    reg [3:0]  wstrb_lat;
 
     // AXI-Lite read channel
     reg        ar_ready_reg;
@@ -127,6 +129,8 @@ module timer_clint (
             aw_done         <= 1'b0;
             w_done          <= 1'b0;
             aw_addr_latched <= 8'd0;
+            wdata_lat       <= 32'd0;
+            wstrb_lat       <= 4'd0;
             mtimecmp        <= 64'hFFFFFFFF_FFFFFFFF;
             prescaler       <= 32'd0;
         end else begin
@@ -145,33 +149,33 @@ module timer_clint (
             if (s_axil_wvalid && !w_done) begin
                 w_ready_reg <= 1'b1;
                 w_done      <= 1'b1;
+                wdata_lat   <= s_axil_wdata;
+                wstrb_lat   <= s_axil_wstrb;
             end
 
             // When both address and data are captured, perform write
-            if ((aw_done || (s_axil_awvalid && !aw_done)) &&
-                (w_done  || (s_axil_wvalid  && !w_done))  &&
-                !b_valid_reg) begin
+            if (aw_done && w_done && !b_valid_reg) begin
 
                 b_valid_reg <= 1'b1;
 
                 case (aw_addr_latched)
                     ADDR_MTIMECMP_LO: begin
-                        if (s_axil_wstrb[0]) mtimecmp[ 7: 0] <= s_axil_wdata[ 7: 0];
-                        if (s_axil_wstrb[1]) mtimecmp[15: 8] <= s_axil_wdata[15: 8];
-                        if (s_axil_wstrb[2]) mtimecmp[23:16] <= s_axil_wdata[23:16];
-                        if (s_axil_wstrb[3]) mtimecmp[31:24] <= s_axil_wdata[31:24];
+                        if (wstrb_lat[0]) mtimecmp[ 7: 0] <= wdata_lat[ 7: 0];
+                        if (wstrb_lat[1]) mtimecmp[15: 8] <= wdata_lat[15: 8];
+                        if (wstrb_lat[2]) mtimecmp[23:16] <= wdata_lat[23:16];
+                        if (wstrb_lat[3]) mtimecmp[31:24] <= wdata_lat[31:24];
                     end
                     ADDR_MTIMECMP_HI: begin
-                        if (s_axil_wstrb[0]) mtimecmp[39:32] <= s_axil_wdata[ 7: 0];
-                        if (s_axil_wstrb[1]) mtimecmp[47:40] <= s_axil_wdata[15: 8];
-                        if (s_axil_wstrb[2]) mtimecmp[55:48] <= s_axil_wdata[23:16];
-                        if (s_axil_wstrb[3]) mtimecmp[63:56] <= s_axil_wdata[31:24];
+                        if (wstrb_lat[0]) mtimecmp[39:32] <= wdata_lat[ 7: 0];
+                        if (wstrb_lat[1]) mtimecmp[47:40] <= wdata_lat[15: 8];
+                        if (wstrb_lat[2]) mtimecmp[55:48] <= wdata_lat[23:16];
+                        if (wstrb_lat[3]) mtimecmp[63:56] <= wdata_lat[31:24];
                     end
                     ADDR_PRESCALER: begin
-                        if (s_axil_wstrb[0]) prescaler[ 7: 0] <= s_axil_wdata[ 7: 0];
-                        if (s_axil_wstrb[1]) prescaler[15: 8] <= s_axil_wdata[15: 8];
-                        if (s_axil_wstrb[2]) prescaler[23:16] <= s_axil_wdata[23:16];
-                        if (s_axil_wstrb[3]) prescaler[31:24] <= s_axil_wdata[31:24];
+                        if (wstrb_lat[0]) prescaler[ 7: 0] <= wdata_lat[ 7: 0];
+                        if (wstrb_lat[1]) prescaler[15: 8] <= wdata_lat[15: 8];
+                        if (wstrb_lat[2]) prescaler[23:16] <= wdata_lat[23:16];
+                        if (wstrb_lat[3]) prescaler[31:24] <= wdata_lat[31:24];
                     end
                     default: ; // ignore writes to read-only registers
                 endcase

@@ -44,10 +44,19 @@ module tb_yuv2rgb;
     task check_rgb;
         input [7:0] exp_r, exp_g, exp_b;
         input integer tol;
+        integer timeout;
         begin
-            // Wait for out_valid
+            // Wait for out_valid with timeout guard
+            timeout = 0;
             @(posedge clk);
-            while (!out_valid) @(posedge clk);
+            while (!out_valid && timeout < 100) begin
+                @(posedge clk);
+                timeout = timeout + 1;
+            end
+            if (timeout >= 100) begin
+                $display("FAIL: Timeout waiting for out_valid");
+                err_count = err_count + 1;
+            end
             #1;
             if (abs_diff(r_o, exp_r) > tol) begin
                 $display("FAIL: R=%0d, expected ~%0d (tol=%0d)", r_o, exp_r, tol);
@@ -81,6 +90,7 @@ module tb_yuv2rgb;
         $display("Test 1: White");
         in_valid = 1; y_i = 255; u_i = 128; v_i = 128;
         @(posedge clk);
+        #1;
         in_valid = 0;
         check_rgb(255, 255, 255, 3);
 
@@ -88,6 +98,7 @@ module tb_yuv2rgb;
         $display("Test 2: Black");
         in_valid = 1; y_i = 0; u_i = 128; v_i = 128;
         @(posedge clk);
+        #1;
         in_valid = 0;
         check_rgb(0, 0, 0, 3);
 
@@ -95,6 +106,7 @@ module tb_yuv2rgb;
         $display("Test 3: Red");
         in_valid = 1; y_i = 82; u_i = 90; v_i = 240;
         @(posedge clk);
+        #1;
         in_valid = 0;
         check_rgb(239, 0, 0, 20);
 
@@ -102,6 +114,7 @@ module tb_yuv2rgb;
         $display("Test 4: Green");
         in_valid = 1; y_i = 145; u_i = 54; v_i = 34;
         @(posedge clk);
+        #1;
         in_valid = 0;
         check_rgb(0, 255, 0, 20);
 
@@ -109,15 +122,25 @@ module tb_yuv2rgb;
         $display("Test 5: Blue");
         in_valid = 1; y_i = 41; u_i = 240; v_i = 110;
         @(posedge clk);
+        #1;
         in_valid = 0;
         check_rgb(0, 0, 243, 20);
 
         // Summary
+        $display("========================================");
         if (err_count == 0)
-            $display("PASS: tb_yuv2rgb — all tests passed");
+            $display("ALL TESTS PASSED");
         else
             $display("FAIL: tb_yuv2rgb — %0d errors", err_count);
+        $display("========================================");
 
+        $finish;
+    end
+
+    // Global timeout
+    initial begin
+        #50000;
+        $display("[TIMEOUT] tb_yuv2rgb");
         $finish;
     end
 

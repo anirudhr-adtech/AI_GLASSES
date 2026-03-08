@@ -93,6 +93,8 @@ module tb_axi_error_slave;
         input [7:0] len;
         integer i;
         integer beats;
+        reg [1:0] sampled_rresp;
+        reg       sampled_rlast;
         begin
             @(posedge clk);
             arid = id; araddr = 32'hDEAD_BEEF; arlen = len;
@@ -105,13 +107,15 @@ module tb_axi_error_slave;
             beats = 0;
             while (beats <= len) begin
                 wait (rvalid);
+                sampled_rlast = rlast;
+                sampled_rresp = rresp;
                 @(posedge clk);
-                if (rresp !== 2'b11) begin
+                if (sampled_rresp !== 2'b11) begin
                     fail_count = fail_count + 1;
-                    $display("FAIL: Read beat %0d rresp=%b (exp DECERR)", beats, rresp);
+                    $display("FAIL: Read beat %0d rresp=%b (exp DECERR)", beats, sampled_rresp);
                 end
                 if (beats == len) begin
-                    if (rlast !== 1'b1) begin
+                    if (sampled_rlast !== 1'b1) begin
                         fail_count = fail_count + 1;
                         $display("FAIL: RLAST not set on last beat %0d", beats);
                     end

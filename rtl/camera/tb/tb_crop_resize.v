@@ -48,18 +48,18 @@ module tb_crop_resize;
 
     task reset_dut;
         begin
-            rst_n    <= 1'b0;
-            start    <= 1'b0;
-            in_pixel <= 24'd0;
-            in_valid <= 1'b0;
-            scale_x  <= 24'd0;
-            scale_y  <= 24'd0;
-            src_width  <= 10'd0;
-            src_height <= 10'd0;
-            dst_width  <= 10'd0;
-            dst_height <= 10'd0;
+            rst_n    = 1'b0;
+            start    = 1'b0;
+            in_pixel = 24'd0;
+            in_valid = 1'b0;
+            scale_x  = 24'd0;
+            scale_y  = 24'd0;
+            src_width  = 10'd0;
+            src_height = 10'd0;
+            dst_width  = 10'd0;
+            dst_height = 10'd0;
             repeat (5) @(posedge clk);
-            rst_n <= 1'b1;
+            rst_n = 1'b1;
             repeat (2) @(posedge clk);
         end
     endtask
@@ -102,27 +102,31 @@ module tb_crop_resize;
         check("out_valid deasserted after reset", out_valid == 1'b0);
 
         // Test 2: 1:1 passthrough (4x4 -> 4x4)
-        src_width  <= 10'd4;
-        src_height <= 10'd4;
-        dst_width  <= 10'd4;
-        dst_height <= 10'd4;
-        scale_x    <= 24'h010000; // 1.0 Q8.16
-        scale_y    <= 24'h010000;
+        src_width  = 10'd4;
+        src_height = 10'd4;
+        dst_width  = 10'd4;
+        dst_height = 10'd4;
+        scale_x    = 24'h010000; // 1.0 Q8.16
+        scale_y    = 24'h010000;
         @(posedge clk);
-        start <= 1'b1;
+        start = 1'b1;
         @(posedge clk);
-        start <= 1'b0;
+        start = 1'b0;
 
         // Feed 16 pixels (4x4)
         begin : feed_px
-            integer i;
+            integer i, timeout;
             for (i = 0; i < 16; i = i + 1) begin
                 @(posedge clk);
-                while (!in_ready) @(posedge clk);
-                in_pixel <= {8'd100, 8'd150, 8'd200}; // constant color
-                in_valid <= 1'b1;
+                timeout = 0;
+                while (!in_ready && timeout < 500) begin
+                    @(posedge clk);
+                    timeout = timeout + 1;
+                end
+                in_pixel = {8'd100, 8'd150, 8'd200}; // constant color
+                in_valid = 1'b1;
                 @(posedge clk);
-                in_valid <= 1'b0;
+                in_valid = 1'b0;
             end
         end
 
@@ -135,27 +139,31 @@ module tb_crop_resize;
         reset_dut;
         out_pixel_count = 0;
 
-        src_width  <= 10'd8;
-        src_height <= 10'd8;
-        dst_width  <= 10'd4;
-        dst_height <= 10'd4;
-        scale_x    <= 24'h020000; // 2.0
-        scale_y    <= 24'h020000;
+        src_width  = 10'd8;
+        src_height = 10'd8;
+        dst_width  = 10'd4;
+        dst_height = 10'd4;
+        scale_x    = 24'h020000; // 2.0
+        scale_y    = 24'h020000;
         @(posedge clk);
-        start <= 1'b1;
+        start = 1'b1;
         @(posedge clk);
-        start <= 1'b0;
+        start = 1'b0;
 
-        // Feed 64 pixels
+        // Feed dst_height * src_width pixels (one source line per output row)
         begin : feed_px2
-            integer j;
-            for (j = 0; j < 64; j = j + 1) begin
+            integer j, timeout2;
+            for (j = 0; j < 32; j = j + 1) begin
                 @(posedge clk);
-                while (!in_ready) @(posedge clk);
-                in_pixel <= {j[7:0], j[7:0], j[7:0]};
-                in_valid <= 1'b1;
+                timeout2 = 0;
+                while (!in_ready && timeout2 < 500) begin
+                    @(posedge clk);
+                    timeout2 = timeout2 + 1;
+                end
+                in_pixel = {j[7:0], j[7:0], j[7:0]};
+                in_valid = 1'b1;
                 @(posedge clk);
-                in_valid <= 1'b0;
+                in_valid = 1'b0;
             end
         end
 

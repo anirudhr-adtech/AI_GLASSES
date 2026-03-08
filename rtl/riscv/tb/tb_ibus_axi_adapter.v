@@ -83,17 +83,17 @@ module tb_ibus_axi_adapter;
 
     task reset_dut;
         begin
-            rst_n        <= 1'b0;
-            instr_req_i  <= 1'b0;
-            instr_addr_i <= 32'd0;
-            m_axi_arready <= 1'b0;
-            m_axi_rvalid  <= 1'b0;
-            m_axi_rdata   <= 32'd0;
-            m_axi_rresp   <= 2'b00;
-            m_axi_rid     <= 4'd0;
-            m_axi_rlast   <= 1'b0;
+            rst_n        = 1'b0;
+            instr_req_i  = 1'b0;
+            instr_addr_i = 32'd0;
+            m_axi_arready = 1'b0;
+            m_axi_rvalid  = 1'b0;
+            m_axi_rdata   = 32'd0;
+            m_axi_rresp   = 2'b00;
+            m_axi_rid     = 4'd0;
+            m_axi_rlast   = 1'b0;
             repeat (3) @(posedge clk);
-            rst_n <= 1'b1;
+            rst_n = 1'b1;
             @(posedge clk);
         end
     endtask
@@ -103,10 +103,10 @@ module tb_ibus_axi_adapter;
         input [31:0] addr;
         begin
             @(posedge clk);
-            instr_req_i  <= 1'b1;
-            instr_addr_i <= addr;
+            instr_req_i  = 1'b1;
+            instr_addr_i = addr;
             @(posedge clk);
-            instr_req_i  <= 1'b0;
+            instr_req_i  = 1'b0;
         end
     endtask
 
@@ -122,18 +122,18 @@ module tb_ibus_axi_adapter;
             while (!m_axi_arvalid) @(posedge clk);
             // AR delay
             for (i = 0; i < ar_delay; i = i + 1) @(posedge clk);
-            m_axi_arready <= 1'b1;
+            m_axi_arready = 1'b1;
             @(posedge clk);
-            m_axi_arready <= 1'b0;
+            m_axi_arready = 1'b0;
             // R delay
             for (i = 0; i < r_delay; i = i + 1) @(posedge clk);
-            m_axi_rvalid <= 1'b1;
-            m_axi_rdata  <= rdata;
-            m_axi_rresp  <= rresp;
-            m_axi_rlast  <= 1'b1;
+            m_axi_rvalid = 1'b1;
+            m_axi_rdata  = rdata;
+            m_axi_rresp  = rresp;
+            m_axi_rlast  = 1'b1;
             @(posedge clk);
-            m_axi_rvalid <= 1'b0;
-            m_axi_rlast  <= 1'b0;
+            m_axi_rvalid = 1'b0;
+            m_axi_rlast  = 1'b0;
         end
     endtask
 
@@ -200,23 +200,23 @@ module tb_ibus_axi_adapter;
         // ============================================================
         reset_dut;
         @(posedge clk);
-        instr_req_i  <= 1'b1;
-        instr_addr_i <= 32'hABCD_EF00;
+        instr_req_i  = 1'b1;
+        instr_addr_i = 32'hABCD_EF00;
         @(posedge clk);
         @(posedge clk); // registered output
         check("Addr pass-through", m_axi_araddr == 32'hABCD_EF00);
-        instr_req_i <= 1'b0;
+        instr_req_i = 1'b0;
         // Clean up: accept the outstanding AR and R
-        m_axi_arready <= 1'b1;
+        m_axi_arready = 1'b1;
         @(posedge clk);
-        m_axi_arready <= 1'b0;
-        m_axi_rvalid  <= 1'b1;
-        m_axi_rdata   <= 32'd0;
-        m_axi_rresp   <= 2'b00;
-        m_axi_rlast   <= 1'b1;
+        m_axi_arready = 1'b0;
+        m_axi_rvalid  = 1'b1;
+        m_axi_rdata   = 32'd0;
+        m_axi_rresp   = 2'b00;
+        m_axi_rlast   = 1'b1;
         @(posedge clk);
-        m_axi_rvalid  <= 1'b0;
-        m_axi_rlast   <= 1'b0;
+        m_axi_rvalid  = 1'b0;
+        m_axi_rlast   = 1'b0;
         @(posedge clk);
 
         // ============================================================
@@ -227,12 +227,12 @@ module tb_ibus_axi_adapter;
             begin
                 // Issue two fetches back-to-back
                 @(posedge clk);
-                instr_req_i  <= 1'b1;
-                instr_addr_i <= 32'h0000_4000;
+                instr_req_i  = 1'b1;
+                instr_addr_i = 32'h0000_4000;
                 @(posedge clk);
-                instr_addr_i <= 32'h0000_4004;
+                instr_addr_i = 32'h0000_4004;
                 @(posedge clk);
-                instr_req_i  <= 1'b0;
+                instr_req_i  = 1'b0;
             end
             begin
                 // Respond to first

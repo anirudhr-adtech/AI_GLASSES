@@ -131,14 +131,28 @@ module tb_burst_splitter;
         s_awburst = 2'b01;
         s_awvalid = 1;
 
-        // Wait for AW handshake
-        @(posedge clk);
-        while (!s_awready) @(posedge clk);
-        @(posedge clk);
+        // Wait for AW handshake — wait for ready at negedge, fire at posedge
+        begin : wait_awhs_t1
+            integer wt;
+            wt = 0;
+            @(negedge clk);
+            while (!s_awready && wt < 100) begin
+                @(negedge clk);
+                wt = wt + 1;
+            end
+        end
+        @(posedge clk); // handshake fires here
         s_awvalid = 0;
 
         // Check master side AW
-        while (!m_awvalid) @(posedge clk);
+        begin : wait_maw_t1
+            integer wt;
+            wt = 0;
+            while (!m_awvalid && wt < 100) begin
+                @(posedge clk);
+                wt = wt + 1;
+            end
+        end
         if (m_awlen == 4'd3) begin
             $display("  PASS: m_awlen = %0d (expected 3)", m_awlen);
             pass_count = pass_count + 1;
@@ -146,31 +160,53 @@ module tb_burst_splitter;
             $display("  FAIL: m_awlen = %0d (expected 3)", m_awlen);
             fail_count = fail_count + 1;
         end
-        @(posedge clk);
+        @(posedge clk); // let m_awready consume it
 
-        // Send 4 W beats
+        // Send 4 W beats — use negedge sampling for proper handshake
         for (i = 0; i < 4; i = i + 1) begin
             s_wdata  = {DATA_WIDTH{1'b0}} | i;
             s_wstrb  = {STRB_WIDTH{1'b1}};
             s_wlast  = (i == 3);
             s_wvalid = 1;
-            @(posedge clk);
-            while (!(s_wready && m_wready)) @(posedge clk);
+            begin : wait_whs_t1
+                integer wt;
+                wt = 0;
+                @(negedge clk);
+                while (!s_wready && wt < 100) begin
+                    @(negedge clk);
+                    wt = wt + 1;
+                end
+            end
+            @(posedge clk); // Handshake occurs here
         end
         s_wvalid = 0;
         @(posedge clk);
 
-        // Send B response
+        // Wait for B response to be accepted by DUT
+        begin : wait_bready_t1
+            integer wt;
+            wt = 0;
+            while (!m_bready && wt < 50) begin
+                @(posedge clk);
+                wt = wt + 1;
+            end
+        end
         m_bid    = 6'h0A;
         m_bresp  = 2'b00;
         m_bvalid = 1;
         @(posedge clk);
-        while (!m_bready) @(posedge clk);
         @(posedge clk);
         m_bvalid = 0;
 
         // Check slave B
-        while (!s_bvalid) @(posedge clk);
+        begin : wait_sb_t1
+            integer wt;
+            wt = 0;
+            while (!s_bvalid && wt < 50) begin
+                @(posedge clk);
+                wt = wt + 1;
+            end
+        end
         if (s_bresp == 2'b00) begin
             $display("  PASS: bresp = OKAY");
             pass_count = pass_count + 1;
@@ -197,14 +233,29 @@ module tb_burst_splitter;
         s_awburst = 2'b01;
         s_awvalid = 1;
 
-        @(posedge clk);
-        while (!s_awready) @(posedge clk);
-        @(posedge clk);
+        // Wait for AW handshake at negedge, fire at posedge
+        begin : wait_awhs_t2
+            integer wt;
+            wt = 0;
+            @(negedge clk);
+            while (!s_awready && wt < 100) begin
+                @(negedge clk);
+                wt = wt + 1;
+            end
+        end
+        @(posedge clk); // handshake fires here
         s_awvalid = 0;
 
         for (sub = 0; sub < 2; sub = sub + 1) begin
             // Wait for sub-burst AW
-            while (!m_awvalid) @(posedge clk);
+            begin : wait_maw_t2
+                integer wt;
+                wt = 0;
+                while (!m_awvalid && wt < 200) begin
+                    @(posedge clk);
+                    wt = wt + 1;
+                end
+            end
             if (m_awlen == 4'd15) begin
                 $display("  PASS: sub-burst %0d m_awlen = 15", sub);
                 pass_count = pass_count + 1;
@@ -214,31 +265,53 @@ module tb_burst_splitter;
             end
             @(posedge clk);
 
-            // Send 16 W beats
+            // Send 16 W beats — use negedge sampling for proper handshake
             for (i = 0; i < 16; i = i + 1) begin
                 s_wdata  = {DATA_WIDTH{1'b0}} | (sub * 16 + i);
                 s_wstrb  = {STRB_WIDTH{1'b1}};
                 s_wlast  = (sub == 1 && i == 15);
                 s_wvalid = 1;
-                @(posedge clk);
-                while (!(s_wready && m_wready)) @(posedge clk);
+                begin : wait_whs_t2
+                    integer wt;
+                    wt = 0;
+                    @(negedge clk);
+                    while (!s_wready && wt < 100) begin
+                        @(negedge clk);
+                        wt = wt + 1;
+                    end
+                end
+                @(posedge clk); // Handshake occurs here
             end
             s_wvalid = 0;
             @(posedge clk);
 
-            // Send B response per sub-burst
+            // Wait for m_bready then send B response per sub-burst
+            begin : wait_bready_t2
+                integer wt;
+                wt = 0;
+                while (!m_bready && wt < 50) begin
+                    @(posedge clk);
+                    wt = wt + 1;
+                end
+            end
             m_bid    = 6'h15;
             m_bresp  = 2'b00;
             m_bvalid = 1;
             @(posedge clk);
-            while (!m_bready) @(posedge clk);
             @(posedge clk);
             m_bvalid = 0;
             @(posedge clk);
         end
 
         // Wait for final slave B
-        while (!s_bvalid) @(posedge clk);
+        begin : wait_sb_t2
+            integer wt;
+            wt = 0;
+            while (!s_bvalid && wt < 100) begin
+                @(posedge clk);
+                wt = wt + 1;
+            end
+        end
         if (s_bid == 6'h15 && s_bresp == 2'b00) begin
             $display("  PASS: final bresp OKAY, bid correct");
             pass_count = pass_count + 1;
@@ -264,13 +337,28 @@ module tb_burst_splitter;
         s_arburst = 2'b01;
         s_arvalid = 1;
 
-        @(posedge clk);
-        while (!s_arready) @(posedge clk);
-        @(posedge clk);
+        // Wait for AR handshake at negedge, fire at posedge
+        begin : wait_arhs_t3
+            integer wt;
+            wt = 0;
+            @(negedge clk);
+            while (!s_arready && wt < 100) begin
+                @(negedge clk);
+                wt = wt + 1;
+            end
+        end
+        @(posedge clk); // handshake fires here
         s_arvalid = 0;
 
         // Wait for AR on master side
-        while (!m_arvalid) @(posedge clk);
+        begin : wait_mar_t3
+            integer wt;
+            wt = 0;
+            while (!m_arvalid && wt < 100) begin
+                @(posedge clk);
+                wt = wt + 1;
+            end
+        end
         if (m_arlen == 4'd7) begin
             $display("  PASS: m_arlen = 7");
             pass_count = pass_count + 1;
@@ -280,6 +368,16 @@ module tb_burst_splitter;
         end
         @(posedge clk);
 
+        // Wait for m_rready before sending R data
+        begin : wait_mrr_t3
+            integer wt;
+            wt = 0;
+            while (!m_rready && wt < 100) begin
+                @(posedge clk);
+                wt = wt + 1;
+            end
+        end
+
         // Send 8 R beats
         for (i = 0; i < 8; i = i + 1) begin
             m_rid    = 6'h07;
@@ -287,9 +385,15 @@ module tb_burst_splitter;
             m_rresp  = 2'b00;
             m_rlast  = (i == 7);
             m_rvalid = 1;
-            @(posedge clk);
-            while (!m_rready) @(posedge clk);
-            @(posedge clk);
+            begin : wait_rhs_t3
+                integer wt;
+                wt = 0;
+                while (!(m_rvalid && m_rready) && wt < 100) begin
+                    @(posedge clk);
+                    wt = wt + 1;
+                end
+            end
+            @(posedge clk); // beat accepted
         end
         m_rvalid = 0;
 

@@ -66,11 +66,13 @@ module tb_clk_rst_mgr;
 
         // Wait 3 sys_clk cycles — periph should deassert (counter reaches 2+)
         repeat (5) @(posedge clk);
+        @(posedge clk); // extra cycle to avoid NBA stale-value issue
         check("periph_rst_n_early", periph_rst_n, 1'b1);
         check("cpu_rst_n_early",    cpu_rst_n,    1'b0);
 
         // Wait until counter reaches 10+ — cpu should deassert
         repeat (8) @(posedge clk);
+        @(posedge clk); // extra cycle to avoid NBA stale-value issue
         check("cpu_rst_n_late", cpu_rst_n, 1'b1);
 
         // Wait for NPU reset to propagate (2 npu_clk cycles + margin)
@@ -94,6 +96,8 @@ module tb_clk_rst_mgr;
         repeat (5) @(posedge clk);
         $display("========================================");
         $display("tb_clk_rst_mgr: %0d PASSED, %0d FAILED", pass_count, fail_count);
+        if (fail_count == 0)
+            $display("ALL TESTS PASSED");
         $display("========================================");
         $finish;
     end

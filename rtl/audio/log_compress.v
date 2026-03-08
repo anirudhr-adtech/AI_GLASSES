@@ -60,7 +60,7 @@ module log_compress (
     always @(*) begin
         msb_found = 5'd0;
         for (k = 31; k >= 0; k = k - 1) begin
-            if (mel_val[k] && (msb_found == 5'd0) && (k > 0))
+            if (mel_val[k] && (msb_found == 5'd0))
                 msb_found = k[4:0];
         end
     end

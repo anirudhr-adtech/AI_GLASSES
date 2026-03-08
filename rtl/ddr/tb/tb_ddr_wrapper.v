@@ -138,6 +138,7 @@ module tb_ddr_wrapper;
     // Test 1: Single-beat write through full pipeline
     // -----------------------------------------------------------------------
     task test_single_write;
+        integer wt;
     begin
         $display("[TEST] Single-beat write through full pipeline");
 
@@ -149,13 +150,25 @@ module tb_ddr_wrapper;
         s_axi4_awburst = 2'b01;
         s_axi4_awvalid = 1;
 
-        @(posedge clk);
-        while (!s_axi4_awready) @(posedge clk);
-        @(posedge clk);
+        // Wait for AW ready at negedge, handshake fires at next posedge
+        wt = 0;
+        @(negedge clk);
+        while (!s_axi4_awready && wt < 200) begin
+            @(negedge clk);
+            wt = wt + 1;
+        end
+        @(posedge clk); // handshake fires
         s_axi4_awvalid = 0;
 
         // Wait for AW on AXI3 master
-        while (!m_axi3_awvalid) @(posedge clk);
+        begin : wait_aw_m
+            integer wt;
+            wt = 0;
+            while (!m_axi3_awvalid && wt < 200) begin
+                @(posedge clk);
+                wt = wt + 1;
+            end
+        end
 
         // Check: len should be doubled (0->1), size clamped (4->3)
         if (m_axi3_awlen == 4'd1) begin
@@ -181,15 +194,22 @@ module tb_ddr_wrapper;
         s_axi4_wlast  = 1;
         s_axi4_wvalid = 1;
 
-        @(posedge clk);
-        while (!s_axi4_wready) @(posedge clk);
-        @(posedge clk);
+        // Wait for W ready at negedge, handshake fires at next posedge
+        wt = 0;
+        @(negedge clk);
+        while (!s_axi4_wready && wt < 200) begin
+            @(negedge clk);
+            wt = wt + 1;
+        end
+        @(posedge clk); // handshake fires
         s_axi4_wvalid = 0;
 
         // Receive 2 x 64-bit W beats on master
         beat_count = 0;
-        while (beat_count < 2) begin
+        wt = 0;
+        while (beat_count < 2 && wt < 200) begin
             @(posedge clk);
+            wt = wt + 1;
             if (m_axi3_wvalid && m_axi3_wready) begin
                 beat_count = beat_count + 1;
                 if (beat_count == 1) begin
@@ -212,18 +232,31 @@ module tb_ddr_wrapper;
             end
         end
 
-        // Send B response from AXI3 side
-        @(posedge clk);
+        // Send B response from AXI3 side — wait for bready first
+        begin : wait_br_w
+            integer wt;
+            wt = 0;
+            while (!m_axi3_bready && wt < 200) begin
+                @(posedge clk);
+                wt = wt + 1;
+            end
+        end
         m_axi3_bid    = 6'b010_001;
         m_axi3_bresp  = 2'b00;
         m_axi3_bvalid = 1;
         @(posedge clk);
-        while (!m_axi3_bready) @(posedge clk);
         @(posedge clk);
         m_axi3_bvalid = 0;
 
         // Check slave B
-        while (!s_axi4_bvalid) @(posedge clk);
+        begin : wait_sb_w
+            integer wt;
+            wt = 0;
+            while (!s_axi4_bvalid && wt < 200) begin
+                @(posedge clk);
+                wt = wt + 1;
+            end
+        end
         if (s_axi4_bresp == 2'b00) begin
             $display("  PASS: write response OKAY");
             pass_count = pass_count + 1;
@@ -239,6 +272,7 @@ module tb_ddr_wrapper;
     // Test 2: Single-beat read through full pipeline
     // -----------------------------------------------------------------------
     task test_single_read;
+        integer wt;
     begin
         $display("[TEST] Single-beat read through full pipeline");
 
@@ -249,13 +283,22 @@ module tb_ddr_wrapper;
         s_axi4_arburst = 2'b01;
         s_axi4_arvalid = 1;
 
-        @(posedge clk);
-        while (!s_axi4_arready) @(posedge clk);
-        @(posedge clk);
+        // Wait for AR ready at negedge, handshake fires at next posedge
+        wt = 0;
+        @(negedge clk);
+        while (!s_axi4_arready && wt < 200) begin
+            @(negedge clk);
+            wt = wt + 1;
+        end
+        @(posedge clk); // handshake fires
         s_axi4_arvalid = 0;
 
         // Wait for AR on master
-        while (!m_axi3_arvalid) @(posedge clk);
+        wt = 0;
+        while (!m_axi3_arvalid && wt < 200) begin
+            @(posedge clk);
+            wt = wt + 1;
+        end
         if (m_axi3_arlen == 4'd1) begin
             $display("  PASS: m_axi3_arlen = 1 (doubled from 0)");
             pass_count = pass_count + 1;
@@ -265,25 +308,40 @@ module tb_ddr_wrapper;
         end
         @(posedge clk);
 
+        // Wait for m_rready from DUT
+        wt = 0;
+        while (!m_axi3_rready && wt < 200) begin
+            @(posedge clk);
+            wt = wt + 1;
+        end
+
         // Supply 2 x 64-bit read beats
+        // Beat 0 (low)
         m_axi3_rid    = 6'b011_000;
         m_axi3_rdata  = 64'hFEDC_BA98_7654_3210;
         m_axi3_rresp  = 2'b00;
         m_axi3_rlast  = 0;
         m_axi3_rvalid = 1;
-        @(posedge clk);
-        while (!m_axi3_rready) @(posedge clk);
-        @(posedge clk);
-
+        // Wait for m_rready stable at negedge, then handshake at posedge
+        wt = 0;
+        @(negedge clk);
+        while (!m_axi3_rready && wt < 200) begin
+            @(negedge clk);
+            wt = wt + 1;
+        end
+        @(posedge clk); // beat 0 handshake fires here
+        // Change to beat 1 data immediately (before next posedge)
         m_axi3_rdata  = 64'h0123_4567_89AB_CDEF;
         m_axi3_rlast  = 1;
-        @(posedge clk);
-        while (!m_axi3_rready) @(posedge clk);
-        @(posedge clk);
-        m_axi3_rvalid = 0;
+        @(posedge clk); // beat 1 handshake fires here (RD_HIGH)
+        m_axi3_rvalid = 0; // deassert immediately
 
         // Check merged 128-bit on slave side
-        while (!s_axi4_rvalid) @(posedge clk);
+        wt = 0;
+        while (!s_axi4_rvalid && wt < 200) begin
+            @(posedge clk);
+            wt = wt + 1;
+        end
         if (s_axi4_rdata == 128'h0123_4567_89AB_CDEF_FEDC_BA98_7654_3210) begin
             $display("  PASS: merged rdata correct");
             pass_count = pass_count + 1;
@@ -307,6 +365,7 @@ module tb_ddr_wrapper;
     // Test 3: Verify AXI3 burst limit (awlen <= 15)
     // -----------------------------------------------------------------------
     task test_burst_limit;
+        integer wt;
     begin
         $display("[TEST] Verify AXI3 burst limit on master side");
 
@@ -318,13 +377,22 @@ module tb_ddr_wrapper;
         s_axi4_awburst = 2'b01;
         s_axi4_awvalid = 1;
 
-        @(posedge clk);
-        while (!s_axi4_awready) @(posedge clk);
-        @(posedge clk);
+        // Wait for AW ready at negedge, handshake fires at next posedge
+        wt = 0;
+        @(negedge clk);
+        while (!s_axi4_awready && wt < 200) begin
+            @(negedge clk);
+            wt = wt + 1;
+        end
+        @(posedge clk); // handshake fires
         s_axi4_awvalid = 0;
 
         // First sub-burst AW
-        while (!m_axi3_awvalid) @(posedge clk);
+        wt = 0;
+        while (!m_axi3_awvalid && wt < 200) begin
+            @(posedge clk);
+            wt = wt + 1;
+        end
         if (m_axi3_awlen <= 4'd15) begin
             $display("  PASS: first sub-burst m_axi3_awlen = %0d (<= 15)", m_axi3_awlen);
             pass_count = pass_count + 1;

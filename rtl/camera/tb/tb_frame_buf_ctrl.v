@@ -56,7 +56,7 @@ module tb_frame_buf_ctrl;
 
         // Swap
         swap = 1;
-        @(posedge clk);
+        @(posedge clk); #1;
         swap = 0;
         @(posedge clk);
         #1;
@@ -73,7 +73,7 @@ module tb_frame_buf_ctrl;
 
         // Swap again
         swap = 1;
-        @(posedge clk);
+        @(posedge clk); #1;
         swap = 0;
         @(posedge clk);
         #1;
@@ -95,7 +95,7 @@ module tb_frame_buf_ctrl;
 
         // Summary
         if (err_count == 0)
-            $display("PASS: tb_frame_buf_ctrl — all tests passed");
+            $display("ALL TESTS PASSED");
         else
             $display("FAIL: tb_frame_buf_ctrl — %0d errors", err_count);
 

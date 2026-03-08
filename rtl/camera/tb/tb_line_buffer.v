@@ -54,7 +54,7 @@ module tb_line_buffer;
             @(posedge clk);
             wr_en   = 1;
             wr_addr = i;
-            wr_data = {8'd100 + i, 8'd150 + i, 8'd200 + i};  // RGB
+            wr_data = {8'd100 + i[7:0], 8'd150 + i[7:0], 8'd200 + i[7:0]};  // RGB
         end
         @(posedge clk);
         wr_en = 0;
@@ -65,7 +65,7 @@ module tb_line_buffer;
             @(posedge clk);
             wr_en   = 1;
             wr_addr = i;
-            wr_data = {8'd10 + i, 8'd20 + i, 8'd30 + i};
+            wr_data = {8'd10 + i[7:0], 8'd20 + i[7:0], 8'd30 + i[7:0]};
         end
         @(posedge clk);
         wr_en = 0;
@@ -100,7 +100,7 @@ module tb_line_buffer;
 
         // Summary
         if (err_count == 0)
-            $display("PASS: tb_line_buffer — all tests passed");
+            $display("ALL TESTS PASSED");
         else
             $display("FAIL: tb_line_buffer — %0d errors", err_count);
 

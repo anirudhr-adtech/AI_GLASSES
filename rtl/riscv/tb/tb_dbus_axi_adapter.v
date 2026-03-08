@@ -127,25 +127,25 @@ module tb_dbus_axi_adapter;
 
     task reset_dut;
         begin
-            rst_n         <= 1'b0;
-            data_req_i    <= 1'b0;
-            data_we_i     <= 1'b0;
-            data_be_i     <= 4'hF;
-            data_addr_i   <= 32'd0;
-            data_wdata_i  <= 32'd0;
-            m_axi_awready <= 1'b0;
-            m_axi_wready  <= 1'b0;
-            m_axi_bvalid  <= 1'b0;
-            m_axi_bresp   <= 2'b00;
-            m_axi_bid     <= 4'd0;
-            m_axi_arready <= 1'b0;
-            m_axi_rvalid  <= 1'b0;
-            m_axi_rdata   <= 32'd0;
-            m_axi_rresp   <= 2'b00;
-            m_axi_rid     <= 4'd0;
-            m_axi_rlast   <= 1'b0;
+            rst_n         = 1'b0;
+            data_req_i    = 1'b0;
+            data_we_i     = 1'b0;
+            data_be_i     = 4'hF;
+            data_addr_i   = 32'd0;
+            data_wdata_i  = 32'd0;
+            m_axi_awready = 1'b0;
+            m_axi_wready  = 1'b0;
+            m_axi_bvalid  = 1'b0;
+            m_axi_bresp   = 2'b00;
+            m_axi_bid     = 4'd0;
+            m_axi_arready = 1'b0;
+            m_axi_rvalid  = 1'b0;
+            m_axi_rdata   = 32'd0;
+            m_axi_rresp   = 2'b00;
+            m_axi_rid     = 4'd0;
+            m_axi_rlast   = 1'b0;
             repeat (3) @(posedge clk);
-            rst_n <= 1'b1;
+            rst_n = 1'b1;
             @(posedge clk);
         end
     endtask
@@ -155,12 +155,12 @@ module tb_dbus_axi_adapter;
         input [31:0] addr;
         begin
             @(posedge clk);
-            data_req_i  <= 1'b1;
-            data_we_i   <= 1'b0;
-            data_addr_i <= addr;
-            data_be_i   <= 4'hF;
+            data_req_i  = 1'b1;
+            data_we_i   = 1'b0;
+            data_addr_i = addr;
+            data_be_i   = 4'hF;
             @(posedge clk);
-            data_req_i  <= 1'b0;
+            data_req_i  = 1'b0;
         end
     endtask
 
@@ -171,13 +171,13 @@ module tb_dbus_axi_adapter;
         input [3:0]  be;
         begin
             @(posedge clk);
-            data_req_i   <= 1'b1;
-            data_we_i    <= 1'b1;
-            data_addr_i  <= addr;
-            data_wdata_i <= wdata;
-            data_be_i    <= be;
+            data_req_i   = 1'b1;
+            data_we_i    = 1'b1;
+            data_addr_i  = addr;
+            data_wdata_i = wdata;
+            data_be_i    = be;
             @(posedge clk);
-            data_req_i   <= 1'b0;
+            data_req_i   = 1'b0;
         end
     endtask
 
@@ -191,17 +191,17 @@ module tb_dbus_axi_adapter;
         begin
             while (!m_axi_arvalid) @(posedge clk);
             for (i = 0; i < ar_delay; i = i + 1) @(posedge clk);
-            m_axi_arready <= 1'b1;
+            m_axi_arready = 1'b1;
             @(posedge clk);
-            m_axi_arready <= 1'b0;
+            m_axi_arready = 1'b0;
             for (i = 0; i < r_delay; i = i + 1) @(posedge clk);
-            m_axi_rvalid <= 1'b1;
-            m_axi_rdata  <= rdata;
-            m_axi_rresp  <= rresp;
-            m_axi_rlast  <= 1'b1;
+            m_axi_rvalid = 1'b1;
+            m_axi_rdata  = rdata;
+            m_axi_rresp  = rresp;
+            m_axi_rlast  = 1'b1;
             @(posedge clk);
-            m_axi_rvalid <= 1'b0;
-            m_axi_rlast  <= 1'b0;
+            m_axi_rvalid = 1'b0;
+            m_axi_rlast  = 1'b0;
         end
     endtask
 
@@ -214,17 +214,17 @@ module tb_dbus_axi_adapter;
         begin
             while (!m_axi_awvalid) @(posedge clk);
             for (i = 0; i < aw_delay; i = i + 1) @(posedge clk);
-            m_axi_awready <= 1'b1;
-            m_axi_wready  <= 1'b1;
+            m_axi_awready = 1'b1;
+            m_axi_wready  = 1'b1;
             @(posedge clk);
-            m_axi_awready <= 1'b0;
-            m_axi_wready  <= 1'b0;
+            m_axi_awready = 1'b0;
+            m_axi_wready  = 1'b0;
             for (i = 0; i < b_delay; i = i + 1) @(posedge clk);
-            m_axi_bvalid <= 1'b1;
-            m_axi_bresp  <= bresp;
-            m_axi_bid    <= 4'b0100;
+            m_axi_bvalid = 1'b1;
+            m_axi_bresp  = bresp;
+            m_axi_bid    = 4'b0100;
             @(posedge clk);
-            m_axi_bvalid <= 1'b0;
+            m_axi_bvalid = 1'b0;
         end
     endtask
 
@@ -280,16 +280,16 @@ module tb_dbus_axi_adapter;
                 check("Byte enable: wstrb=0001", m_axi_wstrb == 4'b0001);
                 check("Byte enable: wdata correct", m_axi_wdata == 32'h0000_00FF);
                 // Accept
-                m_axi_awready <= 1'b1;
-                m_axi_wready  <= 1'b1;
+                m_axi_awready = 1'b1;
+                m_axi_wready  = 1'b1;
                 @(posedge clk);
-                m_axi_awready <= 1'b0;
-                m_axi_wready  <= 1'b0;
+                m_axi_awready = 1'b0;
+                m_axi_wready  = 1'b0;
                 @(posedge clk);
-                m_axi_bvalid  <= 1'b1;
-                m_axi_bresp   <= 2'b00;
+                m_axi_bvalid  = 1'b1;
+                m_axi_bresp   = 2'b00;
                 @(posedge clk);
-                m_axi_bvalid  <= 1'b0;
+                m_axi_bvalid  = 1'b0;
             end
         join
         @(posedge clk);
@@ -359,24 +359,24 @@ module tb_dbus_axi_adapter;
         // ============================================================
         reset_dut;
         @(posedge clk);
-        data_req_i  <= 1'b1;
-        data_we_i   <= 1'b0;
-        data_addr_i <= 32'h7777_0000;
+        data_req_i  = 1'b1;
+        data_we_i   = 1'b0;
+        data_addr_i = 32'h7777_0000;
         @(posedge clk);
         @(posedge clk); // registered output delay
         check("Load addr pass-through", m_axi_araddr == 32'h7777_0000);
-        data_req_i  <= 1'b0;
+        data_req_i  = 1'b0;
         // Clean up
-        m_axi_arready <= 1'b1;
+        m_axi_arready = 1'b1;
         @(posedge clk);
-        m_axi_arready <= 1'b0;
-        m_axi_rvalid  <= 1'b1;
-        m_axi_rdata   <= 32'd0;
-        m_axi_rresp   <= 2'b00;
-        m_axi_rlast   <= 1'b1;
+        m_axi_arready = 1'b0;
+        m_axi_rvalid  = 1'b1;
+        m_axi_rdata   = 32'd0;
+        m_axi_rresp   = 2'b00;
+        m_axi_rlast   = 1'b1;
         @(posedge clk);
-        m_axi_rvalid  <= 1'b0;
-        m_axi_rlast   <= 1'b0;
+        m_axi_rvalid  = 1'b0;
+        m_axi_rlast   = 1'b0;
         @(posedge clk);
 
         // ============================================================
@@ -384,28 +384,28 @@ module tb_dbus_axi_adapter;
         // ============================================================
         reset_dut;
         @(posedge clk);
-        data_req_i   <= 1'b1;
-        data_we_i    <= 1'b1;
-        data_addr_i  <= 32'h8888_0000;
-        data_wdata_i <= 32'hCAFE_D00D;
-        data_be_i    <= 4'b1100;
+        data_req_i   = 1'b1;
+        data_we_i    = 1'b1;
+        data_addr_i  = 32'h8888_0000;
+        data_wdata_i = 32'hCAFE_D00D;
+        data_be_i    = 4'b1100;
         @(posedge clk);
         @(posedge clk); // registered output delay
         check("Store addr pass-through",  m_axi_awaddr == 32'h8888_0000);
         check("Store wdata pass-through",  m_axi_wdata == 32'hCAFE_D00D);
         check("Store wstrb pass-through",  m_axi_wstrb == 4'b1100);
-        data_req_i <= 1'b0;
+        data_req_i = 1'b0;
         // Clean up
-        m_axi_awready <= 1'b1;
-        m_axi_wready  <= 1'b1;
+        m_axi_awready = 1'b1;
+        m_axi_wready  = 1'b1;
         @(posedge clk);
-        m_axi_awready <= 1'b0;
-        m_axi_wready  <= 1'b0;
+        m_axi_awready = 1'b0;
+        m_axi_wready  = 1'b0;
         @(posedge clk);
-        m_axi_bvalid  <= 1'b1;
-        m_axi_bresp   <= 2'b00;
+        m_axi_bvalid  = 1'b1;
+        m_axi_bresp   = 2'b00;
         @(posedge clk);
-        m_axi_bvalid  <= 1'b0;
+        m_axi_bvalid  = 1'b0;
         @(posedge clk);
 
         // ============================================================

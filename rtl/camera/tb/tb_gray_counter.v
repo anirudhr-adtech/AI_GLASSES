@@ -47,8 +47,8 @@ module tb_gray_counter;
 
         // Reset
         @(posedge clk); @(posedge clk);
-        rst_n = 1;
-        @(posedge clk);
+        #1; rst_n = 1;
+        @(posedge clk); #1;
 
         // Check reset values
         if (bin_count_o !== 0) begin
@@ -60,15 +60,13 @@ module tb_gray_counter;
             err_count = err_count + 1;
         end
 
-        // Count through full range
-        for (i = 0; i < (1 << WIDTH); i = i + 1) begin
-            inc = 1;
+        // Count through full range: assert inc for exactly 16 clocks
+        inc = 1;
+        repeat (1 << WIDTH) begin
             @(posedge clk);
-            #1;
         end
-        inc = 0;
-        @(posedge clk);
-        #1;
+        #1; inc = 0;
+        @(posedge clk); #1;
 
         // Verify final count
         if (bin_count_o !== (1 << WIDTH)) begin
@@ -80,8 +78,8 @@ module tb_gray_counter;
         // Reset and re-count, checking each step
         rst_n = 0;
         @(posedge clk); @(posedge clk);
-        rst_n = 1;
-        @(posedge clk);
+        #1; rst_n = 1;
+        @(posedge clk); #1;
 
         begin : gray_check
             reg [WIDTH:0] prev_gray;
@@ -92,8 +90,7 @@ module tb_gray_counter;
             prev_gray = gray_count_o;
             for (i = 0; i < (1 << WIDTH); i = i + 1) begin
                 inc = 1;
-                @(posedge clk);
-                #1;
+                @(posedge clk); #1;
                 // Check only 1 bit changed
                 xor_val = prev_gray ^ gray_count_o;
                 bit_cnt = 0;
@@ -115,7 +112,7 @@ module tb_gray_counter;
 
         // Summary
         if (err_count == 0)
-            $display("PASS: tb_gray_counter — all tests passed");
+            $display("ALL TESTS PASSED");
         else
             $display("FAIL: tb_gray_counter — %0d errors", err_count);
 

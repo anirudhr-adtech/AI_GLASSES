@@ -6,7 +6,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 module gray_counter #(
-    parameter WIDTH = 10
+    parameter WIDTH = 10,
+    parameter DEPTH = (1 << WIDTH)
 )(
     input  wire                clk,
     input  wire                rst_n,
@@ -18,7 +19,7 @@ module gray_counter #(
     wire [WIDTH:0] bin_next;
     wire [WIDTH:0] gray_next;
 
-    // Binary increment
+    // Binary increment (wraps naturally at 2^(WIDTH+1) for full/empty detection)
     assign bin_next  = bin_count_o + {{WIDTH{1'b0}}, inc};
 
     // Binary-to-Gray conversion: gray = bin ^ (bin >> 1)

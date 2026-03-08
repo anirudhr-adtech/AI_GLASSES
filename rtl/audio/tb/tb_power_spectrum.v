@@ -51,11 +51,9 @@ module tb_power_spectrum;
         end
     end
 
-    always @(posedge clk) begin
-        if (fft_rd_en) begin
-            fft_re_reg <= fft_re_mem[fft_addr];
-            fft_im_reg <= fft_im_mem[fft_addr];
-        end
+    always @(*) begin
+        fft_re_reg = fft_re_mem[fft_addr];
+        fft_im_reg = fft_im_mem[fft_addr];
     end
 
     integer out_count;
@@ -65,8 +63,6 @@ module tb_power_spectrum;
         clk   = 0;
         rst_n = 0;
         start = 0;
-        fft_re_reg = 0;
-        fft_im_reg = 0;
         out_count = 0;
         pwr_bin0  = 0;
         pwr_bin1  = 0;
@@ -82,28 +78,24 @@ module tb_power_spectrum;
         @(posedge clk);
         start = 0;
 
-        // Collect outputs
+        // Collect outputs (while-loop timeout pattern)
         begin : collect_block
-            fork
-                begin : timeout_branch
-                    repeat (5000) @(posedge clk);
-                    $display("FAIL: Timeout");
-                    fail_count = fail_count + 1;
-                    disable wait_done_branch;
+            integer pwr_countdown;
+            pwr_countdown = 5000;
+            while (!done && pwr_countdown > 0) begin
+                @(posedge clk);
+                pwr_countdown = pwr_countdown - 1;
+                if (pwr_valid) begin
+                    out_count = out_count + 1;
+                    if (pwr_addr == 10'd0) pwr_bin0  = pwr_data;
+                    if (pwr_addr == 10'd1) pwr_bin1  = pwr_data;
+                    if (pwr_addr == 10'd10) pwr_bin10 = pwr_data;
                 end
-                begin : wait_done_branch
-                    while (!done) begin
-                        @(posedge clk);
-                        if (pwr_valid) begin
-                            out_count = out_count + 1;
-                            if (pwr_addr == 10'd0) pwr_bin0  = pwr_data;
-                            if (pwr_addr == 10'd1) pwr_bin1  = pwr_data;
-                            if (pwr_addr == 10'd10) pwr_bin10 = pwr_data;
-                        end
-                    end
-                    disable timeout_branch;
-                end
-            join
+            end
+            if (pwr_countdown == 0) begin
+                $display("FAIL: Timeout");
+                fail_count = fail_count + 1;
+            end
         end
 
         // Test 1: Should output 513 bins

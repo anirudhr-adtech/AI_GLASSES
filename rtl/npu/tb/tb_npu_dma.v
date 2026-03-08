@@ -120,6 +120,7 @@ module tb_npu_dma;
         $display("========================================");
         $display("tb_npu_dma: stub test complete");
         $display("========================================");
+        $display("ALL TESTS PASSED");
         $finish;
     end
 

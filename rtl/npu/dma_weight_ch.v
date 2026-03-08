@@ -58,6 +58,7 @@ module dma_weight_ch (
     reg [ 1:0] sub_word_r;      // 2-bit sub-word counter (0-3)
     reg [14:0] buf_addr_cnt_r;  // running buffer address
     reg [127:0] rdata_latch_r;  // latched 128-bit read data
+    reg         rlast_latch_r;  // latched rlast from accepted beat
 
     // Bytes per beat = 16
     localparam BYTES_PER_BEAT = 32'd16;
@@ -79,14 +80,15 @@ module dma_weight_ch (
             S_CALC_BURSTS:                                       state_nxt = S_AR_ISSUE;
             S_AR_ISSUE:    if (m_axi_arvalid && m_axi_arready)   state_nxt = S_R_DATA;
             S_R_DATA: begin
-                if (m_axi_rvalid && m_axi_rready && (sub_word_r == 2'd3)) begin
-                    if (m_axi_rlast) begin
-                        if (burst_cnt_r + 1 < full_bursts_r ||
-                            (burst_cnt_r + 1 == full_bursts_r && remainder_r != 8'd0))
-                            state_nxt = S_AR_ISSUE;
-                        else
-                            state_nxt = S_DONE;
-                    end
+                // Transition when all 4 sub-words of the last beat have been written.
+                // rlast_latch_r is set when the AXI beat is accepted (sub_word_r==0);
+                // beat_cnt_r == cur_arlen_r confirms it was the final beat.
+                if (sub_word_r == 2'd3 && beat_cnt_r == cur_arlen_r && rlast_latch_r) begin
+                    if (burst_cnt_r + 1 < full_bursts_r ||
+                        (burst_cnt_r + 1 == full_bursts_r && remainder_r != 8'd0))
+                        state_nxt = S_AR_ISSUE;
+                    else
+                        state_nxt = S_DONE;
                 end
             end
             S_DONE:                                              state_nxt = S_IDLE;
@@ -109,6 +111,7 @@ module dma_weight_ch (
             sub_word_r     <= 2'd0;
             buf_addr_cnt_r <= 15'd0;
             rdata_latch_r  <= 128'd0;
+            rlast_latch_r  <= 1'b0;
 
             done           <= 1'b0;
             buf_we         <= 1'b0;
@@ -179,7 +182,8 @@ module dma_weight_ch (
                     if (sub_word_r == 2'd0) begin
                         // Waiting for or consuming a new AXI beat
                         if (m_axi_rvalid && m_axi_rready) begin
-                            rdata_latch_r <= m_axi_rdata;
+                            rdata_latch_r  <= m_axi_rdata;
+                            rlast_latch_r  <= m_axi_rlast;  // latch rlast for FSM transition
                             // Write first word immediately
                             buf_we    <= 1'b1;
                             buf_addr  <= buf_addr_cnt_r;

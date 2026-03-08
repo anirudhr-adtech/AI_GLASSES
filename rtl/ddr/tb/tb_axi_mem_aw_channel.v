@@ -63,8 +63,11 @@ module tb_axi_mem_aw_channel;
         rst_n = 1;
         @(posedge clk);
 
-        // Test 1: Send AW transaction with downstream ready
-        aw_ready_i = 1;
+        // ---------------------------------------------------------------
+        // Test 1: AW transaction with downstream NOT ready (holds aw_valid_o)
+        // ---------------------------------------------------------------
+        @(negedge clk);
+        aw_ready_i    = 0;
         s_axi_awvalid = 1;
         s_axi_awid    = 6'd7;
         s_axi_awaddr  = 32'h0000_1000;
@@ -72,14 +75,22 @@ module tb_axi_mem_aw_channel;
         s_axi_awsize  = 3'd4;
         s_axi_awburst = 2'd1;
 
-        // Wait for handshake
-        @(posedge clk);
-        while (!s_axi_awready) @(posedge clk);
-        @(posedge clk);
+        // Wait for awready at negedge
+        begin : wait_aw1
+            integer wt;
+            wt = 0;
+            @(negedge clk);
+            while (!s_axi_awready && wt < 100) begin
+                @(negedge clk);
+                wt = wt + 1;
+            end
+        end
+        @(posedge clk); #1; // handshake fires
+        @(negedge clk);
         s_axi_awvalid = 0;
 
-        // Check captured values
-        @(posedge clk);
+        // Check captured values (aw_ready_i=0, so aw_valid_o holds)
+        @(negedge clk);
         if (aw_valid_o && aw_addr_o == 32'h0000_1000 && aw_len_o == 8'd3 &&
             aw_size_o == 3'd4 && aw_id_o == 6'd7) begin
             pass_count = pass_count + 1;
@@ -90,40 +101,57 @@ module tb_axi_mem_aw_channel;
         end
 
         // Consume it
-        @(posedge clk);
+        @(negedge clk);
         aw_ready_i = 1;
-        @(posedge clk);
-
-        // Test 2: Back-to-back AW with downstream stall
+        @(posedge clk); #1;
+        @(negedge clk);
         aw_ready_i = 0;
+
+        // Wait for DUT to re-assert awready
+        @(posedge clk); @(posedge clk);
+
+        // ---------------------------------------------------------------
+        // Test 2: AW with downstream stall
+        // ---------------------------------------------------------------
+        @(negedge clk);
+        aw_ready_i    = 0;
         s_axi_awvalid = 1;
         s_axi_awid    = 6'd15;
         s_axi_awaddr  = 32'h0000_2000;
         s_axi_awlen   = 8'd7;
         s_axi_awsize  = 3'd4;
 
-        // Wait for handshake
-        repeat (5) @(posedge clk);
-        while (!s_axi_awready) @(posedge clk);
-        @(posedge clk);
+        begin : wait_aw2
+            integer wt;
+            wt = 0;
+            @(negedge clk);
+            while (!s_axi_awready && wt < 100) begin
+                @(negedge clk);
+                wt = wt + 1;
+            end
+        end
+        @(posedge clk); #1; // handshake fires
+        @(negedge clk);
         s_axi_awvalid = 0;
 
-        // Verify stalling works (valid should be asserted, ready should go low)
-        @(posedge clk);
+        @(negedge clk);
         if (aw_valid_o && aw_id_o == 6'd15 && aw_addr_o == 32'h0000_2000) begin
             pass_count = pass_count + 1;
         end else begin
             fail_count = fail_count + 1;
-            $display("FAIL: Stall test mismatch");
+            $display("FAIL: Stall test mismatch v=%b id=%h a=%h", aw_valid_o, aw_id_o, aw_addr_o);
         end
 
         // Release downstream
+        @(negedge clk);
         aw_ready_i = 1;
         @(posedge clk); @(posedge clk);
 
-        // Test 3: Reset
+        // ---------------------------------------------------------------
+        // Test 3: Reset clears valid
+        // ---------------------------------------------------------------
         rst_n = 0;
-        @(posedge clk);
+        @(posedge clk); #1;
         if (!aw_valid_o) begin
             pass_count = pass_count + 1;
         end else begin
@@ -137,6 +165,13 @@ module tb_axi_mem_aw_channel;
         $display("tb_axi_mem_aw_channel: %0d PASSED, %0d FAILED", pass_count, fail_count);
         $display("========================================");
         if (fail_count == 0) $display("ALL TESTS PASSED");
+        $finish;
+    end
+
+    // Timeout watchdog
+    initial begin
+        #10000;
+        $display("TIMEOUT: Simulation exceeded 10us");
         $finish;
     end
 

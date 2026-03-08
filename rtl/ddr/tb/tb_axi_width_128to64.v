@@ -66,6 +66,7 @@ module tb_axi_width_128to64;
     integer pass_count;
     integer fail_count;
     integer i;
+    integer wt;
 
     initial clk = 0;
     always #5 clk = ~clk;
@@ -134,12 +135,22 @@ module tb_axi_width_128to64;
         s_awqos   = 4'hC;
         s_awvalid = 1;
 
-        @(posedge clk);
-        while (!s_awready) @(posedge clk);
-        @(posedge clk);
+        // Wait for slave-side AW handshake
+        wt = 0;
+        while (!s_awready && wt < 100) begin
+            @(posedge clk);
+            wt = wt + 1;
+        end
+        @(posedge clk); // handshake fires here
         s_awvalid = 0;
 
-        while (!m_awvalid) @(posedge clk);
+        // Wait for master-side AW to appear
+        wt = 0;
+        while (!m_awvalid && wt < 100) begin
+            @(posedge clk);
+            wt = wt + 1;
+        end
+
         // Expected: len = (3+1)*2-1 = 7, size = 3 (clamped)
         if (m_awlen == 4'd7) begin
             $display("  PASS: m_awlen = %0d (expected 7)", m_awlen);
@@ -188,8 +199,10 @@ module tb_axi_width_128to64;
         got_high = 0;
 
         // Expect 2 beats on narrow side
-        while (!(got_low && got_high)) begin
+        wt = 0;
+        while (!(got_low && got_high) && wt < 200) begin
             @(posedge clk);
+            wt = wt + 1;
             if (s_wready && s_wvalid) begin
                 s_wvalid = 0;
             end
@@ -224,12 +237,19 @@ module tb_axi_width_128to64;
                 end
             end
         end
+        if (wt >= 200) begin
+            $display("  FAIL: TIMEOUT in write data split");
+            fail_count = fail_count + 1;
+        end
 
         // Send B response
         @(posedge clk); @(posedge clk);
         m_bid = 6'h0A; m_bresp = 2'b00; m_bvalid = 1;
-        @(posedge clk);
-        while (!m_bready) @(posedge clk);
+        wt = 0;
+        while (!m_bready && wt < 100) begin
+            @(posedge clk);
+            wt = wt + 1;
+        end
         @(posedge clk);
         m_bvalid = 0;
         @(posedge clk);
@@ -251,37 +271,58 @@ module tb_axi_width_128to64;
         s_arqos   = 4'h8;
         s_arvalid = 1;
 
-        @(posedge clk);
-        while (!s_arready) @(posedge clk);
-        @(posedge clk);
+        wt = 0;
+        while (!s_arready && wt < 100) begin
+            @(posedge clk);
+            wt = wt + 1;
+        end
+        @(posedge clk); // handshake fires here
         s_arvalid = 0;
 
         // Wait for AR to propagate to master
-        while (!m_arvalid) @(posedge clk);
+        wt = 0;
+        while (!m_arvalid && wt < 100) begin
+            @(posedge clk);
+            wt = wt + 1;
+        end
         @(posedge clk);
 
-        // Send 2 x 64-bit read beats
+        // Wait for m_rready to be asserted by DUT (read merge FSM)
+        wt = 0;
+        while (!m_rready && wt < 100) begin
+            @(posedge clk);
+            wt = wt + 1;
+        end
+
+        // Send 2 x 64-bit read beats using negedge sampling
         // Beat 0 (low)
         m_rid    = 6'h05;
         m_rdata  = 64'hAAAA_BBBB_CCCC_DDDD;
         m_rresp  = 2'b00;
         m_rlast  = 0;
         m_rvalid = 1;
-        @(posedge clk);
-        while (!m_rready) @(posedge clk);
-        @(posedge clk);
 
-        // Beat 1 (high)
+        wt = 0;
+        @(negedge clk);
+        while (!m_rready && wt < 100) begin
+            @(negedge clk);
+            wt = wt + 1;
+        end
+        @(posedge clk); // beat 0 handshake fires here
+
+        // Beat 1 (high) — change data immediately before next posedge
         m_rdata  = 64'h1111_2222_3333_4444;
         m_rresp  = 2'b00;
         m_rlast  = 1;
-        @(posedge clk);
-        while (!m_rready) @(posedge clk);
-        @(posedge clk);
-        m_rvalid = 0;
+        @(posedge clk); // beat 1 handshake fires here (RD_HIGH)
+        m_rvalid = 0; // deassert immediately
 
         // Check merged 128-bit data on slave side
-        while (!s_rvalid) @(posedge clk);
+        wt = 0;
+        while (!s_rvalid && wt < 100) begin
+            @(posedge clk);
+            wt = wt + 1;
+        end
         if (s_rdata == 128'h1111_2222_3333_4444_AAAA_BBBB_CCCC_DDDD) begin
             $display("  PASS: merged rdata = 0x%h", s_rdata);
             pass_count = pass_count + 1;
@@ -322,6 +363,7 @@ module tb_axi_width_128to64;
         $finish;
     end
 
+    // Timeout
     initial begin
         #100000;
         $display("TIMEOUT");

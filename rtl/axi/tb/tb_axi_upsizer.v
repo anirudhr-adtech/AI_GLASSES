@@ -51,6 +51,7 @@ module tb_axi_upsizer;
     reg               m_rlast;
 
     integer pass_count, fail_count;
+    integer timeout_cnt;
 
     axi_upsizer #(
         .NARROW_WIDTH(NARROW), .WIDE_WIDTH(WIDE),
@@ -88,35 +89,65 @@ module tb_axi_upsizer;
     initial clk = 0;
     always #5 clk = ~clk;
 
-    // Simple wide slave responder
+    // Saved AW id for B channel response
+    reg [IW-1:0] saved_awid;
+
+    // Wide-side slave responder — combinational ready, registered responses
+    // Keep ready signals always high to avoid deadlocks
+    always @(*) begin
+        m_awready = 1'b1;
+        m_wready  = 1'b1;
+        m_arready = 1'b1;
+    end
+
+    // B channel: respond after W last beat accepted
     always @(posedge clk) begin
         if (!rst_n) begin
-            m_awready <= 1'b1;
-            m_wready  <= 1'b1;
             m_bvalid  <= 1'b0;
-            m_arready <= 1'b1;
-            m_rvalid  <= 1'b0;
+            m_bid     <= {IW{1'b0}};
+            m_bresp   <= 2'b00;
+            saved_awid <= {IW{1'b0}};
         end else begin
-            // Accept writes, return OKAY
-            if (m_wvalid && m_wready && m_wlast) begin
-                m_bid    <= m_awid;
+            // Capture AW id when AW handshakes
+            if (m_awvalid && m_awready)
+                saved_awid <= m_awid;
+
+            if (m_bvalid && m_bready) begin
+                m_bvalid <= 1'b0;
+            end else if (m_wvalid && m_wready && m_wlast) begin
+                m_bid    <= saved_awid;
                 m_bresp  <= 2'b00;
                 m_bvalid <= 1'b1;
             end
-            if (m_bvalid && m_bready)
-                m_bvalid <= 1'b0;
+        end
+    end
 
-            // Accept reads, return known data
-            if (m_arvalid && m_arready) begin
+    // R channel: respond after AR accepted
+    always @(posedge clk) begin
+        if (!rst_n) begin
+            m_rvalid <= 1'b0;
+            m_rid    <= {IW{1'b0}};
+            m_rdata  <= {WIDE{1'b0}};
+            m_rresp  <= 2'b00;
+            m_rlast  <= 1'b0;
+        end else begin
+            if (m_rvalid && m_rready) begin
+                m_rvalid <= 1'b0;
+            end else if (m_arvalid && m_arready) begin
                 m_rid    <= m_arid;
                 m_rdata  <= 128'hDDDD_CCCC_BBBB_AAAA_4444_3333_2222_1111;
                 m_rresp  <= 2'b00;
                 m_rlast  <= 1'b1;
                 m_rvalid <= 1'b1;
             end
-            if (m_rvalid && m_rready)
-                m_rvalid <= 1'b0;
         end
+    end
+
+    // Timeout guard
+    initial begin
+        #50000;
+        $display("FAIL: TIMEOUT at %0t", $time);
+        $finish;
     end
 
     initial begin
@@ -129,21 +160,47 @@ module tb_axi_upsizer;
         s_bready = 1; s_rready = 1;
         repeat (4) @(posedge clk);
         rst_n = 1;
-        repeat (2) @(posedge clk);
+        // Wait for RTL to reach IDLE (awready/arready go high)
+        repeat (4) @(posedge clk); #1;
 
-        // Write test: 32-bit write to addr[3:2]=2 (lane 2)
+        // ---- Write test: 32-bit write to addr[3:2]=2 (lane 2) ----
         s_awid = 6'd5; s_awaddr = 32'h8000_0008; // addr[3:2]=2
         s_awlen = 8'd0; s_awsize = 3'd2; s_awburst = 2'b01; s_awvalid = 1;
-        wait (s_awready && s_awvalid);
-        @(posedge clk); s_awvalid = 0;
-        s_wdata = 32'hDEAD_BEEF; s_wstrb = 4'hF; s_wlast = 1; s_wvalid = 1;
-        wait (s_wready && s_wvalid);
-        @(posedge clk); s_wvalid = 0;
+        // Wait for AW handshake
+        timeout_cnt = 0;
+        while (!(s_awready && s_awvalid)) begin
+            @(posedge clk); #1;
+            timeout_cnt = timeout_cnt + 1;
+            if (timeout_cnt > 100) begin
+                $display("FAIL: AW handshake timeout"); $finish;
+            end
+        end
+        @(posedge clk); #1;
+        s_awvalid = 0;
 
-        // Check wide side got correct lane
-        repeat (5) @(posedge clk);
-        // Wait for B
-        wait (s_bvalid);
+        // Send W data
+        s_wdata = 32'hDEAD_BEEF; s_wstrb = 4'hF; s_wlast = 1; s_wvalid = 1;
+        timeout_cnt = 0;
+        while (!(s_wready && s_wvalid)) begin
+            @(posedge clk); #1;
+            timeout_cnt = timeout_cnt + 1;
+            if (timeout_cnt > 100) begin
+                $display("FAIL: W handshake timeout"); $finish;
+            end
+        end
+        @(posedge clk); #1;
+        s_wvalid = 0; s_wlast = 0;
+
+        // Wait for B response
+        timeout_cnt = 0;
+        while (!s_bvalid) begin
+            @(posedge clk); #1;
+            timeout_cnt = timeout_cnt + 1;
+            if (timeout_cnt > 100) begin
+                $display("FAIL: B response timeout"); $finish;
+            end
+        end
+
         if (s_bresp === 2'b00 && s_bid === 6'd5) begin
             pass_count = pass_count + 1;
             $display("PASS: Upsized write completed OK");
@@ -151,16 +208,36 @@ module tb_axi_upsizer;
             fail_count = fail_count + 1;
             $display("FAIL: Write bresp=%b bid=%0d", s_bresp, s_bid);
         end
-        @(posedge clk);
+        @(posedge clk); #1;
 
-        // Read test: 32-bit read from addr[3:2]=0 (lane 0)
+        // Let state machine return to IDLE
+        repeat (4) @(posedge clk); #1;
+
+        // ---- Read test: 32-bit read from addr[3:2]=0 (lane 0) ----
         s_arid = 6'd7; s_araddr = 32'h8000_0000; // addr[3:2]=0
         s_arlen = 8'd0; s_arsize = 3'd2; s_arburst = 2'b01; s_arvalid = 1;
-        wait (s_arready && s_arvalid);
-        @(posedge clk); s_arvalid = 0;
+        // Wait for AR handshake
+        timeout_cnt = 0;
+        while (!(s_arready && s_arvalid)) begin
+            @(posedge clk); #1;
+            timeout_cnt = timeout_cnt + 1;
+            if (timeout_cnt > 100) begin
+                $display("FAIL: AR handshake timeout"); $finish;
+            end
+        end
+        @(posedge clk); #1;
+        s_arvalid = 0;
 
-        wait (s_rvalid);
-        @(posedge clk);
+        // Wait for R response
+        timeout_cnt = 0;
+        while (!s_rvalid) begin
+            @(posedge clk); #1;
+            timeout_cnt = timeout_cnt + 1;
+            if (timeout_cnt > 100) begin
+                $display("FAIL: R response timeout"); $finish;
+            end
+        end
+
         // Lane 0 of 128'h...2222_1111 = 32'h2222_1111
         if (s_rdata === 32'h2222_1111 && s_rlast === 1'b1 && s_rresp === 2'b00) begin
             pass_count = pass_count + 1;
@@ -173,7 +250,7 @@ module tb_axi_upsizer;
         repeat (5) @(posedge clk);
         $display("=== tb_axi_upsizer DONE ===");
         $display("PASSED: %0d  FAILED: %0d", pass_count, fail_count);
-        if (fail_count == 0) $display("*** ALL TESTS PASSED ***");
+        if (fail_count == 0) $display("ALL TESTS PASSED");
         else $display("*** SOME TESTS FAILED ***");
         $finish;
     end

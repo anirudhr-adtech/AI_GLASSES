@@ -61,28 +61,24 @@ module tb_audio_window;
         @(posedge clk);
         start = 0;
 
-        // Wait for outputs
+        // Wait for outputs (while-loop timeout pattern)
         begin : wait_block
-            fork
-                begin : timeout_branch
-                    repeat (20000) @(posedge clk);
-                    $display("FAIL: Timeout waiting for done");
-                    fail_count = fail_count + 1;
-                    disable wait_done_branch;
+            integer aw_countdown;
+            aw_countdown = 20000;
+            while (!done && aw_countdown > 0) begin
+                @(posedge clk);
+                aw_countdown = aw_countdown - 1;
+                if (out_valid) begin
+                    out_count = out_count + 1;
+                    last_addr = out_addr;
+                    if (out_data == 16'd0)
+                        zero_count = zero_count + 1;
                 end
-                begin : wait_done_branch
-                    while (!done) begin
-                        @(posedge clk);
-                        if (out_valid) begin
-                            out_count = out_count + 1;
-                            last_addr = out_addr;
-                            if (out_data == 16'd0)
-                                zero_count = zero_count + 1;
-                        end
-                    end
-                    disable timeout_branch;
-                end
-            join
+            end
+            if (aw_countdown == 0) begin
+                $display("FAIL: Timeout waiting for done");
+                fail_count = fail_count + 1;
+            end
         end
 
         // Test 1: Should output 1024 samples total

@@ -103,30 +103,30 @@ module tb_crop_engine;
 
     task reset_dut;
         begin
-            rst_n          <= 1'b0;
-            crop_start     <= 1'b0;
-            crop_x         <= 10'd0;
-            crop_y         <= 10'd0;
-            crop_w         <= 10'd0;
-            crop_h         <= 10'd0;
-            crop_out_w     <= 10'd0;
-            crop_out_h     <= 10'd0;
-            raw_frame_addr <= 32'd0;
-            frame_stride   <= 16'd0;
-            crop_buf_addr  <= 32'd0;
-            arready        <= 1'b0;
-            rid            <= 4'b1101;
-            rdata          <= 128'd0;
-            rresp          <= 2'b00;
-            rlast          <= 1'b0;
-            rvalid         <= 1'b0;
-            awready        <= 1'b0;
-            wready         <= 1'b0;
-            bid            <= 4'b1101;
-            bresp          <= 2'b00;
-            bvalid         <= 1'b0;
+            rst_n          = 1'b0;
+            crop_start     = 1'b0;
+            crop_x         = 10'd0;
+            crop_y         = 10'd0;
+            crop_w         = 10'd0;
+            crop_h         = 10'd0;
+            crop_out_w     = 10'd0;
+            crop_out_h     = 10'd0;
+            raw_frame_addr = 32'd0;
+            frame_stride   = 16'd0;
+            crop_buf_addr  = 32'd0;
+            arready        = 1'b0;
+            rid            = 4'b1101;
+            rdata          = 128'd0;
+            rresp          = 2'b00;
+            rlast          = 1'b0;
+            rvalid         = 1'b0;
+            awready        = 1'b0;
+            wready         = 1'b0;
+            bid            = 4'b1101;
+            bresp          = 2'b00;
+            bvalid         = 1'b0;
             repeat (5) @(posedge clk);
-            rst_n <= 1'b1;
+            rst_n = 1'b1;
             repeat (2) @(posedge clk);
         end
     endtask
@@ -212,20 +212,20 @@ module tb_crop_engine;
         check("crop_done deasserted after reset", crop_done == 1'b0);
 
         // Test 2: Start crop operation (4x4 ROI -> 4x4 output)
-        raw_frame_addr <= 32'h0402_0000;
-        frame_stride   <= 16'd2560;
-        crop_buf_addr  <= 32'h0420_0000;
-        crop_x         <= 10'd10;
-        crop_y         <= 10'd20;
-        crop_w         <= 10'd4;
-        crop_h         <= 10'd4;
-        crop_out_w     <= 10'd4;
-        crop_out_h     <= 10'd4;
-        wready         <= 1'b1;
+        raw_frame_addr = 32'h0402_0000;
+        frame_stride   = 16'd2560;
+        crop_buf_addr  = 32'h0420_0000;
+        crop_x         = 10'd10;
+        crop_y         = 10'd20;
+        crop_w         = 10'd4;
+        crop_h         = 10'd4;
+        crop_out_w     = 10'd4;
+        crop_out_h     = 10'd4;
+        wready         = 1'b1;
         @(posedge clk);
-        crop_start <= 1'b1;
+        crop_start = 1'b1;
         @(posedge clk);
-        crop_start <= 1'b0;
+        crop_start = 1'b0;
 
         check("State transitions to RUNNING", u_dut.state == 2'd1);
 

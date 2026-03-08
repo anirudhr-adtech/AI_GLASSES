@@ -30,7 +30,7 @@ module audio_window (
     localparam S_DONE     = 3'd5;
 
     reg [2:0]  state;
-    reg [9:0]  cnt;
+    reg [10:0] cnt;
     reg [15:0] sample_reg;
     reg [15:0] coeff_reg;
 
@@ -76,7 +76,7 @@ module audio_window (
                 end
 
                 S_READ: begin
-                    if (cnt < 10'd640) begin
+                    if (cnt < 11'd640) begin
                         fifo_rd_en_o <= 1'b1;
                         ham_addr     <= cnt;
                         state        <= S_WAIT;
@@ -95,18 +95,18 @@ module audio_window (
 
                 S_MULTIPLY: begin
                     out_data_o  <= mult_result[30:15];
-                    out_addr_o  <= cnt;
+                    out_addr_o  <= cnt[9:0];
                     out_valid_o <= 1'b1;
-                    cnt         <= cnt + 10'd1;
+                    cnt         <= cnt + 11'd1;
                     state       <= S_READ;
                 end
 
                 S_ZERO_PAD: begin
-                    if (cnt < 10'd1024) begin
+                    if (cnt < 11'd1024) begin
                         out_data_o  <= 16'd0;
-                        out_addr_o  <= cnt;
+                        out_addr_o  <= cnt[9:0];
                         out_valid_o <= 1'b1;
-                        cnt         <= cnt + 10'd1;
+                        cnt         <= cnt + 11'd1;
                     end else begin
                         state <= S_DONE;
                     end

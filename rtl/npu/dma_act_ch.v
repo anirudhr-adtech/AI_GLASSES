@@ -94,6 +94,7 @@ module dma_act_ch (
     reg [ 1:0] sub_word_r;     // sub-word counter 0-3
     reg [14:0] buf_addr_cnt_r;
     reg [127:0] rdata_latch_r;
+    reg         rlast_latch_r; // latched rlast from accepted beat
     reg        dir_r;          // latched direction
 
     // Write-path packing register
@@ -125,10 +126,11 @@ module dma_act_ch (
             S_AR_ISSUE:    if (m_axi_arvalid && m_axi_arready) state_nxt = S_R_DATA;
 
             S_R_DATA: begin
-                if (m_axi_rvalid && m_axi_rready && (sub_word_r == 2'd3)) begin
-                    if (m_axi_rlast) begin
-                        state_nxt = more_bursts ? S_AR_ISSUE : S_DONE;
-                    end
+                // Transition when all 4 sub-words of the last beat have been written.
+                // rlast_latch_r is set when the AXI beat is accepted (sub_word_r==0);
+                // beat_cnt_r == cur_len_r confirms it was the final beat.
+                if (sub_word_r == 2'd3 && beat_cnt_r == cur_len_r && rlast_latch_r) begin
+                    state_nxt = more_bursts ? S_AR_ISSUE : S_DONE;
                 end
             end
 
@@ -170,6 +172,7 @@ module dma_act_ch (
             sub_word_r     <= 2'd0;
             buf_addr_cnt_r <= 15'd0;
             rdata_latch_r  <= 128'd0;
+            rlast_latch_r  <= 1'b0;
             dir_r          <= 1'b0;
             wpack_r        <= 128'd0;
             wpack_cnt_r    <= 2'd0;
@@ -262,6 +265,7 @@ module dma_act_ch (
                     if (sub_word_r == 2'd0) begin
                         if (m_axi_rvalid && m_axi_rready) begin
                             rdata_latch_r  <= m_axi_rdata;
+                            rlast_latch_r  <= m_axi_rlast;  // latch rlast for FSM transition
                             buf_we         <= 1'b1;
                             buf_addr       <= buf_addr_cnt_r;
                             buf_wdata      <= m_axi_rdata[31:0];

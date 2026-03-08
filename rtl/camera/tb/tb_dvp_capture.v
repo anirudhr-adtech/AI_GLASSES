@@ -93,9 +93,10 @@ module tb_dvp_capture;
         end
 
         // Summary
-        if (err_count == 0)
+        if (err_count == 0) begin
             $display("PASS: tb_dvp_capture — basic frame capture completed");
-        else
+            $display("ALL TESTS PASSED");
+        end else
             $display("FAIL: tb_dvp_capture — %0d errors", err_count);
 
         $finish;

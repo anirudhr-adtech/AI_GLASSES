@@ -17,12 +17,19 @@ module fft_twiddle_rom (
     reg [15:0] rom_im [0:511];
 
     integer i;
+    integer tmp_re, tmp_im;
     initial begin
         for (i = 0; i < 512; i = i + 1) begin
-            // cos(2*pi*k/1024) in Q1.15
-            rom_re[i] = $rtoi($cos(6.28318530717959 * i / 1024.0) * 32768.0);
-            // -sin(2*pi*k/1024) in Q1.15
-            rom_im[i] = $rtoi(-$sin(6.28318530717959 * i / 1024.0) * 32768.0);
+            // cos(2*pi*k/1024) in Q1.15, clamped to [-32768, 32767]
+            tmp_re = $rtoi($cos(6.28318530717959 * i / 1024.0) * 32768.0);
+            if (tmp_re > 32767)  tmp_re = 32767;
+            if (tmp_re < -32768) tmp_re = -32768;
+            rom_re[i] = tmp_re[15:0];
+            // -sin(2*pi*k/1024) in Q1.15, clamped
+            tmp_im = $rtoi(-$sin(6.28318530717959 * i / 1024.0) * 32768.0);
+            if (tmp_im > 32767)  tmp_im = 32767;
+            if (tmp_im < -32768) tmp_im = -32768;
+            rom_im[i] = tmp_im[15:0];
         end
     end
 
