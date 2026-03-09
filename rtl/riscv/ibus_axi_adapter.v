@@ -3,7 +3,7 @@
 // Module : ibus_axi_adapter
 // Project : AI_GLASSES — RISC-V Subsystem
 // Description : Ibex instruction bus to AXI4 read-only master adapter.
-//               Supports up to 2 outstanding read requests.
+//               Sequential (non-pipelined) design: one outstanding request.
 //============================================================================
 
 module ibus_axi_adapter (
@@ -56,13 +56,6 @@ module ibus_axi_adapter (
     reg [31:0] rdata_r;
     reg        rerr_r;
 
-    // Pending request queue (supports 1 queued while 1 in-flight)
-    reg        pending_valid_r;
-    reg [31:0] pending_addr_r;
-
-    // Outstanding transaction counter (0, 1, or 2)
-    reg [1:0]  outstanding_r;
-
     assign m_axi_arvalid = ar_valid_r;
     assign m_axi_araddr  = ar_addr_r;
     assign m_axi_arid    = ar_id_r;
@@ -73,35 +66,18 @@ module ibus_axi_adapter (
 
     always @(posedge clk) begin
         if (!rst_n) begin
-            state_r         <= IDLE;
-            ar_valid_r      <= 1'b0;
-            ar_addr_r       <= 32'd0;
-            ar_id_r         <= 4'd0;
-            gnt_r           <= 1'b0;
-            rvalid_r        <= 1'b0;
-            rdata_r         <= 32'd0;
-            rerr_r          <= 1'b0;
-            pending_valid_r <= 1'b0;
-            pending_addr_r  <= 32'd0;
-            outstanding_r   <= 2'd0;
+            state_r    <= IDLE;
+            ar_valid_r <= 1'b0;
+            ar_addr_r  <= 32'd0;
+            ar_id_r    <= 4'd0;
+            gnt_r      <= 1'b0;
+            rvalid_r   <= 1'b0;
+            rdata_r    <= 32'd0;
+            rerr_r     <= 1'b0;
         end else begin
             // Default pulse signals
             gnt_r    <= 1'b0;
             rvalid_r <= 1'b0;
-
-            // Track outstanding count: increment on AR handshake, decrement on R handshake
-            case ({(ar_valid_r & m_axi_arready), (m_axi_rvalid & m_axi_rready)})
-                2'b10: outstanding_r <= outstanding_r + 2'd1;
-                2'b01: outstanding_r <= outstanding_r - 2'd1;
-                default: ; // 00 or 11: no net change
-            endcase
-
-            // R channel: always capture responses
-            if (m_axi_rvalid) begin
-                rvalid_r <= 1'b1;
-                rdata_r  <= m_axi_rdata;
-                rerr_r   <= (m_axi_rresp != 2'b00);
-            end
 
             case (state_r)
                 IDLE: begin
@@ -119,46 +95,16 @@ module ibus_axi_adapter (
                     if (m_axi_arready) begin
                         gnt_r      <= 1'b1;
                         ar_valid_r <= 1'b0;
-                        // Queue new request if one arrives simultaneously
-                        if (instr_req_i) begin
-                            pending_valid_r <= 1'b1;
-                            pending_addr_r  <= instr_addr_i;
-                        end
-                        state_r <= R_WAIT;
-                    end else begin
-                        // While waiting for arready, capture incoming requests
-                        if (instr_req_i && !pending_valid_r) begin
-                            pending_valid_r <= 1'b1;
-                            pending_addr_r  <= instr_addr_i;
-                        end
+                        state_r    <= R_WAIT;
                     end
                 end
 
                 R_WAIT: begin
-                    // Capture new requests into pending slot
-                    if (instr_req_i && !pending_valid_r) begin
-                        pending_valid_r <= 1'b1;
-                        pending_addr_r  <= instr_addr_i;
-                    end
-
                     if (m_axi_rvalid) begin
-                        // Response received
-                        if (pending_valid_r) begin
-                            // Issue queued request
-                            ar_valid_r      <= 1'b1;
-                            ar_addr_r       <= pending_addr_r;
-                            ar_id_r         <= 4'd1;
-                            pending_valid_r <= 1'b0;
-                            state_r         <= AR_WAIT;
-                        end else if (instr_req_i) begin
-                            // New request right now
-                            ar_valid_r <= 1'b1;
-                            ar_addr_r  <= instr_addr_i;
-                            ar_id_r    <= 4'd0;
-                            state_r    <= AR_WAIT;
-                        end else begin
-                            state_r <= IDLE;
-                        end
+                        rvalid_r <= 1'b1;
+                        rdata_r  <= m_axi_rdata;
+                        rerr_r   <= (m_axi_rresp != 2'b00);
+                        state_r  <= IDLE;
                     end
                 end
 

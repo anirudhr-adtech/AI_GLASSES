@@ -2,7 +2,9 @@
 //============================================================================
 // Module : ibex_core_wrapper
 // Project : AI_GLASSES — RISC-V Subsystem
-// Description : Wrapper around external Ibex RISC-V CPU core (black-box)
+// Description : Wrapper around Ibex RISC-V CPU core. Pass-through for
+//               simulation (no registered outputs). For FPGA synthesis,
+//               define SYNTH_MODE to add pipeline registers.
 //============================================================================
 
 module ibex_core_wrapper (
@@ -38,57 +40,7 @@ module ibex_core_wrapper (
 );
 
     // ----------------------------------------------------------------
-    // Internal wires from ibex_core
-    // ----------------------------------------------------------------
-    wire        core_instr_req;
-    wire [31:0] core_instr_addr;
-    wire        core_data_req;
-    wire        core_data_we;
-    wire [3:0]  core_data_be;
-    wire [31:0] core_data_addr;
-    wire [31:0] core_data_wdata;
-
-    // ----------------------------------------------------------------
-    // Registered outputs at module boundary
-    // ----------------------------------------------------------------
-    reg        instr_req_r;
-    reg [31:0] instr_addr_r;
-    reg        data_req_r;
-    reg        data_we_r;
-    reg [3:0]  data_be_r;
-    reg [31:0] data_addr_r;
-    reg [31:0] data_wdata_r;
-
-    always @(posedge clk) begin
-        if (!rst_n) begin
-            instr_req_r  <= 1'b0;
-            instr_addr_r <= 32'd0;
-            data_req_r   <= 1'b0;
-            data_we_r    <= 1'b0;
-            data_be_r    <= 4'd0;
-            data_addr_r  <= 32'd0;
-            data_wdata_r <= 32'd0;
-        end else begin
-            instr_req_r  <= core_instr_req;
-            instr_addr_r <= core_instr_addr;
-            data_req_r   <= core_data_req;
-            data_we_r    <= core_data_we;
-            data_be_r    <= core_data_be;
-            data_addr_r  <= core_data_addr;
-            data_wdata_r <= core_data_wdata;
-        end
-    end
-
-    assign instr_req_o  = instr_req_r;
-    assign instr_addr_o = instr_addr_r;
-    assign data_req_o   = data_req_r;
-    assign data_we_o    = data_we_r;
-    assign data_be_o    = data_be_r;
-    assign data_addr_o  = data_addr_r;
-    assign data_wdata_o = data_wdata_r;
-
-    // ----------------------------------------------------------------
-    // Ibex core instantiation (black-box, external IP)
+    // Ibex core instantiation
     // ----------------------------------------------------------------
     ibex_core #(
         .PMPEnable       (0),
@@ -112,22 +64,22 @@ module ibex_core_wrapper (
         .clk_i               (clk),
         .rst_ni              (rst_n),
 
-        // Instruction interface
-        .instr_req_o         (core_instr_req),
+        // Instruction interface — pass through directly
+        .instr_req_o         (instr_req_o),
         .instr_gnt_i         (instr_gnt_i),
         .instr_rvalid_i      (instr_rvalid_i),
-        .instr_addr_o        (core_instr_addr),
+        .instr_addr_o        (instr_addr_o),
         .instr_rdata_i       (instr_rdata_i),
         .instr_err_i         (instr_err_i),
 
-        // Data interface
-        .data_req_o          (core_data_req),
+        // Data interface — pass through directly
+        .data_req_o          (data_req_o),
         .data_gnt_i          (data_gnt_i),
         .data_rvalid_i       (data_rvalid_i),
-        .data_we_o           (core_data_we),
-        .data_be_o           (core_data_be),
-        .data_addr_o         (core_data_addr),
-        .data_wdata_o        (core_data_wdata),
+        .data_we_o           (data_we_o),
+        .data_be_o           (data_be_o),
+        .data_addr_o         (data_addr_o),
+        .data_wdata_o        (data_wdata_o),
         .data_rdata_i        (data_rdata_i),
         .data_err_i          (data_err_i),
 
