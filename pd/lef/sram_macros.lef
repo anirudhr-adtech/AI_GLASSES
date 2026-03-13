@@ -1,0 +1,3515 @@
+VERSION 5.7 ;
+BUSBITCHARS "[]" ;
+DIVIDERCHAR "/" ;
+
+MACRO npu_act_buf
+    CLASS BLOCK ;
+    SIZE 400.000 BY 300.000 ;
+    SYMMETRY X Y ;
+    PIN clk
+        DIRECTION INPUT ;
+        USE CLOCK ;
+        PORT
+            LAYER met3 ;
+                RECT 199.850 299.700 200.150 300.000 ;
+            END
+        END clk
+    PIN port_a_en
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 0.870 0.300 1.170 ;
+            END
+        END port_a_en
+    PIN port_a_we
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 1.550 0.300 1.850 ;
+            END
+        END port_a_we
+    PIN port_a_addr[0]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 2.230 0.300 2.530 ;
+            END
+        END port_a_addr[0]
+    PIN port_a_addr[1]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 2.910 0.300 3.210 ;
+            END
+        END port_a_addr[1]
+    PIN port_a_addr[2]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 3.590 0.300 3.890 ;
+            END
+        END port_a_addr[2]
+    PIN port_a_addr[3]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 4.270 0.300 4.570 ;
+            END
+        END port_a_addr[3]
+    PIN port_a_addr[4]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 4.950 0.300 5.250 ;
+            END
+        END port_a_addr[4]
+    PIN port_a_addr[5]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 5.630 0.300 5.930 ;
+            END
+        END port_a_addr[5]
+    PIN port_a_addr[6]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 6.310 0.300 6.610 ;
+            END
+        END port_a_addr[6]
+    PIN port_a_addr[7]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 6.990 0.300 7.290 ;
+            END
+        END port_a_addr[7]
+    PIN port_a_addr[8]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 7.670 0.300 7.970 ;
+            END
+        END port_a_addr[8]
+    PIN port_a_addr[9]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 8.350 0.300 8.650 ;
+            END
+        END port_a_addr[9]
+    PIN port_a_addr[10]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 9.030 0.300 9.330 ;
+            END
+        END port_a_addr[10]
+    PIN port_a_addr[11]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 9.710 0.300 10.010 ;
+            END
+        END port_a_addr[11]
+    PIN port_a_addr[12]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 10.390 0.300 10.690 ;
+            END
+        END port_a_addr[12]
+    PIN port_a_addr[13]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 11.070 0.300 11.370 ;
+            END
+        END port_a_addr[13]
+    PIN port_a_addr[14]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 11.750 0.300 12.050 ;
+            END
+        END port_a_addr[14]
+    PIN port_a_wdata[0]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 12.430 0.300 12.730 ;
+            END
+        END port_a_wdata[0]
+    PIN port_a_wdata[1]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 13.110 0.300 13.410 ;
+            END
+        END port_a_wdata[1]
+    PIN port_a_wdata[2]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 13.790 0.300 14.090 ;
+            END
+        END port_a_wdata[2]
+    PIN port_a_wdata[3]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 14.470 0.300 14.770 ;
+            END
+        END port_a_wdata[3]
+    PIN port_a_wdata[4]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 15.150 0.300 15.450 ;
+            END
+        END port_a_wdata[4]
+    PIN port_a_wdata[5]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 15.830 0.300 16.130 ;
+            END
+        END port_a_wdata[5]
+    PIN port_a_wdata[6]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 16.510 0.300 16.810 ;
+            END
+        END port_a_wdata[6]
+    PIN port_a_wdata[7]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 17.190 0.300 17.490 ;
+            END
+        END port_a_wdata[7]
+    PIN port_a_wdata[8]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 17.870 0.300 18.170 ;
+            END
+        END port_a_wdata[8]
+    PIN port_a_wdata[9]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 18.550 0.300 18.850 ;
+            END
+        END port_a_wdata[9]
+    PIN port_a_wdata[10]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 19.230 0.300 19.530 ;
+            END
+        END port_a_wdata[10]
+    PIN port_a_wdata[11]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 19.910 0.300 20.210 ;
+            END
+        END port_a_wdata[11]
+    PIN port_a_wdata[12]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 20.590 0.300 20.890 ;
+            END
+        END port_a_wdata[12]
+    PIN port_a_wdata[13]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 21.270 0.300 21.570 ;
+            END
+        END port_a_wdata[13]
+    PIN port_a_wdata[14]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 21.950 0.300 22.250 ;
+            END
+        END port_a_wdata[14]
+    PIN port_a_wdata[15]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 22.630 0.300 22.930 ;
+            END
+        END port_a_wdata[15]
+    PIN port_a_wdata[16]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 23.310 0.300 23.610 ;
+            END
+        END port_a_wdata[16]
+    PIN port_a_wdata[17]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 23.990 0.300 24.290 ;
+            END
+        END port_a_wdata[17]
+    PIN port_a_wdata[18]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 24.670 0.300 24.970 ;
+            END
+        END port_a_wdata[18]
+    PIN port_a_wdata[19]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 25.350 0.300 25.650 ;
+            END
+        END port_a_wdata[19]
+    PIN port_a_wdata[20]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 26.030 0.300 26.330 ;
+            END
+        END port_a_wdata[20]
+    PIN port_a_wdata[21]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 26.710 0.300 27.010 ;
+            END
+        END port_a_wdata[21]
+    PIN port_a_wdata[22]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 27.390 0.300 27.690 ;
+            END
+        END port_a_wdata[22]
+    PIN port_a_wdata[23]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 28.070 0.300 28.370 ;
+            END
+        END port_a_wdata[23]
+    PIN port_a_wdata[24]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 28.750 0.300 29.050 ;
+            END
+        END port_a_wdata[24]
+    PIN port_a_wdata[25]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 29.430 0.300 29.730 ;
+            END
+        END port_a_wdata[25]
+    PIN port_a_wdata[26]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 30.110 0.300 30.410 ;
+            END
+        END port_a_wdata[26]
+    PIN port_a_wdata[27]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 30.790 0.300 31.090 ;
+            END
+        END port_a_wdata[27]
+    PIN port_a_wdata[28]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 31.470 0.300 31.770 ;
+            END
+        END port_a_wdata[28]
+    PIN port_a_wdata[29]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 32.150 0.300 32.450 ;
+            END
+        END port_a_wdata[29]
+    PIN port_a_wdata[30]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 32.830 0.300 33.130 ;
+            END
+        END port_a_wdata[30]
+    PIN port_a_wdata[31]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 33.510 0.300 33.810 ;
+            END
+        END port_a_wdata[31]
+    PIN port_a_rdata[0]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 34.190 0.300 34.490 ;
+            END
+        END port_a_rdata[0]
+    PIN port_a_rdata[1]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 34.870 0.300 35.170 ;
+            END
+        END port_a_rdata[1]
+    PIN port_a_rdata[2]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 35.550 0.300 35.850 ;
+            END
+        END port_a_rdata[2]
+    PIN port_a_rdata[3]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 36.230 0.300 36.530 ;
+            END
+        END port_a_rdata[3]
+    PIN port_a_rdata[4]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 36.910 0.300 37.210 ;
+            END
+        END port_a_rdata[4]
+    PIN port_a_rdata[5]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 37.590 0.300 37.890 ;
+            END
+        END port_a_rdata[5]
+    PIN port_a_rdata[6]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 38.270 0.300 38.570 ;
+            END
+        END port_a_rdata[6]
+    PIN port_a_rdata[7]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 38.950 0.300 39.250 ;
+            END
+        END port_a_rdata[7]
+    PIN port_a_rdata[8]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 39.630 0.300 39.930 ;
+            END
+        END port_a_rdata[8]
+    PIN port_a_rdata[9]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 40.310 0.300 40.610 ;
+            END
+        END port_a_rdata[9]
+    PIN port_a_rdata[10]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 40.990 0.300 41.290 ;
+            END
+        END port_a_rdata[10]
+    PIN port_a_rdata[11]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 41.670 0.300 41.970 ;
+            END
+        END port_a_rdata[11]
+    PIN port_a_rdata[12]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 42.350 0.300 42.650 ;
+            END
+        END port_a_rdata[12]
+    PIN port_a_rdata[13]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 43.030 0.300 43.330 ;
+            END
+        END port_a_rdata[13]
+    PIN port_a_rdata[14]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 43.710 0.300 44.010 ;
+            END
+        END port_a_rdata[14]
+    PIN port_a_rdata[15]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 44.390 0.300 44.690 ;
+            END
+        END port_a_rdata[15]
+    PIN port_a_rdata[16]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 45.070 0.300 45.370 ;
+            END
+        END port_a_rdata[16]
+    PIN port_a_rdata[17]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 45.750 0.300 46.050 ;
+            END
+        END port_a_rdata[17]
+    PIN port_a_rdata[18]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 46.430 0.300 46.730 ;
+            END
+        END port_a_rdata[18]
+    PIN port_a_rdata[19]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 47.110 0.300 47.410 ;
+            END
+        END port_a_rdata[19]
+    PIN port_a_rdata[20]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 47.790 0.300 48.090 ;
+            END
+        END port_a_rdata[20]
+    PIN port_a_rdata[21]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 48.470 0.300 48.770 ;
+            END
+        END port_a_rdata[21]
+    PIN port_a_rdata[22]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 49.150 0.300 49.450 ;
+            END
+        END port_a_rdata[22]
+    PIN port_a_rdata[23]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 49.830 0.300 50.130 ;
+            END
+        END port_a_rdata[23]
+    PIN port_a_rdata[24]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 50.510 0.300 50.810 ;
+            END
+        END port_a_rdata[24]
+    PIN port_a_rdata[25]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 51.190 0.300 51.490 ;
+            END
+        END port_a_rdata[25]
+    PIN port_a_rdata[26]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 51.870 0.300 52.170 ;
+            END
+        END port_a_rdata[26]
+    PIN port_a_rdata[27]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 52.550 0.300 52.850 ;
+            END
+        END port_a_rdata[27]
+    PIN port_a_rdata[28]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 53.230 0.300 53.530 ;
+            END
+        END port_a_rdata[28]
+    PIN port_a_rdata[29]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 53.910 0.300 54.210 ;
+            END
+        END port_a_rdata[29]
+    PIN port_a_rdata[30]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 54.590 0.300 54.890 ;
+            END
+        END port_a_rdata[30]
+    PIN port_a_rdata[31]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 55.270 0.300 55.570 ;
+            END
+        END port_a_rdata[31]
+    PIN port_b_en
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 0.870 400.000 1.170 ;
+            END
+        END port_b_en
+    PIN port_b_addr[0]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 1.550 400.000 1.850 ;
+            END
+        END port_b_addr[0]
+    PIN port_b_addr[1]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 2.230 400.000 2.530 ;
+            END
+        END port_b_addr[1]
+    PIN port_b_addr[2]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 2.910 400.000 3.210 ;
+            END
+        END port_b_addr[2]
+    PIN port_b_addr[3]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 3.590 400.000 3.890 ;
+            END
+        END port_b_addr[3]
+    PIN port_b_addr[4]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 4.270 400.000 4.570 ;
+            END
+        END port_b_addr[4]
+    PIN port_b_addr[5]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 4.950 400.000 5.250 ;
+            END
+        END port_b_addr[5]
+    PIN port_b_addr[6]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 5.630 400.000 5.930 ;
+            END
+        END port_b_addr[6]
+    PIN port_b_addr[7]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 6.310 400.000 6.610 ;
+            END
+        END port_b_addr[7]
+    PIN port_b_addr[8]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 6.990 400.000 7.290 ;
+            END
+        END port_b_addr[8]
+    PIN port_b_addr[9]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 7.670 400.000 7.970 ;
+            END
+        END port_b_addr[9]
+    PIN port_b_addr[10]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 8.350 400.000 8.650 ;
+            END
+        END port_b_addr[10]
+    PIN port_b_addr[11]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 9.030 400.000 9.330 ;
+            END
+        END port_b_addr[11]
+    PIN port_b_addr[12]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 9.710 400.000 10.010 ;
+            END
+        END port_b_addr[12]
+    PIN port_b_addr[13]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 10.390 400.000 10.690 ;
+            END
+        END port_b_addr[13]
+    PIN port_b_addr[14]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 11.070 400.000 11.370 ;
+            END
+        END port_b_addr[14]
+    PIN port_b_rdata[0]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 11.750 400.000 12.050 ;
+            END
+        END port_b_rdata[0]
+    PIN port_b_rdata[1]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 12.430 400.000 12.730 ;
+            END
+        END port_b_rdata[1]
+    PIN port_b_rdata[2]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 13.110 400.000 13.410 ;
+            END
+        END port_b_rdata[2]
+    PIN port_b_rdata[3]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 13.790 400.000 14.090 ;
+            END
+        END port_b_rdata[3]
+    PIN port_b_rdata[4]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 14.470 400.000 14.770 ;
+            END
+        END port_b_rdata[4]
+    PIN port_b_rdata[5]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 15.150 400.000 15.450 ;
+            END
+        END port_b_rdata[5]
+    PIN port_b_rdata[6]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 15.830 400.000 16.130 ;
+            END
+        END port_b_rdata[6]
+    PIN port_b_rdata[7]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 16.510 400.000 16.810 ;
+            END
+        END port_b_rdata[7]
+    PIN port_b_rdata[8]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 17.190 400.000 17.490 ;
+            END
+        END port_b_rdata[8]
+    PIN port_b_rdata[9]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 17.870 400.000 18.170 ;
+            END
+        END port_b_rdata[9]
+    PIN port_b_rdata[10]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 18.550 400.000 18.850 ;
+            END
+        END port_b_rdata[10]
+    PIN port_b_rdata[11]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 19.230 400.000 19.530 ;
+            END
+        END port_b_rdata[11]
+    PIN port_b_rdata[12]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 19.910 400.000 20.210 ;
+            END
+        END port_b_rdata[12]
+    PIN port_b_rdata[13]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 20.590 400.000 20.890 ;
+            END
+        END port_b_rdata[13]
+    PIN port_b_rdata[14]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 21.270 400.000 21.570 ;
+            END
+        END port_b_rdata[14]
+    PIN port_b_rdata[15]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 21.950 400.000 22.250 ;
+            END
+        END port_b_rdata[15]
+    PIN port_b_rdata[16]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 22.630 400.000 22.930 ;
+            END
+        END port_b_rdata[16]
+    PIN port_b_rdata[17]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 23.310 400.000 23.610 ;
+            END
+        END port_b_rdata[17]
+    PIN port_b_rdata[18]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 23.990 400.000 24.290 ;
+            END
+        END port_b_rdata[18]
+    PIN port_b_rdata[19]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 24.670 400.000 24.970 ;
+            END
+        END port_b_rdata[19]
+    PIN port_b_rdata[20]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 25.350 400.000 25.650 ;
+            END
+        END port_b_rdata[20]
+    PIN port_b_rdata[21]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 26.030 400.000 26.330 ;
+            END
+        END port_b_rdata[21]
+    PIN port_b_rdata[22]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 26.710 400.000 27.010 ;
+            END
+        END port_b_rdata[22]
+    PIN port_b_rdata[23]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 27.390 400.000 27.690 ;
+            END
+        END port_b_rdata[23]
+    PIN port_b_rdata[24]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 28.070 400.000 28.370 ;
+            END
+        END port_b_rdata[24]
+    PIN port_b_rdata[25]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 28.750 400.000 29.050 ;
+            END
+        END port_b_rdata[25]
+    PIN port_b_rdata[26]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 29.430 400.000 29.730 ;
+            END
+        END port_b_rdata[26]
+    PIN port_b_rdata[27]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 30.110 400.000 30.410 ;
+            END
+        END port_b_rdata[27]
+    PIN port_b_rdata[28]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 30.790 400.000 31.090 ;
+            END
+        END port_b_rdata[28]
+    PIN port_b_rdata[29]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 31.470 400.000 31.770 ;
+            END
+        END port_b_rdata[29]
+    PIN port_b_rdata[30]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 32.150 400.000 32.450 ;
+            END
+        END port_b_rdata[30]
+    PIN port_b_rdata[31]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 32.830 400.000 33.130 ;
+            END
+        END port_b_rdata[31]
+    OBS
+        LAYER met1 ;
+            RECT 0.000 0.000 400.000 300.000 ;
+        LAYER met2 ;
+            RECT 0.000 0.000 400.000 300.000 ;
+    END
+END npu_act_buf
+
+MACRO npu_weight_buf
+    CLASS BLOCK ;
+    SIZE 400.000 BY 300.000 ;
+    SYMMETRY X Y ;
+    PIN clk
+        DIRECTION INPUT ;
+        USE CLOCK ;
+        PORT
+            LAYER met3 ;
+                RECT 199.850 299.700 200.150 300.000 ;
+            END
+        END clk
+    PIN port_a_en
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 0.870 0.300 1.170 ;
+            END
+        END port_a_en
+    PIN port_a_we
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 1.550 0.300 1.850 ;
+            END
+        END port_a_we
+    PIN port_a_addr[0]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 2.230 0.300 2.530 ;
+            END
+        END port_a_addr[0]
+    PIN port_a_addr[1]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 2.910 0.300 3.210 ;
+            END
+        END port_a_addr[1]
+    PIN port_a_addr[2]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 3.590 0.300 3.890 ;
+            END
+        END port_a_addr[2]
+    PIN port_a_addr[3]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 4.270 0.300 4.570 ;
+            END
+        END port_a_addr[3]
+    PIN port_a_addr[4]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 4.950 0.300 5.250 ;
+            END
+        END port_a_addr[4]
+    PIN port_a_addr[5]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 5.630 0.300 5.930 ;
+            END
+        END port_a_addr[5]
+    PIN port_a_addr[6]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 6.310 0.300 6.610 ;
+            END
+        END port_a_addr[6]
+    PIN port_a_addr[7]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 6.990 0.300 7.290 ;
+            END
+        END port_a_addr[7]
+    PIN port_a_addr[8]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 7.670 0.300 7.970 ;
+            END
+        END port_a_addr[8]
+    PIN port_a_addr[9]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 8.350 0.300 8.650 ;
+            END
+        END port_a_addr[9]
+    PIN port_a_addr[10]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 9.030 0.300 9.330 ;
+            END
+        END port_a_addr[10]
+    PIN port_a_addr[11]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 9.710 0.300 10.010 ;
+            END
+        END port_a_addr[11]
+    PIN port_a_addr[12]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 10.390 0.300 10.690 ;
+            END
+        END port_a_addr[12]
+    PIN port_a_addr[13]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 11.070 0.300 11.370 ;
+            END
+        END port_a_addr[13]
+    PIN port_a_addr[14]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 11.750 0.300 12.050 ;
+            END
+        END port_a_addr[14]
+    PIN port_a_wdata[0]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 12.430 0.300 12.730 ;
+            END
+        END port_a_wdata[0]
+    PIN port_a_wdata[1]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 13.110 0.300 13.410 ;
+            END
+        END port_a_wdata[1]
+    PIN port_a_wdata[2]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 13.790 0.300 14.090 ;
+            END
+        END port_a_wdata[2]
+    PIN port_a_wdata[3]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 14.470 0.300 14.770 ;
+            END
+        END port_a_wdata[3]
+    PIN port_a_wdata[4]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 15.150 0.300 15.450 ;
+            END
+        END port_a_wdata[4]
+    PIN port_a_wdata[5]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 15.830 0.300 16.130 ;
+            END
+        END port_a_wdata[5]
+    PIN port_a_wdata[6]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 16.510 0.300 16.810 ;
+            END
+        END port_a_wdata[6]
+    PIN port_a_wdata[7]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 17.190 0.300 17.490 ;
+            END
+        END port_a_wdata[7]
+    PIN port_a_wdata[8]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 17.870 0.300 18.170 ;
+            END
+        END port_a_wdata[8]
+    PIN port_a_wdata[9]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 18.550 0.300 18.850 ;
+            END
+        END port_a_wdata[9]
+    PIN port_a_wdata[10]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 19.230 0.300 19.530 ;
+            END
+        END port_a_wdata[10]
+    PIN port_a_wdata[11]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 19.910 0.300 20.210 ;
+            END
+        END port_a_wdata[11]
+    PIN port_a_wdata[12]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 20.590 0.300 20.890 ;
+            END
+        END port_a_wdata[12]
+    PIN port_a_wdata[13]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 21.270 0.300 21.570 ;
+            END
+        END port_a_wdata[13]
+    PIN port_a_wdata[14]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 21.950 0.300 22.250 ;
+            END
+        END port_a_wdata[14]
+    PIN port_a_wdata[15]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 22.630 0.300 22.930 ;
+            END
+        END port_a_wdata[15]
+    PIN port_a_wdata[16]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 23.310 0.300 23.610 ;
+            END
+        END port_a_wdata[16]
+    PIN port_a_wdata[17]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 23.990 0.300 24.290 ;
+            END
+        END port_a_wdata[17]
+    PIN port_a_wdata[18]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 24.670 0.300 24.970 ;
+            END
+        END port_a_wdata[18]
+    PIN port_a_wdata[19]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 25.350 0.300 25.650 ;
+            END
+        END port_a_wdata[19]
+    PIN port_a_wdata[20]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 26.030 0.300 26.330 ;
+            END
+        END port_a_wdata[20]
+    PIN port_a_wdata[21]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 26.710 0.300 27.010 ;
+            END
+        END port_a_wdata[21]
+    PIN port_a_wdata[22]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 27.390 0.300 27.690 ;
+            END
+        END port_a_wdata[22]
+    PIN port_a_wdata[23]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 28.070 0.300 28.370 ;
+            END
+        END port_a_wdata[23]
+    PIN port_a_wdata[24]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 28.750 0.300 29.050 ;
+            END
+        END port_a_wdata[24]
+    PIN port_a_wdata[25]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 29.430 0.300 29.730 ;
+            END
+        END port_a_wdata[25]
+    PIN port_a_wdata[26]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 30.110 0.300 30.410 ;
+            END
+        END port_a_wdata[26]
+    PIN port_a_wdata[27]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 30.790 0.300 31.090 ;
+            END
+        END port_a_wdata[27]
+    PIN port_a_wdata[28]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 31.470 0.300 31.770 ;
+            END
+        END port_a_wdata[28]
+    PIN port_a_wdata[29]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 32.150 0.300 32.450 ;
+            END
+        END port_a_wdata[29]
+    PIN port_a_wdata[30]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 32.830 0.300 33.130 ;
+            END
+        END port_a_wdata[30]
+    PIN port_a_wdata[31]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 33.510 0.300 33.810 ;
+            END
+        END port_a_wdata[31]
+    PIN port_a_rdata[0]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 34.190 0.300 34.490 ;
+            END
+        END port_a_rdata[0]
+    PIN port_a_rdata[1]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 34.870 0.300 35.170 ;
+            END
+        END port_a_rdata[1]
+    PIN port_a_rdata[2]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 35.550 0.300 35.850 ;
+            END
+        END port_a_rdata[2]
+    PIN port_a_rdata[3]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 36.230 0.300 36.530 ;
+            END
+        END port_a_rdata[3]
+    PIN port_a_rdata[4]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 36.910 0.300 37.210 ;
+            END
+        END port_a_rdata[4]
+    PIN port_a_rdata[5]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 37.590 0.300 37.890 ;
+            END
+        END port_a_rdata[5]
+    PIN port_a_rdata[6]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 38.270 0.300 38.570 ;
+            END
+        END port_a_rdata[6]
+    PIN port_a_rdata[7]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 38.950 0.300 39.250 ;
+            END
+        END port_a_rdata[7]
+    PIN port_a_rdata[8]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 39.630 0.300 39.930 ;
+            END
+        END port_a_rdata[8]
+    PIN port_a_rdata[9]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 40.310 0.300 40.610 ;
+            END
+        END port_a_rdata[9]
+    PIN port_a_rdata[10]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 40.990 0.300 41.290 ;
+            END
+        END port_a_rdata[10]
+    PIN port_a_rdata[11]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 41.670 0.300 41.970 ;
+            END
+        END port_a_rdata[11]
+    PIN port_a_rdata[12]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 42.350 0.300 42.650 ;
+            END
+        END port_a_rdata[12]
+    PIN port_a_rdata[13]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 43.030 0.300 43.330 ;
+            END
+        END port_a_rdata[13]
+    PIN port_a_rdata[14]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 43.710 0.300 44.010 ;
+            END
+        END port_a_rdata[14]
+    PIN port_a_rdata[15]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 44.390 0.300 44.690 ;
+            END
+        END port_a_rdata[15]
+    PIN port_a_rdata[16]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 45.070 0.300 45.370 ;
+            END
+        END port_a_rdata[16]
+    PIN port_a_rdata[17]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 45.750 0.300 46.050 ;
+            END
+        END port_a_rdata[17]
+    PIN port_a_rdata[18]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 46.430 0.300 46.730 ;
+            END
+        END port_a_rdata[18]
+    PIN port_a_rdata[19]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 47.110 0.300 47.410 ;
+            END
+        END port_a_rdata[19]
+    PIN port_a_rdata[20]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 47.790 0.300 48.090 ;
+            END
+        END port_a_rdata[20]
+    PIN port_a_rdata[21]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 48.470 0.300 48.770 ;
+            END
+        END port_a_rdata[21]
+    PIN port_a_rdata[22]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 49.150 0.300 49.450 ;
+            END
+        END port_a_rdata[22]
+    PIN port_a_rdata[23]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 49.830 0.300 50.130 ;
+            END
+        END port_a_rdata[23]
+    PIN port_a_rdata[24]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 50.510 0.300 50.810 ;
+            END
+        END port_a_rdata[24]
+    PIN port_a_rdata[25]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 51.190 0.300 51.490 ;
+            END
+        END port_a_rdata[25]
+    PIN port_a_rdata[26]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 51.870 0.300 52.170 ;
+            END
+        END port_a_rdata[26]
+    PIN port_a_rdata[27]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 52.550 0.300 52.850 ;
+            END
+        END port_a_rdata[27]
+    PIN port_a_rdata[28]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 53.230 0.300 53.530 ;
+            END
+        END port_a_rdata[28]
+    PIN port_a_rdata[29]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 53.910 0.300 54.210 ;
+            END
+        END port_a_rdata[29]
+    PIN port_a_rdata[30]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 54.590 0.300 54.890 ;
+            END
+        END port_a_rdata[30]
+    PIN port_a_rdata[31]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 55.270 0.300 55.570 ;
+            END
+        END port_a_rdata[31]
+    PIN port_b_en
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 0.870 400.000 1.170 ;
+            END
+        END port_b_en
+    PIN port_b_addr[0]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 1.550 400.000 1.850 ;
+            END
+        END port_b_addr[0]
+    PIN port_b_addr[1]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 2.230 400.000 2.530 ;
+            END
+        END port_b_addr[1]
+    PIN port_b_addr[2]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 2.910 400.000 3.210 ;
+            END
+        END port_b_addr[2]
+    PIN port_b_addr[3]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 3.590 400.000 3.890 ;
+            END
+        END port_b_addr[3]
+    PIN port_b_addr[4]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 4.270 400.000 4.570 ;
+            END
+        END port_b_addr[4]
+    PIN port_b_addr[5]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 4.950 400.000 5.250 ;
+            END
+        END port_b_addr[5]
+    PIN port_b_addr[6]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 5.630 400.000 5.930 ;
+            END
+        END port_b_addr[6]
+    PIN port_b_addr[7]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 6.310 400.000 6.610 ;
+            END
+        END port_b_addr[7]
+    PIN port_b_addr[8]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 6.990 400.000 7.290 ;
+            END
+        END port_b_addr[8]
+    PIN port_b_addr[9]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 7.670 400.000 7.970 ;
+            END
+        END port_b_addr[9]
+    PIN port_b_addr[10]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 8.350 400.000 8.650 ;
+            END
+        END port_b_addr[10]
+    PIN port_b_addr[11]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 9.030 400.000 9.330 ;
+            END
+        END port_b_addr[11]
+    PIN port_b_addr[12]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 9.710 400.000 10.010 ;
+            END
+        END port_b_addr[12]
+    PIN port_b_addr[13]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 10.390 400.000 10.690 ;
+            END
+        END port_b_addr[13]
+    PIN port_b_addr[14]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 11.070 400.000 11.370 ;
+            END
+        END port_b_addr[14]
+    PIN port_b_rdata[0]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 11.750 400.000 12.050 ;
+            END
+        END port_b_rdata[0]
+    PIN port_b_rdata[1]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 12.430 400.000 12.730 ;
+            END
+        END port_b_rdata[1]
+    PIN port_b_rdata[2]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 13.110 400.000 13.410 ;
+            END
+        END port_b_rdata[2]
+    PIN port_b_rdata[3]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 13.790 400.000 14.090 ;
+            END
+        END port_b_rdata[3]
+    PIN port_b_rdata[4]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 14.470 400.000 14.770 ;
+            END
+        END port_b_rdata[4]
+    PIN port_b_rdata[5]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 15.150 400.000 15.450 ;
+            END
+        END port_b_rdata[5]
+    PIN port_b_rdata[6]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 15.830 400.000 16.130 ;
+            END
+        END port_b_rdata[6]
+    PIN port_b_rdata[7]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 16.510 400.000 16.810 ;
+            END
+        END port_b_rdata[7]
+    PIN port_b_rdata[8]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 17.190 400.000 17.490 ;
+            END
+        END port_b_rdata[8]
+    PIN port_b_rdata[9]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 17.870 400.000 18.170 ;
+            END
+        END port_b_rdata[9]
+    PIN port_b_rdata[10]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 18.550 400.000 18.850 ;
+            END
+        END port_b_rdata[10]
+    PIN port_b_rdata[11]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 19.230 400.000 19.530 ;
+            END
+        END port_b_rdata[11]
+    PIN port_b_rdata[12]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 19.910 400.000 20.210 ;
+            END
+        END port_b_rdata[12]
+    PIN port_b_rdata[13]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 20.590 400.000 20.890 ;
+            END
+        END port_b_rdata[13]
+    PIN port_b_rdata[14]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 21.270 400.000 21.570 ;
+            END
+        END port_b_rdata[14]
+    PIN port_b_rdata[15]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 21.950 400.000 22.250 ;
+            END
+        END port_b_rdata[15]
+    PIN port_b_rdata[16]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 22.630 400.000 22.930 ;
+            END
+        END port_b_rdata[16]
+    PIN port_b_rdata[17]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 23.310 400.000 23.610 ;
+            END
+        END port_b_rdata[17]
+    PIN port_b_rdata[18]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 23.990 400.000 24.290 ;
+            END
+        END port_b_rdata[18]
+    PIN port_b_rdata[19]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 24.670 400.000 24.970 ;
+            END
+        END port_b_rdata[19]
+    PIN port_b_rdata[20]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 25.350 400.000 25.650 ;
+            END
+        END port_b_rdata[20]
+    PIN port_b_rdata[21]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 26.030 400.000 26.330 ;
+            END
+        END port_b_rdata[21]
+    PIN port_b_rdata[22]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 26.710 400.000 27.010 ;
+            END
+        END port_b_rdata[22]
+    PIN port_b_rdata[23]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 27.390 400.000 27.690 ;
+            END
+        END port_b_rdata[23]
+    PIN port_b_rdata[24]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 28.070 400.000 28.370 ;
+            END
+        END port_b_rdata[24]
+    PIN port_b_rdata[25]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 28.750 400.000 29.050 ;
+            END
+        END port_b_rdata[25]
+    PIN port_b_rdata[26]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 29.430 400.000 29.730 ;
+            END
+        END port_b_rdata[26]
+    PIN port_b_rdata[27]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 30.110 400.000 30.410 ;
+            END
+        END port_b_rdata[27]
+    PIN port_b_rdata[28]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 30.790 400.000 31.090 ;
+            END
+        END port_b_rdata[28]
+    PIN port_b_rdata[29]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 31.470 400.000 31.770 ;
+            END
+        END port_b_rdata[29]
+    PIN port_b_rdata[30]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 32.150 400.000 32.450 ;
+            END
+        END port_b_rdata[30]
+    PIN port_b_rdata[31]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 399.700 32.830 400.000 33.130 ;
+            END
+        END port_b_rdata[31]
+    OBS
+        LAYER met1 ;
+            RECT 0.000 0.000 400.000 300.000 ;
+        LAYER met2 ;
+            RECT 0.000 0.000 400.000 300.000 ;
+    END
+END npu_weight_buf
+
+MACRO sram_bank
+    CLASS BLOCK ;
+    SIZE 400.000 BY 300.000 ;
+    SYMMETRY X Y ;
+    PIN clk
+        DIRECTION INPUT ;
+        USE CLOCK ;
+        PORT
+            LAYER met3 ;
+                RECT 199.850 299.700 200.150 300.000 ;
+            END
+        END clk
+    PIN en
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 0.870 0.300 1.170 ;
+            END
+        END en
+    PIN we[0]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 1.550 0.300 1.850 ;
+            END
+        END we[0]
+    PIN we[1]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 2.230 0.300 2.530 ;
+            END
+        END we[1]
+    PIN we[2]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 2.910 0.300 3.210 ;
+            END
+        END we[2]
+    PIN we[3]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 3.590 0.300 3.890 ;
+            END
+        END we[3]
+    PIN addr[0]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 4.270 0.300 4.570 ;
+            END
+        END addr[0]
+    PIN addr[1]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 4.950 0.300 5.250 ;
+            END
+        END addr[1]
+    PIN addr[2]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 5.630 0.300 5.930 ;
+            END
+        END addr[2]
+    PIN addr[3]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 6.310 0.300 6.610 ;
+            END
+        END addr[3]
+    PIN addr[4]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 6.990 0.300 7.290 ;
+            END
+        END addr[4]
+    PIN addr[5]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 7.670 0.300 7.970 ;
+            END
+        END addr[5]
+    PIN addr[6]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 8.350 0.300 8.650 ;
+            END
+        END addr[6]
+    PIN addr[7]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 9.030 0.300 9.330 ;
+            END
+        END addr[7]
+    PIN addr[8]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 9.710 0.300 10.010 ;
+            END
+        END addr[8]
+    PIN addr[9]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 10.390 0.300 10.690 ;
+            END
+        END addr[9]
+    PIN addr[10]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 11.070 0.300 11.370 ;
+            END
+        END addr[10]
+    PIN addr[11]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 11.750 0.300 12.050 ;
+            END
+        END addr[11]
+    PIN addr[12]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 12.430 0.300 12.730 ;
+            END
+        END addr[12]
+    PIN addr[13]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 13.110 0.300 13.410 ;
+            END
+        END addr[13]
+    PIN addr[14]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 13.790 0.300 14.090 ;
+            END
+        END addr[14]
+    PIN wdata[0]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 14.470 0.300 14.770 ;
+            END
+        END wdata[0]
+    PIN wdata[1]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 15.150 0.300 15.450 ;
+            END
+        END wdata[1]
+    PIN wdata[2]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 15.830 0.300 16.130 ;
+            END
+        END wdata[2]
+    PIN wdata[3]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 16.510 0.300 16.810 ;
+            END
+        END wdata[3]
+    PIN wdata[4]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 17.190 0.300 17.490 ;
+            END
+        END wdata[4]
+    PIN wdata[5]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 17.870 0.300 18.170 ;
+            END
+        END wdata[5]
+    PIN wdata[6]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 18.550 0.300 18.850 ;
+            END
+        END wdata[6]
+    PIN wdata[7]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 19.230 0.300 19.530 ;
+            END
+        END wdata[7]
+    PIN wdata[8]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 19.910 0.300 20.210 ;
+            END
+        END wdata[8]
+    PIN wdata[9]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 20.590 0.300 20.890 ;
+            END
+        END wdata[9]
+    PIN wdata[10]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 21.270 0.300 21.570 ;
+            END
+        END wdata[10]
+    PIN wdata[11]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 21.950 0.300 22.250 ;
+            END
+        END wdata[11]
+    PIN wdata[12]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 22.630 0.300 22.930 ;
+            END
+        END wdata[12]
+    PIN wdata[13]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 23.310 0.300 23.610 ;
+            END
+        END wdata[13]
+    PIN wdata[14]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 23.990 0.300 24.290 ;
+            END
+        END wdata[14]
+    PIN wdata[15]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 24.670 0.300 24.970 ;
+            END
+        END wdata[15]
+    PIN wdata[16]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 25.350 0.300 25.650 ;
+            END
+        END wdata[16]
+    PIN wdata[17]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 26.030 0.300 26.330 ;
+            END
+        END wdata[17]
+    PIN wdata[18]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 26.710 0.300 27.010 ;
+            END
+        END wdata[18]
+    PIN wdata[19]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 27.390 0.300 27.690 ;
+            END
+        END wdata[19]
+    PIN wdata[20]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 28.070 0.300 28.370 ;
+            END
+        END wdata[20]
+    PIN wdata[21]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 28.750 0.300 29.050 ;
+            END
+        END wdata[21]
+    PIN wdata[22]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 29.430 0.300 29.730 ;
+            END
+        END wdata[22]
+    PIN wdata[23]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 30.110 0.300 30.410 ;
+            END
+        END wdata[23]
+    PIN wdata[24]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 30.790 0.300 31.090 ;
+            END
+        END wdata[24]
+    PIN wdata[25]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 31.470 0.300 31.770 ;
+            END
+        END wdata[25]
+    PIN wdata[26]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 32.150 0.300 32.450 ;
+            END
+        END wdata[26]
+    PIN wdata[27]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 32.830 0.300 33.130 ;
+            END
+        END wdata[27]
+    PIN wdata[28]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 33.510 0.300 33.810 ;
+            END
+        END wdata[28]
+    PIN wdata[29]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 34.190 0.300 34.490 ;
+            END
+        END wdata[29]
+    PIN wdata[30]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 34.870 0.300 35.170 ;
+            END
+        END wdata[30]
+    PIN wdata[31]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 35.550 0.300 35.850 ;
+            END
+        END wdata[31]
+    PIN rdata[0]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 36.230 0.300 36.530 ;
+            END
+        END rdata[0]
+    PIN rdata[1]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 36.910 0.300 37.210 ;
+            END
+        END rdata[1]
+    PIN rdata[2]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 37.590 0.300 37.890 ;
+            END
+        END rdata[2]
+    PIN rdata[3]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 38.270 0.300 38.570 ;
+            END
+        END rdata[3]
+    PIN rdata[4]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 38.950 0.300 39.250 ;
+            END
+        END rdata[4]
+    PIN rdata[5]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 39.630 0.300 39.930 ;
+            END
+        END rdata[5]
+    PIN rdata[6]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 40.310 0.300 40.610 ;
+            END
+        END rdata[6]
+    PIN rdata[7]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 40.990 0.300 41.290 ;
+            END
+        END rdata[7]
+    PIN rdata[8]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 41.670 0.300 41.970 ;
+            END
+        END rdata[8]
+    PIN rdata[9]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 42.350 0.300 42.650 ;
+            END
+        END rdata[9]
+    PIN rdata[10]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 43.030 0.300 43.330 ;
+            END
+        END rdata[10]
+    PIN rdata[11]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 43.710 0.300 44.010 ;
+            END
+        END rdata[11]
+    PIN rdata[12]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 44.390 0.300 44.690 ;
+            END
+        END rdata[12]
+    PIN rdata[13]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 45.070 0.300 45.370 ;
+            END
+        END rdata[13]
+    PIN rdata[14]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 45.750 0.300 46.050 ;
+            END
+        END rdata[14]
+    PIN rdata[15]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 46.430 0.300 46.730 ;
+            END
+        END rdata[15]
+    PIN rdata[16]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 47.110 0.300 47.410 ;
+            END
+        END rdata[16]
+    PIN rdata[17]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 47.790 0.300 48.090 ;
+            END
+        END rdata[17]
+    PIN rdata[18]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 48.470 0.300 48.770 ;
+            END
+        END rdata[18]
+    PIN rdata[19]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 49.150 0.300 49.450 ;
+            END
+        END rdata[19]
+    PIN rdata[20]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 49.830 0.300 50.130 ;
+            END
+        END rdata[20]
+    PIN rdata[21]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 50.510 0.300 50.810 ;
+            END
+        END rdata[21]
+    PIN rdata[22]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 51.190 0.300 51.490 ;
+            END
+        END rdata[22]
+    PIN rdata[23]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 51.870 0.300 52.170 ;
+            END
+        END rdata[23]
+    PIN rdata[24]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 52.550 0.300 52.850 ;
+            END
+        END rdata[24]
+    PIN rdata[25]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 53.230 0.300 53.530 ;
+            END
+        END rdata[25]
+    PIN rdata[26]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 53.910 0.300 54.210 ;
+            END
+        END rdata[26]
+    PIN rdata[27]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 54.590 0.300 54.890 ;
+            END
+        END rdata[27]
+    PIN rdata[28]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 55.270 0.300 55.570 ;
+            END
+        END rdata[28]
+    PIN rdata[29]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 55.950 0.300 56.250 ;
+            END
+        END rdata[29]
+    PIN rdata[30]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 56.630 0.300 56.930 ;
+            END
+        END rdata[30]
+    PIN rdata[31]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 57.310 0.300 57.610 ;
+            END
+        END rdata[31]
+    OBS
+        LAYER met1 ;
+            RECT 0.000 0.000 400.000 300.000 ;
+        LAYER met2 ;
+            RECT 0.000 0.000 400.000 300.000 ;
+    END
+END sram_bank
+
+MACRO boot_rom
+    CLASS BLOCK ;
+    SIZE 100.000 BY 100.000 ;
+    SYMMETRY X Y ;
+    PIN clk
+        DIRECTION INPUT ;
+        USE CLOCK ;
+        PORT
+            LAYER met3 ;
+                RECT 49.850 99.700 50.150 100.000 ;
+            END
+        END clk
+    PIN s_axi_aclk
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 0.870 0.300 1.170 ;
+            END
+        END s_axi_aclk
+    PIN s_axi_aresetn
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 1.550 0.300 1.850 ;
+            END
+        END s_axi_aresetn
+    PIN s_axi_araddr[0]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 2.230 0.300 2.530 ;
+            END
+        END s_axi_araddr[0]
+    PIN s_axi_araddr[1]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 2.910 0.300 3.210 ;
+            END
+        END s_axi_araddr[1]
+    PIN s_axi_araddr[2]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 3.590 0.300 3.890 ;
+            END
+        END s_axi_araddr[2]
+    PIN s_axi_araddr[3]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 4.270 0.300 4.570 ;
+            END
+        END s_axi_araddr[3]
+    PIN s_axi_araddr[4]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 4.950 0.300 5.250 ;
+            END
+        END s_axi_araddr[4]
+    PIN s_axi_araddr[5]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 5.630 0.300 5.930 ;
+            END
+        END s_axi_araddr[5]
+    PIN s_axi_araddr[6]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 6.310 0.300 6.610 ;
+            END
+        END s_axi_araddr[6]
+    PIN s_axi_araddr[7]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 6.990 0.300 7.290 ;
+            END
+        END s_axi_araddr[7]
+    PIN s_axi_araddr[8]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 7.670 0.300 7.970 ;
+            END
+        END s_axi_araddr[8]
+    PIN s_axi_araddr[9]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 8.350 0.300 8.650 ;
+            END
+        END s_axi_araddr[9]
+    PIN s_axi_araddr[10]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 9.030 0.300 9.330 ;
+            END
+        END s_axi_araddr[10]
+    PIN s_axi_araddr[11]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 9.710 0.300 10.010 ;
+            END
+        END s_axi_araddr[11]
+    PIN s_axi_araddr[12]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 10.390 0.300 10.690 ;
+            END
+        END s_axi_araddr[12]
+    PIN s_axi_araddr[13]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 11.070 0.300 11.370 ;
+            END
+        END s_axi_araddr[13]
+    PIN s_axi_araddr[14]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 11.750 0.300 12.050 ;
+            END
+        END s_axi_araddr[14]
+    PIN s_axi_araddr[15]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 12.430 0.300 12.730 ;
+            END
+        END s_axi_araddr[15]
+    PIN s_axi_araddr[16]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 13.110 0.300 13.410 ;
+            END
+        END s_axi_araddr[16]
+    PIN s_axi_araddr[17]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 13.790 0.300 14.090 ;
+            END
+        END s_axi_araddr[17]
+    PIN s_axi_araddr[18]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 14.470 0.300 14.770 ;
+            END
+        END s_axi_araddr[18]
+    PIN s_axi_araddr[19]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 15.150 0.300 15.450 ;
+            END
+        END s_axi_araddr[19]
+    PIN s_axi_araddr[20]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 15.830 0.300 16.130 ;
+            END
+        END s_axi_araddr[20]
+    PIN s_axi_araddr[21]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 16.510 0.300 16.810 ;
+            END
+        END s_axi_araddr[21]
+    PIN s_axi_araddr[22]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 17.190 0.300 17.490 ;
+            END
+        END s_axi_araddr[22]
+    PIN s_axi_araddr[23]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 17.870 0.300 18.170 ;
+            END
+        END s_axi_araddr[23]
+    PIN s_axi_araddr[24]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 18.550 0.300 18.850 ;
+            END
+        END s_axi_araddr[24]
+    PIN s_axi_araddr[25]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 19.230 0.300 19.530 ;
+            END
+        END s_axi_araddr[25]
+    PIN s_axi_araddr[26]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 19.910 0.300 20.210 ;
+            END
+        END s_axi_araddr[26]
+    PIN s_axi_araddr[27]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 20.590 0.300 20.890 ;
+            END
+        END s_axi_araddr[27]
+    PIN s_axi_araddr[28]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 21.270 0.300 21.570 ;
+            END
+        END s_axi_araddr[28]
+    PIN s_axi_araddr[29]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 21.950 0.300 22.250 ;
+            END
+        END s_axi_araddr[29]
+    PIN s_axi_araddr[30]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 22.630 0.300 22.930 ;
+            END
+        END s_axi_araddr[30]
+    PIN s_axi_araddr[31]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 23.310 0.300 23.610 ;
+            END
+        END s_axi_araddr[31]
+    PIN s_axi_arvalid
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 23.990 0.300 24.290 ;
+            END
+        END s_axi_arvalid
+    PIN s_axi_arready
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 24.670 0.300 24.970 ;
+            END
+        END s_axi_arready
+    PIN s_axi_rdata[0]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 25.350 0.300 25.650 ;
+            END
+        END s_axi_rdata[0]
+    PIN s_axi_rdata[1]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 26.030 0.300 26.330 ;
+            END
+        END s_axi_rdata[1]
+    PIN s_axi_rdata[2]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 26.710 0.300 27.010 ;
+            END
+        END s_axi_rdata[2]
+    PIN s_axi_rdata[3]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 27.390 0.300 27.690 ;
+            END
+        END s_axi_rdata[3]
+    PIN s_axi_rdata[4]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 28.070 0.300 28.370 ;
+            END
+        END s_axi_rdata[4]
+    PIN s_axi_rdata[5]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 28.750 0.300 29.050 ;
+            END
+        END s_axi_rdata[5]
+    PIN s_axi_rdata[6]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 29.430 0.300 29.730 ;
+            END
+        END s_axi_rdata[6]
+    PIN s_axi_rdata[7]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 30.110 0.300 30.410 ;
+            END
+        END s_axi_rdata[7]
+    PIN s_axi_rdata[8]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 30.790 0.300 31.090 ;
+            END
+        END s_axi_rdata[8]
+    PIN s_axi_rdata[9]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 31.470 0.300 31.770 ;
+            END
+        END s_axi_rdata[9]
+    PIN s_axi_rdata[10]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 32.150 0.300 32.450 ;
+            END
+        END s_axi_rdata[10]
+    PIN s_axi_rdata[11]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 32.830 0.300 33.130 ;
+            END
+        END s_axi_rdata[11]
+    PIN s_axi_rdata[12]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 33.510 0.300 33.810 ;
+            END
+        END s_axi_rdata[12]
+    PIN s_axi_rdata[13]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 34.190 0.300 34.490 ;
+            END
+        END s_axi_rdata[13]
+    PIN s_axi_rdata[14]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 34.870 0.300 35.170 ;
+            END
+        END s_axi_rdata[14]
+    PIN s_axi_rdata[15]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 35.550 0.300 35.850 ;
+            END
+        END s_axi_rdata[15]
+    PIN s_axi_rdata[16]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 36.230 0.300 36.530 ;
+            END
+        END s_axi_rdata[16]
+    PIN s_axi_rdata[17]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 36.910 0.300 37.210 ;
+            END
+        END s_axi_rdata[17]
+    PIN s_axi_rdata[18]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 37.590 0.300 37.890 ;
+            END
+        END s_axi_rdata[18]
+    PIN s_axi_rdata[19]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 38.270 0.300 38.570 ;
+            END
+        END s_axi_rdata[19]
+    PIN s_axi_rdata[20]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 38.950 0.300 39.250 ;
+            END
+        END s_axi_rdata[20]
+    PIN s_axi_rdata[21]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 39.630 0.300 39.930 ;
+            END
+        END s_axi_rdata[21]
+    PIN s_axi_rdata[22]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 40.310 0.300 40.610 ;
+            END
+        END s_axi_rdata[22]
+    PIN s_axi_rdata[23]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 40.990 0.300 41.290 ;
+            END
+        END s_axi_rdata[23]
+    PIN s_axi_rdata[24]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 41.670 0.300 41.970 ;
+            END
+        END s_axi_rdata[24]
+    PIN s_axi_rdata[25]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 42.350 0.300 42.650 ;
+            END
+        END s_axi_rdata[25]
+    PIN s_axi_rdata[26]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 43.030 0.300 43.330 ;
+            END
+        END s_axi_rdata[26]
+    PIN s_axi_rdata[27]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 43.710 0.300 44.010 ;
+            END
+        END s_axi_rdata[27]
+    PIN s_axi_rdata[28]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 44.390 0.300 44.690 ;
+            END
+        END s_axi_rdata[28]
+    PIN s_axi_rdata[29]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 45.070 0.300 45.370 ;
+            END
+        END s_axi_rdata[29]
+    PIN s_axi_rdata[30]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 45.750 0.300 46.050 ;
+            END
+        END s_axi_rdata[30]
+    PIN s_axi_rdata[31]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 46.430 0.300 46.730 ;
+            END
+        END s_axi_rdata[31]
+    PIN s_axi_rresp[0]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 47.110 0.300 47.410 ;
+            END
+        END s_axi_rresp[0]
+    PIN s_axi_rresp[1]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 47.790 0.300 48.090 ;
+            END
+        END s_axi_rresp[1]
+    PIN s_axi_rvalid
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 48.470 0.300 48.770 ;
+            END
+        END s_axi_rvalid
+    PIN s_axi_rready
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 49.150 0.300 49.450 ;
+            END
+        END s_axi_rready
+    PIN s_axi_awaddr[0]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 49.830 0.300 50.130 ;
+            END
+        END s_axi_awaddr[0]
+    PIN s_axi_awaddr[1]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 0.000 50.510 0.300 50.810 ;
+            END
+        END s_axi_awaddr[1]
+    PIN s_axi_awaddr[2]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 0.870 100.000 1.170 ;
+            END
+        END s_axi_awaddr[2]
+    PIN s_axi_awaddr[3]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 1.550 100.000 1.850 ;
+            END
+        END s_axi_awaddr[3]
+    PIN s_axi_awaddr[4]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 2.230 100.000 2.530 ;
+            END
+        END s_axi_awaddr[4]
+    PIN s_axi_awaddr[5]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 2.910 100.000 3.210 ;
+            END
+        END s_axi_awaddr[5]
+    PIN s_axi_awaddr[6]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 3.590 100.000 3.890 ;
+            END
+        END s_axi_awaddr[6]
+    PIN s_axi_awaddr[7]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 4.270 100.000 4.570 ;
+            END
+        END s_axi_awaddr[7]
+    PIN s_axi_awaddr[8]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 4.950 100.000 5.250 ;
+            END
+        END s_axi_awaddr[8]
+    PIN s_axi_awaddr[9]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 5.630 100.000 5.930 ;
+            END
+        END s_axi_awaddr[9]
+    PIN s_axi_awaddr[10]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 6.310 100.000 6.610 ;
+            END
+        END s_axi_awaddr[10]
+    PIN s_axi_awaddr[11]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 6.990 100.000 7.290 ;
+            END
+        END s_axi_awaddr[11]
+    PIN s_axi_awaddr[12]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 7.670 100.000 7.970 ;
+            END
+        END s_axi_awaddr[12]
+    PIN s_axi_awaddr[13]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 8.350 100.000 8.650 ;
+            END
+        END s_axi_awaddr[13]
+    PIN s_axi_awaddr[14]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 9.030 100.000 9.330 ;
+            END
+        END s_axi_awaddr[14]
+    PIN s_axi_awaddr[15]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 9.710 100.000 10.010 ;
+            END
+        END s_axi_awaddr[15]
+    PIN s_axi_awaddr[16]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 10.390 100.000 10.690 ;
+            END
+        END s_axi_awaddr[16]
+    PIN s_axi_awaddr[17]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 11.070 100.000 11.370 ;
+            END
+        END s_axi_awaddr[17]
+    PIN s_axi_awaddr[18]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 11.750 100.000 12.050 ;
+            END
+        END s_axi_awaddr[18]
+    PIN s_axi_awaddr[19]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 12.430 100.000 12.730 ;
+            END
+        END s_axi_awaddr[19]
+    PIN s_axi_awaddr[20]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 13.110 100.000 13.410 ;
+            END
+        END s_axi_awaddr[20]
+    PIN s_axi_awaddr[21]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 13.790 100.000 14.090 ;
+            END
+        END s_axi_awaddr[21]
+    PIN s_axi_awaddr[22]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 14.470 100.000 14.770 ;
+            END
+        END s_axi_awaddr[22]
+    PIN s_axi_awaddr[23]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 15.150 100.000 15.450 ;
+            END
+        END s_axi_awaddr[23]
+    PIN s_axi_awaddr[24]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 15.830 100.000 16.130 ;
+            END
+        END s_axi_awaddr[24]
+    PIN s_axi_awaddr[25]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 16.510 100.000 16.810 ;
+            END
+        END s_axi_awaddr[25]
+    PIN s_axi_awaddr[26]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 17.190 100.000 17.490 ;
+            END
+        END s_axi_awaddr[26]
+    PIN s_axi_awaddr[27]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 17.870 100.000 18.170 ;
+            END
+        END s_axi_awaddr[27]
+    PIN s_axi_awaddr[28]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 18.550 100.000 18.850 ;
+            END
+        END s_axi_awaddr[28]
+    PIN s_axi_awaddr[29]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 19.230 100.000 19.530 ;
+            END
+        END s_axi_awaddr[29]
+    PIN s_axi_awaddr[30]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 19.910 100.000 20.210 ;
+            END
+        END s_axi_awaddr[30]
+    PIN s_axi_awaddr[31]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 20.590 100.000 20.890 ;
+            END
+        END s_axi_awaddr[31]
+    PIN s_axi_awvalid
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 21.270 100.000 21.570 ;
+            END
+        END s_axi_awvalid
+    PIN s_axi_awready
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 21.950 100.000 22.250 ;
+            END
+        END s_axi_awready
+    PIN s_axi_wdata[0]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 22.630 100.000 22.930 ;
+            END
+        END s_axi_wdata[0]
+    PIN s_axi_wdata[1]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 23.310 100.000 23.610 ;
+            END
+        END s_axi_wdata[1]
+    PIN s_axi_wdata[2]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 23.990 100.000 24.290 ;
+            END
+        END s_axi_wdata[2]
+    PIN s_axi_wdata[3]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 24.670 100.000 24.970 ;
+            END
+        END s_axi_wdata[3]
+    PIN s_axi_wdata[4]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 25.350 100.000 25.650 ;
+            END
+        END s_axi_wdata[4]
+    PIN s_axi_wdata[5]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 26.030 100.000 26.330 ;
+            END
+        END s_axi_wdata[5]
+    PIN s_axi_wdata[6]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 26.710 100.000 27.010 ;
+            END
+        END s_axi_wdata[6]
+    PIN s_axi_wdata[7]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 27.390 100.000 27.690 ;
+            END
+        END s_axi_wdata[7]
+    PIN s_axi_wdata[8]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 28.070 100.000 28.370 ;
+            END
+        END s_axi_wdata[8]
+    PIN s_axi_wdata[9]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 28.750 100.000 29.050 ;
+            END
+        END s_axi_wdata[9]
+    PIN s_axi_wdata[10]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 29.430 100.000 29.730 ;
+            END
+        END s_axi_wdata[10]
+    PIN s_axi_wdata[11]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 30.110 100.000 30.410 ;
+            END
+        END s_axi_wdata[11]
+    PIN s_axi_wdata[12]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 30.790 100.000 31.090 ;
+            END
+        END s_axi_wdata[12]
+    PIN s_axi_wdata[13]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 31.470 100.000 31.770 ;
+            END
+        END s_axi_wdata[13]
+    PIN s_axi_wdata[14]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 32.150 100.000 32.450 ;
+            END
+        END s_axi_wdata[14]
+    PIN s_axi_wdata[15]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 32.830 100.000 33.130 ;
+            END
+        END s_axi_wdata[15]
+    PIN s_axi_wdata[16]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 33.510 100.000 33.810 ;
+            END
+        END s_axi_wdata[16]
+    PIN s_axi_wdata[17]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 34.190 100.000 34.490 ;
+            END
+        END s_axi_wdata[17]
+    PIN s_axi_wdata[18]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 34.870 100.000 35.170 ;
+            END
+        END s_axi_wdata[18]
+    PIN s_axi_wdata[19]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 35.550 100.000 35.850 ;
+            END
+        END s_axi_wdata[19]
+    PIN s_axi_wdata[20]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 36.230 100.000 36.530 ;
+            END
+        END s_axi_wdata[20]
+    PIN s_axi_wdata[21]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 36.910 100.000 37.210 ;
+            END
+        END s_axi_wdata[21]
+    PIN s_axi_wdata[22]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 37.590 100.000 37.890 ;
+            END
+        END s_axi_wdata[22]
+    PIN s_axi_wdata[23]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 38.270 100.000 38.570 ;
+            END
+        END s_axi_wdata[23]
+    PIN s_axi_wdata[24]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 38.950 100.000 39.250 ;
+            END
+        END s_axi_wdata[24]
+    PIN s_axi_wdata[25]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 39.630 100.000 39.930 ;
+            END
+        END s_axi_wdata[25]
+    PIN s_axi_wdata[26]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 40.310 100.000 40.610 ;
+            END
+        END s_axi_wdata[26]
+    PIN s_axi_wdata[27]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 40.990 100.000 41.290 ;
+            END
+        END s_axi_wdata[27]
+    PIN s_axi_wdata[28]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 41.670 100.000 41.970 ;
+            END
+        END s_axi_wdata[28]
+    PIN s_axi_wdata[29]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 42.350 100.000 42.650 ;
+            END
+        END s_axi_wdata[29]
+    PIN s_axi_wdata[30]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 43.030 100.000 43.330 ;
+            END
+        END s_axi_wdata[30]
+    PIN s_axi_wdata[31]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 43.710 100.000 44.010 ;
+            END
+        END s_axi_wdata[31]
+    PIN s_axi_wstrb[0]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 44.390 100.000 44.690 ;
+            END
+        END s_axi_wstrb[0]
+    PIN s_axi_wstrb[1]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 45.070 100.000 45.370 ;
+            END
+        END s_axi_wstrb[1]
+    PIN s_axi_wstrb[2]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 45.750 100.000 46.050 ;
+            END
+        END s_axi_wstrb[2]
+    PIN s_axi_wstrb[3]
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 46.430 100.000 46.730 ;
+            END
+        END s_axi_wstrb[3]
+    PIN s_axi_wvalid
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 47.110 100.000 47.410 ;
+            END
+        END s_axi_wvalid
+    PIN s_axi_wready
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 47.790 100.000 48.090 ;
+            END
+        END s_axi_wready
+    PIN s_axi_bresp[0]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 48.470 100.000 48.770 ;
+            END
+        END s_axi_bresp[0]
+    PIN s_axi_bresp[1]
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 49.150 100.000 49.450 ;
+            END
+        END s_axi_bresp[1]
+    PIN s_axi_bvalid
+        DIRECTION OUTPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 49.830 100.000 50.130 ;
+            END
+        END s_axi_bvalid
+    PIN s_axi_bready
+        DIRECTION INPUT ;
+        PORT
+            LAYER met3 ;
+                RECT 99.700 50.510 100.000 50.810 ;
+            END
+        END s_axi_bready
+    OBS
+        LAYER met1 ;
+            RECT 0.000 0.000 100.000 100.000 ;
+        LAYER met2 ;
+            RECT 0.000 0.000 100.000 100.000 ;
+    END
+END boot_rom
+
+END LIBRARY

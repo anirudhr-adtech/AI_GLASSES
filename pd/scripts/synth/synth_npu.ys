@@ -1,0 +1,51 @@
+# ===========================================================================
+# Yosys Synthesis Script — NPU Subsystem (npu_top)
+# Target: SKY130 HD standard cells
+# Usage:  cd pd && yosys -s scripts/synth/synth_npu.ys
+# ===========================================================================
+
+# --- Read RTL ---
+read_verilog ../rtl/npu/mac_unit.v
+read_verilog ../rtl/npu/npu_mac_array.v
+# SRAM buffers: blackbox stubs (real SRAM macros substituted in PnR)
+read_verilog synth_stubs/npu_weight_buf_bb.v
+read_verilog synth_stubs/npu_act_buf_bb.v
+read_verilog ../rtl/npu/npu_quantize.v
+read_verilog ../rtl/npu/npu_activation.v
+read_verilog ../rtl/npu/dma_weight_ch.v
+read_verilog ../rtl/npu/dma_act_ch.v
+read_verilog ../rtl/npu/npu_dma.v
+read_verilog ../rtl/npu/npu_regfile.v
+read_verilog ../rtl/npu/npu_controller.v
+read_verilog ../rtl/npu/npu_top.v
+
+# --- Elaborate ---
+hierarchy -check -top npu_top
+
+# --- High-level passes ---
+proc
+opt -full
+fsm
+opt
+memory -nomap
+opt
+
+# --- Technology mapping ---
+dfflibmap -liberty $PDK_ROOT/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+
+# Map remaining small memories to FFs (large SRAMs are blackboxed)
+memory_map
+
+# Combinational logic mapping via ABC (5000ps = 5ns = 200 MHz target)
+abc -liberty $PDK_ROOT/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib -D 5000
+
+# --- Clean up ---
+opt_clean -purge
+
+# --- Reports ---
+tee -o results/synth/npu_top_area.rpt stat -liberty $PDK_ROOT/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+tee -o results/synth/npu_top_check.rpt check
+
+# --- Write outputs ---
+write_verilog -noattr -noexpr -nohex results/synth/npu_top_netlist.v
+write_json results/synth/npu_top.json

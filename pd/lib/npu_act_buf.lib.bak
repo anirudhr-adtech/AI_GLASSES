@@ -1,0 +1,3540 @@
+library(npu_act_buf_lib) {
+  delay_model : table_lookup;
+  time_unit : "1ns";
+  voltage_unit : "1V";
+  current_unit : "1mA";
+  capacitive_load_unit(1, pf);
+  pulling_resistance_unit : "1kohm";
+  leakage_power_unit : "1nW";
+
+  nom_process : 1.0;
+  nom_voltage : 1.80;
+  nom_temperature : 25.0;
+
+  default_cell_leakage_power : 0.0;
+  default_fanout_load : 1.0;
+  default_input_pin_cap : 0.01;
+  default_output_pin_cap : 0.0;
+  default_inout_pin_cap : 0.01;
+
+  input_threshold_pct_fall : 50;
+  input_threshold_pct_rise : 50;
+  output_threshold_pct_fall : 50;
+  output_threshold_pct_rise : 50;
+  slew_lower_threshold_pct_fall : 20;
+  slew_lower_threshold_pct_rise : 20;
+  slew_upper_threshold_pct_fall : 80;
+  slew_upper_threshold_pct_rise : 80;
+
+  lu_table_template(delay_2x2) {
+    variable_1 : input_net_transition;
+    variable_2 : total_output_net_capacitance;
+    index_1("0.01, 0.1");
+    index_2("0.01, 0.1");
+  }
+
+  operating_conditions(typical) {
+    process : 1.0;
+    voltage : 1.80;
+    temperature : 25.0;
+  }
+  default_operating_conditions : typical;
+
+  cell(npu_act_buf) {
+    area : 120000.0;
+    dont_touch : true;
+    dont_use : true;
+
+    pin(clk) {
+      direction : input;
+      capacitance : 0.05;
+      clock : true;
+    }
+
+    pin("port_a_en") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_we") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_addr[0]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_addr[1]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_addr[2]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_addr[3]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_addr[4]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_addr[5]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_addr[6]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_addr[7]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_addr[8]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_addr[9]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_addr[10]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_addr[11]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_addr[12]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_addr[13]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_addr[14]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[0]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[1]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[2]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[3]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[4]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[5]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[6]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[7]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[8]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[9]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[10]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[11]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[12]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[13]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[14]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[15]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[16]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[17]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[18]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[19]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[20]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[21]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[22]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[23]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[24]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[25]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[26]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[27]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[28]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[29]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[30]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_wdata[31]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_a_rdata[0]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[1]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[2]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[3]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[4]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[5]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[6]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[7]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[8]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[9]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[10]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[11]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[12]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[13]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[14]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[15]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[16]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[17]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[18]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[19]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[20]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[21]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[22]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[23]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[24]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[25]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[26]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[27]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[28]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[29]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[30]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_a_rdata[31]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_en") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_b_addr[0]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_b_addr[1]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_b_addr[2]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_b_addr[3]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_b_addr[4]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_b_addr[5]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_b_addr[6]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_b_addr[7]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_b_addr[8]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_b_addr[9]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_b_addr[10]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_b_addr[11]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_b_addr[12]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_b_addr[13]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_b_addr[14]") {
+      direction : input;
+      capacitance : 0.01;
+      timing() {
+        related_pin : "clk";
+        timing_type : setup_rising;
+        rise_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.5, 0.5", \
+                 "0.5, 0.5");
+        }
+      }
+      timing() {
+        related_pin : "clk";
+        timing_type : hold_rising;
+        rise_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+        fall_constraint(delay_2x2) {
+          values("0.2, 0.2", \
+                 "0.2, 0.2");
+        }
+      }
+    }
+
+    pin("port_b_rdata[0]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[1]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[2]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[3]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[4]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[5]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[6]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[7]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[8]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[9]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[10]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[11]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[12]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[13]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[14]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[15]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[16]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[17]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[18]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[19]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[20]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[21]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[22]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[23]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[24]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[25]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[26]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[27]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[28]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[29]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[30]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+    pin("port_b_rdata[31]") {
+      direction : output;
+      max_capacitance : 0.5;
+      timing() {
+        related_pin : "clk";
+        timing_type : rising_edge;
+        cell_rise(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        cell_fall(delay_2x2) {
+          values("2.0, 2.1", \
+                 "2.1, 2.2");
+        }
+        rise_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+        fall_transition(delay_2x2) {
+          values("0.05, 0.10", \
+                 "0.10, 0.15");
+        }
+      }
+    }
+
+  } /* end cell npu_act_buf */
+} /* end library npu_act_buf_lib */
